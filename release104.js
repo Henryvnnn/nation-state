@@ -1,0 +1,31 @@
+/* 1.0.4 — one Olympic bid, varied identities and concise legislative UI. */
+const SURNAMES104=[...new Set('赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦尤许何吕施张孔曹严华金魏陶姜戚谢邹喻柏水窦章云苏潘葛奚范彭郎鲁韦昌马苗凤花方俞任袁柳鲍史唐费廉岑薛雷贺倪汤滕殷罗毕郝邬安常乐于傅皮卞齐康伍余元卜顾孟平黄穆萧尹姚邵湛汪祁毛禹狄米贝明臧计伏成戴谈宋茅庞熊纪舒屈项祝董梁杜阮蓝闵席季麻强贾路娄危江童颜郭梅盛林刁钟徐邱骆高夏蔡田樊胡凌霍虞万支柯昝管卢莫经房裘缪干解应宗丁宣贲邓郁单杭洪包诸左石崔吉龚程嵇邢裴陆荣翁荀羊甄封芮储靳汲邴糜松井段富巫乌焦巴弓牧隗山谷车侯宓蓬全郗班仰秋仲伊宫宁仇栾甘祖武符刘景詹龙叶幸司韶黎乔苍双闻莘党翟谭贡劳逄姬申扶堵冉宰郦雍璩桑桂濮牛寿通边燕冀郏浦尚农温别庄晏柴阎连茹习艾鱼容向古易慎戈廖庾居衡步都耿满弘匡国文寇广阙东欧利师巩聂晁勾敖融冷辛阚简饶曾沙鞠丰巢关查荆游权盖益桓公')];
+const GIVEN_FIRST104=[...new Set('承启书怀明景思文修绍正允彦致庭弘立宏元嘉令维尚时秉怀仲伯季崇若闻长守昭穆敬致兴云清安乐永庆熙瑞靖远世宗德泰诚光奕和仁峻志宇泽言哲俊锦卓培荣新博星华君逸凌钧谦至青朗厚知成亦东舒勤信建振朝廷天少仲兆林宁其汉盛学道鸿腾孟礼方玉之见恺成奎嘉翰复敬蔚允善政群')];
+const GIVEN_LAST104=[...new Set('衡川宁远泽岳章文泉松柏桐楷棠竹林岚澄源清渊涛河洲汀江海湖舟帆峰岭山岩峦庭堂轩亭桥原野牧禾稷硕稻秋春夏冬晨昕晖曜旭曦明晟辉昭辰星月朗晏和谦正直诚信义仁礼智睿哲思知行达济民安泰平康健宁福祥瑞祺禧佑惠嘉良善卓英杰俊才彦贤儒博学书墨砚翰章锦绣琛瑾瑜珩璋琅琦琮璞玉振铎钧铭铮锋锐坚毅恒定朴实谨敬勤勉修齐治兴隆盛荣昌熙雍豫宽裕慕望靖允畅述澜逸颖宁启')];
+function leastUsed104(pool,used){let counts=new Map(pool.map(x=>[x,0]));for(let x of used)if(counts.has(x))counts.set(x,counts.get(x)+1);let min=Math.min(...counts.values());return pick(pool.filter(x=>counts.get(x)===min))}
+personName=function(){let people=[...(s.political?.members||[]),...(s.political?.candidates||[])],names=people.map(p=>p.name).filter(Boolean);let surname=leastUsed104(SURNAMES104,names.map(n=>n[0])),first=leastUsed104(GIVEN_FIRST104,names.map(n=>n[1])),last=leastUsed104(GIVEN_LAST104.filter(x=>x!==first),names.map(n=>n[2]));let name=surname+first+last;
+ // A bounded fallback is only needed after an unusually large imported roster.
+ if(names.includes(name)){for(let x of SURNAMES104)for(let a of GIVEN_FIRST104)for(let b of GIVEN_LAST104)if(a!==b&&!names.includes(x+a+b))return x+a+b;throw Error('姓名池已耗尽')}return name};
+function migrate104(){
+ if(s.release104)return;
+ if(!creatingWorld)try{localStorage.setItem(KEY+'-pre-104',JSON.stringify(s))}catch(_){}
+ let st=sits();st.olympicsApplied=!!st.olympicsApplied||[...st.active,...st.history].some(x=>x.kind==='olympics');
+ if(!creatingWorld){let people=[...pstate().members,...pstate().candidates],oldNames=people.map(c=>c.name),mapping={};people.forEach(c=>c.name='');people.forEach((c,i)=>{c.name=personName();mapping[oldNames[i]]=c.name});
+  let pattern=new RegExp(oldNames.filter(Boolean).map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');
+  function renameText(obj){for(let key of Object.keys(obj)){let value=obj[key];if(typeof value==='string')obj[key]=value.replace(pattern,n=>mapping[n]);else if(value&&typeof value==='object')renameText(value)}}
+  // IDs, jobs, attributes and historical results remain stable; only identity text changes.
+  for(let obj of [s.logs,pstate().reports,pstate().queue,pstate().current,pstate().promises,v3().decisions,st.notices].filter(Boolean))renameText(obj);
+ }
+ s.release104={version:1};log('1.0.4 更新','已启用逐步教程与概念搜索；奥运每局最多申办一次，提案忠诚损耗改为每季 0.5。');
+}
+const initBefore104=initPolitics;initPolitics=function(id=selectedRegime){initBefore104(id);migrate104()};
+function billPassRate104(){let seats=pstate().factions.reduce((sum,f)=>sum+f.seats,0);return seats?clamp(votes()/seats*100,0,100):0}
+function factionFocus104(f){let items=Object.entries(factionProfile(f).budget).sort((a,b)=>b[1]-a[1]);return policyMeta[items[0][0]][0]}
+factionVotingRows=function(){return pstate().factions.map(f=>`<div class="faction-row"><div><b style="color:${COLORS[f.id]}">${esc(f.name)}</b><small><span data-guide="seats">${f.seats} 席</span> · <span data-guide="faction-relation">团体关系 ${fmt(f.relation,1)}</span> · <span data-guide="agenda">议程倾向 ${fmt(support(f),0)}</span></small><small data-guide="faction-profile">${factionProfile(f).name} · 关注${factionFocus104(f)}</small><details class="faction-details"><summary data-guide="faction-details">查看细则</summary><p><span data-guide="full-support">全票支持门槛 ${fmt(budgetRequirement(f),2)}</span> · <span data-guide="effective-agenda">折算倾向 ${fmt(votingTendency(f),2)}</span> · 支持席位权重 ${fmt(f.seats*factionSeatRatio(f),2)}</p><p>${preferenceText103(f)}</p><p>${f.id===0?'玩家派系不承担每季倾向损耗。':'每季议程倾向 −2；协商可抵消累计损耗。'}${coalitionRegime()&&rules103().coalition.includes(f.id)?'目前属于执政联盟。':''}</p></details></div><span class="badge" data-guide="faction-support">${fmt(factionSeatRatio(f)*100,1)}% 支持</span><button data-guide="negotiate" onclick="factionTalk(${f.id})">协商</button></div>`).join('')+`<details class="vote-rules"><summary>查看表决计算规则</summary><p>通过率是各党支持比例按席位加权后的总支持百分比，达到 ${threshold()}% 即通过。折算倾向 50 对应 0% 支持、51 对应 10%、60 对应 100%。</p><p>折算倾向 = 议程倾向 −（本案全票门槛 − 60）。个税每提高 1%、消费税每提高 1.5%、企业税每提高 2%，全票门槛各 +1；降税相反。公共预算按各派系偏好调整，执政党同样适用。</p><p>低于 50 的每一点仅在通过后扣除 0.1 稳定度，另外保留原有通过收益。本案预计额外稳定损失 ${fmt(billStabilityPenalty(),2)}。</p></details>`};
+const assemblyBefore104=assembly;
+assembly=function(){let html=assemblyBefore104();if(!pstate().bill)html=html.replace('<h2>等待政府提案</h2>',`<div class="pass-rate" data-guide="pass-rate"><strong>${fmt(billPassRate104(),1)}%</strong><span>当前基础通过率 · 所需 ${threshold()}%</span></div><h2>等待政府提案</h2>`);else html=html.replace('<div class="big-number">', '<div class="big-number" data-guide="pass-rate">');return html};
+function olympicBenefits104(){return `<details class="olympic-benefits" open><summary>成功申办与赛后收益</summary><p>已取得本局唯一一次承办资格。接受时投入 0.3% GDP，筹备八季度，每季维护支出 0.15% GDP；取消、失败和成功都不会恢复申办机会。</p><p>进度完成 100%、质量达到 40：成功举办后支持 +6、投资者信心 +3，未来六季度增长压力 +0.5。若超支超过 40，支持收益减为 +3，并追加 2% GDP 债务。</p><p>筹备或质量不达标：支持 −8、信心 −4、稳定 −3；超支仍可能追加债务。举办结束后还有场馆处置，可转为社区设施或出售运营权。</p></details>`}
+function staleOlympicBid104(){let e=pstate().current;if(e?.situationAction==='olympic-bid'&&sits().olympicsApplied){e.situationAction='olympic-used';e.title='本局奥运申办机会已使用';e.text='本局已经成功申办过奥运，不再受理新的申请。现有筹备或赛后结果保留。';e.options=[option('确认并继续','不会再次收取申办费用。')]}}
+const eventBefore104=showPoliticalEvent;showPoliticalEvent=function(){staleOlympicBid104();eventBefore104()};
+const resolveBefore104=resolvePolitical;resolvePolitical=function(i){staleOlympicBid104();resolveBefore104(i)};
+const saveBefore104=validSave;validSave=function(v){return saveBefore104(v)&&(!v.release104||v.release104.version===1&&typeof v.situations?.olympicsApplied==='boolean')};

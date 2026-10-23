@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
 const root=path.resolve(__dirname,'..');let storage={};
-function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
+function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','guide.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}
@@ -70,7 +70,7 @@ fresh103();{
  let quote=programmeQuote('education',1);near(quote.cost,.75*(1-.025*8-.025*4),'discounted 0.75 GDP');near(quote.progress,24*1.15*1.25,'weighted progress');
  let debt=s.debt;advanceProgramme('education',1);near(s.debt-debt,s.gdp*quote.cost/100,'funded programme');near(pr.progress,quote.progress,'programme actual progress');near(c.loyalty,52,'option loyalty +2');
  let progress=pr.progress,ap=p.ap;advanceProgramme('education',1);near(pr.progress,progress,'cannot repeat option same quarter');assert(p.ap===ap,'duplicate no AP');
- s.q=1;programmeQuarter103();near(c.loyalty,51,'unfinished penalty');programmeQuarter103();near(c.loyalty,51,'once per quarter loyalty');
+ s.q=1;programmeQuarter103();near(c.loyalty,51.5,'unfinished penalty');programmeQuarter103();near(c.loyalty,51.5,'once per quarter loyalty');
  for(let q=2;!pr.completed;q++){s.q=q;p.ap=3;advanceProgramme('education',0);assert(q<12,'bounded completion')}
  assert(rules103().research.educationModernized&&pr.progress===100,'education unlock');let human=s.human;debt=s.debt;p.ap=3;advanceProgramme('education',2);near(s.human,human,'no duplicate reward');near(s.debt,debt,'no extra completed cost');
  let loyalty=c.loyalty;s.q++;programmeQuarter103();near(c.loyalty,loyalty,'completed no loyalty loss');
