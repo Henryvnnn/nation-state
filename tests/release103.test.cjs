@@ -77,6 +77,29 @@ fresh103();{
  let replacement=p.candidates.find(c=>cabinetEligible(c)&&!Object.values(p.cabinet).some(i=>i.candidate===c.id));appointOfficial('education',replacement.id);assert(pr.completed&&rules103().research.educationModernized,'replacement retains completion');
  for(let k of cabinetSlots103())for(let i=0;i<3;i++){let x=programmeQuote(k,i);assert(x.cost>0&&x.progress>0&&x.a[3]>=1&&x.a[3]<=3,'valid programme '+k);}
 }
+// Canonical effect summaries: every programme metric is displayed once; health matches its reward.
+fresh103();{
+ for(let [key,def]of Object.entries(MINISTER_PROGRAMMES103)){
+  let summary=programmePanel(key).split('完成效果：')[1].split('。')[0];
+  for(let metric of Object.keys(def.reward)){let label=EFFECT_LABELS106[metric];if(label)assert(summary.split(label).length-1===1,'one effect label '+key+' '+metric)}
+  assert(!summary.includes('；失业 '),'no appended unemployment alias');
+ }
+ assert(impactText({unemployment:-.5})==='失业率 -0.5 个百分点','canonical concise unemployment');
+ assert(impactText({cost:.035}).includes('0.035'),'small fiscal values retained');
+ for(let values of [REFORMS.find(r=>r.key==='culture').values,MINISTER_PROGRAMMES103.health.reward]){
+  assert(impactText(values).split('失业率').length===2,'one unemployment effect in reform/programme');
+  assert(departmentImpact105(values).split('失业率').length===2,'one unemployment effect in task report');
+ }
+ let pr=rules103().proposals.health;pr.progress=99;let unemployment=s.unemployment,approval=s.approval;
+ advanceProgramme('health',0);near(s.unemployment,unemployment-.5,'new health reward -0.5');near(s.approval,approval+4,'health approval unchanged');
+ assert(pr.completed&&pr.rewardApplied.unemployment===-.5,'actual award persisted');
+ assert(programmePanel('health').includes('已获效果：支持 +4 · 失业率 -0.5 个百分点'),'completed panel matches award');
+ let reported=pstate().reports[0].text;assert(reported.includes('失业率 -0.5')&&reported.split('失业率').length===2,'report matches award once');
+ assert(guideMatches104('普惠医疗网络',guideCatalog104())[0].text.includes('失业率 -0.5'),'guide matches current reward');
+ unemployment=s.unemployment;pstate().ap=3;advanceProgramme('health',1);near(s.unemployment,unemployment,'no repeat reward');
+ delete pr.rewardApplied;assert(programmePanel('health').includes('失业率 -0.3'),'legacy completed award stays accurate');
+ near(s.unemployment,unemployment,'legacy description does not grant extra reward');
+}
 // Legacy migration is deterministic and nonpunitive; reload preserves all new state.
 fresh103();{
  let p=pstate();p.cabinet.education={candidate:1,task:'technology'};let history=JSON.stringify(s.history),dismissals=p.memory.dismissals,stability=s.stability,approval=s.approval;delete s.rules103;p.candidates=p.candidates.slice(0,24);Object.keys(p.cabinet).forEach((k,i)=>p.cabinet[k]={candidate:i,task:'balanced'});

@@ -32,7 +32,19 @@ function cabinet(){let p=pstate(),r=regime(),slots=[...(r.head?['head']:[]),...P
 function officialPanel(k){let item=pstate().cabinet[k],c=item?pstate().candidates[item.candidate]:null;return `<span class="tag">${office(k)}</span>${c?`<h2>${c.name}</h2><p>${pstate().factions[c.faction].name} · ${TRAITS[c.trait].name}<br>${TRAITS[c.trait].desc}</p><div class="mini-stats"><span>能力 <b>${c.skill}</b></span><span>忠诚 <b>${c.loyalty}</b></span><span>累计政绩 <b>${fmt(c.achievements,0)}</b></span><span>任职 <b>${c.tenure}</b> 季度</span></div><label class="task-label" for="task">本季任务方向</label><select id="task" onchange="setTask('${k}',this.value)" ${s.ended?'disabled':''}>${cabinetTaskOptions105(k).map(([v,n])=>`<option value="${v}" ${item.task===v?'selected':''}>${n}</option>`).join('')}</select>${taskExplanation105(k)}<p>指令不消耗行动点；官员按自身倾向选择具体手段。任命司法主管或政府首脑也会立即影响司法独立。</p><button class="danger" onclick="dismissPreview('${k}')" ${s.ended?'disabled':''}>要求辞职 · 查看后果</button>`:`<h2>职位空缺</h2><p>请选择下方候选人。政府首脑空缺每季损失 3 稳定度，其他部门每席损失 0.25。</p>`}`}
 function setTask(k,v){if(s.ended||!TASKS[v]||!pstate().cabinet[k])return;pstate().cabinet[k].task=v;save();toast('任务方向已更新，下季度由官员自行执行')}
 function dismissalImpact(k){let p=pstate(),c=p.candidates[p.cabinet[k].candidate],power=k==='head'?(regime().head==='宰相'?1.6:1.2):.55,popular=c.achievements>=8;return {approval:(popular?-3:1)*power,stability:(regime().democratic?-1:-3)*power,confidence:(c.trait===2&&popular?-3:0)*power,relation:popular?-7:-3,popular}}
-function impactText(v){let names={approval:'支持',stability:'稳定',confidence:'信心',judicial:'司法独立',cost:'债务 / GDP',human:'人力资本',capitalStock:'基建资本'};return Object.entries(v).filter(([k,v])=>names[k]&&Math.abs(v)>.01).map(([k,v])=>`${names[k]} ${v>0?'+':''}${fmt(v)}${k==='cost'?'%':''}`).join(' · ')||'无即时指标变化'}
+// One canonical label per effect key; summaries never append a second alias.
+const EFFECT_LABELS106={approval:'支持',stability:'稳定',confidence:'信心',judicial:'司法独立',cost:'债务 / GDP',human:'人力资本',capitalStock:'基建资本',unemployment:'失业率',gdp:'名义 GDP',growth:'年化增长压力',inflation:'通胀',sports:'体育基础',culture:'文化基础'};
+function formatEffectText106(values,{costLabel=EFFECT_LABELS106.cost,costUnit='%',empty='无即时指标变化'}={}){
+ let parts=[];
+ for(let [key,label]of Object.entries(EFFECT_LABELS106)){
+  if(!Number.isFinite(values[key]))continue;
+  let value=Number(values[key].toFixed(key==='cost'?3:2));if(!value)continue;
+  let unit=key==='cost'?costUnit:key==='gdp'?'%':['unemployment','growth','inflation'].includes(key)?' 个百分点':'';
+  parts.push(`${key==='cost'?costLabel:label} ${value>0?'+':''}${value}${unit}`);
+ }
+ return parts.join(' · ')||empty;
+}
+function impactText(v){return formatEffectText106(v)}
 function dismissPreview(k){if(!pstate().cabinet[k])return;let c=pstate().candidates[pstate().cabinet[k].candidate],v=dismissalImpact(k);modal(`<span class="tag">内阁人事 / 强制辞职</span><h2>解除${c.name}的${office(k)}职务？</h2><p>${v.popular?'该官员已有显著政绩，撤换可能被视为打压能臣。':'其政绩尚有限，撤换的公众代价较低。'}${regime().democratic?'议会将关注政府解释。':'其支持者会担忧权力清洗，稳定冲击更大。'}</p><p>${impactText(v)}；所属派系关系 ${v.relation}。消耗 1 行动点。</p><button onclick="$('modal').close()">留任</button> <button class="danger" onclick="dismissOfficial('${k}')">要求辞职</button>`)}
 function removeOfficial(k){let p=pstate(),c=p.candidates[p.cabinet[k].candidate],v=dismissalImpact(k);mod({approval:v.approval,stability:v.stability,confidence:v.confidence});p.factions[c.faction].relation=clamp(p.factions[c.faction].relation+v.relation,0,100);p.memory.dismissals++;log('内阁人事变动',`${c.name}被要求辞去${office(k)}职务。${impactText(v)}。`);p.cabinet[k]=null}
 function dismissOfficial(k){if(!pstate().cabinet[k]||!spendAction('personnel'+k))return;removeOfficial(k);$('modal').close();pSave()}

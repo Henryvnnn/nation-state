@@ -52,7 +52,7 @@ function departmentTask105(k,item,c){
 }
 function departmentScale105(c){return clamp((.4+c.skill/140)*(.6+c.loyalty/200),.35,1.5)}
 function departmentValues105(task,c){return Object.fromEntries(Object.entries(task.values).map(([k,v])=>[k,v*departmentScale105(c)]))}
-function departmentImpact105(values){let names={cost:'财政支出',approval:'支持',stability:'稳定',confidence:'信心',judicial:'司法独立',human:'人力资本',capitalStock:'基建资本',unemployment:'失业率',growth:'年化增长压力',culture:'文化基础'};return Object.entries(values).filter(([k,v])=>names[k]&&Math.abs(v)>.001).map(([k,v])=>`${names[k]} ${v>0?'+':''}${fmt(v,2)}${k==='cost'?'% GDP':['unemployment','growth'].includes(k)?' 个百分点':''}`).join(' · ')||'无额外指标变化'}
+function departmentImpact105(values){return formatEffectText106(values,{costLabel:'财政支出',costUnit:'% GDP',empty:'无额外指标变化'})}
 function taskStatus105(k,item){return item?`<small class="office-task" data-office-task="${k}">本季任务：${esc(TASKS[item.task]||TASKS.balanced)}</small>`:''}
 function taskExplanation105(k){
  let item=pstate().cabinet[k],c=item?pstate().candidates[item.candidate]:null;if(!c)return '';
