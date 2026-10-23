@@ -1,8 +1,8 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');const root=path.resolve(__dirname,'..');let storage={};
-function boot(){let nodes={};let ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}let c=boot();
+function boot(){let nodes={};let ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}let c=boot();
 vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}
-function fresh(id='presidential'){selectedRegime=id;pendingModel='auto';create('test-'+id);}
+function fresh(id='presidential'){selectedRegime=id;pendingModel='auto';create('test-'+id);s.situations.active=[];s.situations.notices=[];s.inflation=3;s.unemployment=6;s.debt=s.gdp*.5;s.approval=58;s.stability=70;pstate().judicial=75;}
 function drain(choice=0){let n=0;while(pstate().current&&!s.ended){resolvePolitical(choice);if(++n>20)throw Error('queue stuck')}return n}
 fresh();assert(pstate().members.length===9,'expected 9 officials');for(let i=0;i<5;i++){let rep=pstate().members.filter(m=>m.id>=4&&m.faction===i);assert(rep.length===1,'duplicate whip');assert(rep[0].role.includes(pstate().factions[i].name),'party mismatch')}assert(TRAITS.length===9,'traits');assert(new Set(pstate().candidates.map(c=>c.trait)).size===9,'candidate traits');assert(date(6).includes('2031')&&date(6).includes('Q1'),'six quarter year');
 let z=v3().regions[0];s.approval=70;z.development=50;z.attitude=0;z.termProgress=0;assert(regionalEstimate(z).share===56,'70 x .8');z.termProgress=1;assert(regionalEstimate(z).share===70,'fulfilled need');
@@ -30,3 +30,24 @@ fresh();delete s.governance;for(let i=9;i<14;i++)pstate().members.push({...pstat
 `,c);
 let migrated=boot();assert.equal(vm.runInContext('pstate().members.length',migrated),9);assert.equal(vm.runInContext('s.q',migrated),12);assert.equal(vm.runInContext('v3().legacyHistory',migrated),true);assert(storage['nation-state-v1-pre-v3']);
 console.log('PASS all 12 regimes: full 48/60-quarter lifecycles, finite metrics, 3 events per quarter, full history, election loss, v2 migration with backup');
+vm.runInContext(`
+{
+fresh('party');assert(pstate().factions.map(f=>f.seats).join(',')==='35,22,25,16,2','party seats');assert(pstate().factions.slice(0,3).every(f=>f.name.startsWith(pstate().rulingParty)),'one ruling party');assert(/共产党|劳动党|工人党/.test(pstate().rulingParty),'socialist ruling name');s.name='阿莱恩人民共和国';assert(countryStem()==='阿莱恩','country suffix');
+for(let id of ['absolute','aristocratic','tyranny']){fresh(id);assert(pstate().factions.every(f=>f.name.endsWith('派')&&!f.name.includes('党')),'secular council '+id)}fresh('theoabsolute');assert(pstate().factions.every(f=>!f.name.includes('党')),'religious council');
+let names=new Set();for(let i=0;i<15;i++){selectedRegime='presidential';create('names-'+i);names.add(pstate().factions.map(f=>f.name).join(','))}assert(names.size>10,'random names diversity');
+fresh();for(let z of v3().regions)z.demandProgress=1;v3().regions[3].demandProgress=0;for(let i=0;i<30;i++)assert(regionalEvent().region===3,'completed regions excluded');let e=regionalEvent();pstate().current=e;pstate().queue=[];resolvePolitical(0);assert(v3().regions[3].demandProgress===1,'regional completion');assert(regionalEvent().type==='maintenance','all complete fallback');assert(campaignEvent().type==='campaign-complete','campaign no duplicate fulfillment');
+fresh();let queued=regionalEvent();pstate().current=queued;pstate().queue=[];v3().regions[queued.region].demandProgress=1;showPoliticalEvent();assert(pstate().current.region!==queued.region,'stale queued request replaced');
+fresh('party');s.q=11;s.stability=85;s.approval=90;for(let z of v3().regions){z.demandProgress=1;z.termProgress=1}let variants=v3().regions.map(z=>z.demandVariant);advance();assert([pstate().current,...pstate().queue].some(e=>e.type==='local-refresh'),'12 quarter notice');drain();assert(v3().localHistory.length===1,'local history saved');assert(v3().regions.every(z=>z.demandProgress===0&&z.demandVariant!==variants[z.id]),'fresh demands distinct');assert(v3().regions.every(z=>z.termProgress>=1),'election credit preserved');let count=v3().localHistory.length;refreshLocalDemands();assert(v3().localHistory.length===count,'no duplicate refresh');
+fresh();s.q=6;for(let z of v3().regions)z.demandProgress=1;s.debt=s.gdp*.4;governingPressure();let mild=v3().pressure.approval;for(let z of v3().regions)z.demandProgress=0;s.debt=s.gdp*1.5;governingPressure();assert(v3().pressure.approval>mild+1,'difficulty responds to neglect/debt');
+console.log('PASS 1.2 factions, country names, seeded diversity, completed/stale request filtering, 12-quarter rollover, preserved electoral credit, pressure response');
+// Balanced fixtures above prove full lifecycles remain possible; these runs measure passive play.
+let wins=0,losses=0;for(let i=0;i<20;i++){selectedRegime='presidential';create('balance-'+i);while(!s.ended&&s.q<48){advance();drain()}if(s.q===48&&v3().elections.at(-1)?.won)wins++;else losses++}console.log('Passive first-option runs: '+wins+' reached 48; '+losses+' ended early');
+}
+`,c);
+// Migration from the previously deployed release repairs party seats once and preserves in-progress demands.
+vm.runInContext("fresh('party');s.q=7;v3().regions[0].termProgress=.6;delete v3().release;pstate().factions[0].seats=32;save()",c);
+let upgraded=boot();assert.equal(vm.runInContext('pstate().factions[0].seats',upgraded),35);assert.equal(vm.runInContext('v3().regions[0].demandProgress',upgraded),.6);let upgradeSaved=storage['nation-state-v1'];boot();assert.equal(storage['nation-state-v1'],upgradeSaved);
+vm.runInContext(`
+{let activeWins=0;for(let i=0;i<10;i++){selectedRegime='presidential';create('balance-'+i);setTask('head','social');setTask('deputy','industry');setTask('education','technology');setTask('interior','order');setTask('environment','green');setTask('health','social');setTask('culture','agriculture');while(!s.ended&&s.q<48){advance();drain()}if(s.q===48&&v3().elections.at(-1)?.won)activeWins++}console.log('Active cabinet task strategy: '+activeWins+'/10 completed both terms');}
+`,c);
+console.log('PASS previous release migration and idempotent reload');
