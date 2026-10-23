@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','guide.js'];let storage={};
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','guide.js'];let storage={};
 function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of files)vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
@@ -28,7 +28,7 @@ fresh104('party','same104');let generated=JSON.stringify(pstate().candidates.map
 }
 fresh104();{
  let p=pstate(),c=p.candidates[p.cabinet.education.candidate],loyalty=c.loyalty;s.q=1;programmeQuarter103();near(c.loyalty,loyalty-.5,'half-point loyalty');programmeQuarter103();near(c.loyalty,loyalty-.5,'once per quarter');
- p.bill={kind:'budget',title:'预算',description:'测试',policies:{...s.policies}};let html=assembly();assert(html.includes('% 通过率')&&html.includes('所需通过率 51%'),'percentage UI');assert(!html.includes('通过所需'),'old seats removed');assert(html.includes('<summary data-guide="faction-details">查看细则'),'details collapsed');assert(!html.includes('faction-details" open'),'details not expanded');
+ p.bill={kind:'budget',title:'预算',description:'测试',policies:{...s.policies}};let html=assembly();assert(html.includes('% 院内支持率')&&html.includes('所需院内支持率 51%'),'percentage UI');assert(!html.includes('通过所需'),'old seats removed');assert(html.includes('<summary data-guide="faction-details">查看细则'),'details collapsed');assert(!html.includes('faction-details" open'),'details not expanded');
  p.factions.forEach(f=>f.seats*=2);near(billPassRate104(),votes()/200*100,'normalization');
 }
 // Every available mechanism catalog is searchable and synonyms share canonical entries.

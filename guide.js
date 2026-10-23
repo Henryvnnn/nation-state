@@ -4,7 +4,7 @@ const REGIME_GUIDE104={
  presidential:'你所扮演的是总统制民主共和国。总统领导政府、提出预算，与议会协商；本游戏另设总理协调内阁。',
  semi:'你所扮演的是半总统制国家。总统与总理分享行政职责，重大议程仍须获得议会支持。',
  westminster:'你所扮演的是西敏议会制国家。首相直接组阁，对议会负责，失去信任可能提前下台。',
- federal:'你所扮演的是联邦委员会制国家。玩家担任协调总理，重大议案通过率须达到 60%。',
+ federal:'你所扮演的是联邦委员会制国家。玩家担任协调总理，重大院内支持率须达到 60%。',
  theorepublic:'按本游戏设定，你所扮演的是神权君主立宪体制的国家。宗教权威与民选机构并立，最高领袖领导国家。',
  symbolic:'你所扮演的是象征性民主制国家。保留选举和议会，行政权集中；民意主要通过政治稳定影响统治。',
  party:'你所扮演的是一党独大制国家。人大包含执政党内部派系、民主党派和无党籍团体。',
@@ -48,21 +48,21 @@ function guideCatalog104(){
  add('research','科研水平',['科研等级','科研','科研进度','下一级进度'],'每季度科研进度增加教育预算数值×2，教育现代化完成后×3。每100%升一级，保留溢出进度；每级增加1点季度行动额度，上限6点。等级达到额度上限后仍可继续提升。','内阁与科研');
  add('assembly','权力机关',['议会','立法机关','枢密院','全国人大','人大','全国人民代表大会'],'审议预算和改革的机关。民主及部分共和政体使用议会，一党独大制使用全国人大，专制和贵族政体使用枢密院。可协商党派、会见负责人、提出并表决议案。','页面与操作');
  add('groups','政党与派系',['政党','党派','派系','党团','政治团体','执政党','执政派系','民主党派','无党籍团体','主流派','新锐派','改革派'],'政党和派系代表不同政治力量。席位决定其表决权重，团体关系、成员关系、倾向和政策偏好决定支持。一党独大制中的前三组是执政党内部派系，并非三个竞争执政党。','立法与政治');
- add('seats','席位',['议席','席','议席比例','议事权重','权力构成'],'决定各党或派系在立法机关的表决权重。它与支持比例共同计算总通过率；枢密院使用同样机制表示政治配合程度。','立法与政治');
+ add('seats','席位',['议席','席','议席比例','议事权重','权力构成'],'决定各党或派系在立法机关的表决权重。它与支持比例共同计算总院内支持率；枢密院使用同样机制表示政治配合程度。','立法与政治');
  add('faction-relation','团体关系',['派系关系','党派关系','集团关系'],'政府与一个党派或派系的关系，范围0至100。协商、任命、事件和承诺会影响它。民主与象征性民主政体中，关系达到70后，可向该党总召邀请组建联合政府。','立法与政治');
  add('member-relation','个人关系',['成员关系','关系'],'政府与立法机关具体成员的关系。会见回应可改变它，并通过该派系主要成员的平均关系影响议程倾向。','立法与政治');
  add('agenda','议程倾向',['议席倾向','支持倾向'],'当前政治力量对政府议程的支持程度，由团体关系、成员关系、议案取向和临时承诺共同决定。非玩家派系每季减少2点，玩家派系豁免；成功协商可抵消最多8点累计季度损耗。','立法与政治');
  add('faction-profile','派系路线',['关注重点','预算偏好',...Object.values(FACTION_PROFILES103).map(p=>p.name)],'概括党派的政治偏好和最关注的公共预算。增加其偏好的投入会降低该党全票支持门槛，削减时相反；详细系数可在“查看细则”中展开。人物倾向与所属派系路线关联。','立法与政治');
  add('full-support','全票支持门槛',['预算门槛','支持门槛'],'基准60。相对现行预算，税率变化会提高或降低门槛，公共支出按各派系偏好另行修正，执政党也适用。议程倾向达到该门槛时，该派系全体议席支持。','立法与政治');
  add('effective-agenda','折算倾向',[],'折算倾向＝议程倾向−（本案全票支持门槛−60）。50对应0%支持、51对应10%、60对应100%，中间按比例计算。','立法与政治');
- add('faction-support','党团支持比例',['支持比例','支持席位权重'],'该派系支持议案的议席比例，范围0%至100%。将各派系的支持比例按席位加权，即得到议案通过率。','立法与政治');
- add('pass-rate','议案通过率',['通过率','表决通过率','通过门槛','政府议程支持','当前基础通过率','所需通过率'],'按各党席位加权的总体支持百分比。一般政体达到51%即通过，联邦委员会制需60%；达到门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
+ add('faction-support','党团支持比例',['支持比例','支持席位权重'],'该派系支持议案的议席比例，范围0%至100%。将各派系的支持比例按席位加权，即得到院内支持率。','立法与政治');
+ add('pass-rate','院内支持率',['通过率','议案通过率','议会通过率','表决支持率','通过门槛','政府议程支持','当前基础院内支持率','所需院内支持率'],'按各党席位加权的总体支持百分比。一般政体达到51%即通过，联邦委员会制需60%；达到门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
  add('opposition-cost','反对压力',['额外稳定损失','稳定损失'],'各派系折算倾向低于50的每一点，在议案通过后扣除0.1稳定度，多个派系累加。原有通过收益另计；表决失败不额外扣这部分损失。','立法与政治');
  add('negotiate','协商',['派系协商'],'打开该党派或派系的谈判选项，以资源、监督或承诺争取支持。执行选项通常消耗1点行动点；查看窗口不消耗。临时支持有期限，承诺会接受核查。','页面与操作');
  add('faction-details','查看细则',['细则','查看表决计算规则'],'展开或收起门槛、折算倾向、席位权重及公共预算偏好。不消耗行动点，也不改变政策。','页面与操作');
  add('meet','会见 / 回应诉求',['会见','回应诉求','主要成员'],'与议长、秘书长及党团代表等交流。每人每季度一次，执行回应消耗1点行动点；回应影响关系、政策与最终统治倾向。','页面与操作');
  add('bill','政府议程',['议案','法案','待表决','提案表决'],'当前送交权力机关的预算或改革。一次只能审议一项，表决通过后才实施；失败保留提案，可继续协商或撤回。','立法与政治');
- add('vote','提交表决',['投票','表决'],'消耗1点行动点，按当前通过率决定议案是否实施。失败会损失支持与稳定；议会制连续三次失败且支持低于45时，可能通过不信任案结束游戏。','页面与操作');
+ add('vote','提交表决',['投票','表决'],'消耗1点行动点，按当前院内支持率决定议案是否实施。失败会损失支持与稳定；议会制连续三次失败且支持低于45时，可能通过不信任案结束游戏。','页面与操作');
  add('withdraw','撤回',['撤回议案'],'取消当前待决议案，不改变已经实施的政策。之后可重新拟定预算或提出其他改革。','页面与操作');
  add('budget-submit','提交财政方案',['提交预算','拟定预算','送交审议'],'将预算草案送到权力机关，尚未生效。通过表决后才替换现行预算，经济随后逐季响应。','页面与操作');
  add('budget-reset','撤销未提交调整',['撤销调整'],'把尚未提交的预算滑块恢复为现行政策，不改变已经提交的议案或生效政策。','页面与操作');
@@ -74,7 +74,7 @@ function guideCatalog104(){
  add('achievements','累计政绩',['政绩','历史政绩'],'官员已取得的施政成果。自主任务和完成提案可增加政绩；罢免政绩较高的官员通常引发更明显的政治后果。','内阁与科研');
  add('tenure','任职',['任职季度'],'当前官员在该职位已任职的季度数，随季度推进增加。重新任命会重新计算其任职时长。','内阁与科研');
  add('traits','政治倾向',['倾向','倾向契合','倾向契合度'],'人物的施政偏好，会影响自主任务、司法独立和提案执行。人物倾向与党派关联；与提案契合时，提案进度另乘1.25，否则乘1。它与议程倾向、结算统治倾向属于不同指标。','内阁与科研');
- add('task','本季任务方向',['任务','任务指令','任务方向'],'为官员指定施政重点，不消耗行动点。具体执行手段仍由其政治倾向、能力、忠诚和职权决定，下一季度在报告中体现。','内阁与科研');
+ add('task','本季任务方向',['任务','任务指令','任务方向'],'为官员指定持续的施政重点，不消耗行动点；左侧席位卡显示当前安排，下次推进季度执行。政府首脑与副职保留综合任务，其他部长各有五种职责相关方向。自主判断按政治倾向选择部门任务；能力、忠诚和执行结果决定实际效果，季度报告会列出。','内阁与科研');
  add('reports','季度施政报告',['季度报告','施政报告'],'记录各官员的自主任务结果及提案完成情况，可用于判断留任或撤换。','内阁与科研');
  add('appoint','任命',['候选人名册','候选人','任命确认'],'在符合组阁资格、尚未任职的人物中选择官员，确认消耗1点行动点。同一人物不能同时占据多个内阁职位；任命政府首脑或司法主管还会影响司法独立。','页面与操作');
  add('replace','重新任命',['重新任命部长','重新任命大臣'],'打开合资格候选人名册，确认前会展示旧任离职后果。部门提案进度与已经完成的成果保留，不会因换人重复发奖。','页面与操作');
@@ -129,7 +129,7 @@ function guideCatalog104(){
  add('tutorial','开启教程',['教程','新手教程','跳过教程'],'逐步高亮页面概念和功能按钮，不执行政策、不消耗行动点。可用上一步、下一步或键盘左右键浏览；右下角“跳过教程”和Esc可随时退出并返回原页面。','页面与操作');
  for(let r of REGIMES)add('regime-'+r.id,r.name,r.id==='presidential'?['总统制','民主共和制']:r.id==='theorepublic'?['神权君主立宪体制']:[],REGIME_GUIDE104[r.id]+' '+r.note,'政体与职务');
  add('player','玩家职务',[],playerGuide104(),'政体与职务');
- for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',政府协调总理:'联邦委员会制中的玩家职务，直接安排内阁，重大议案须达到60%通过率。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
+ for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',政府协调总理:'联邦委员会制中的玩家职务，直接安排内阁，重大议案须达到60%院内支持率。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
  add('premier','总理',['政府首脑'],'在总统制等政体中由玩家任命，协调内阁并自主执行任务；在君主立宪、西敏与联邦委员会制中由玩家直接承担相应政府首脑职责。','政体与职务');
  add('chancellor','宰相',[],'专制和贵族政体中的政府首脑，拥有比普通总理更强的行政裁量。能力、倾向和忠诚决定施政；撤换也可能带来更大稳定冲击。','政体与职务');
  add('finance-minister','财政部长',['财政大臣','玩家兼任'],'由玩家直接操控税收、预算与债务安排，因此不进入普通内阁候选人的任命列表。','政体与职务');
@@ -137,7 +137,8 @@ function guideCatalog104(){
  for(let [title,text]of [['议长','主持立法机关议事的主要负责人，可会见并回应其诉求。'],['副议长','协助主持议事，可通过会见争取其政治支持。'],['秘书长','负责议事组织与协调，会见可以改善成员关系。'],['副秘书长','协助议事组织与协调，也是可会见的主要成员。'],['主席','在人大或枢密院中主持议事的主要负责人。'],['副主席','协助人大或枢密院主席处理议事工作。']])add('member-'+title,title,[],text,'政体与职务');
  add('whip','党团总召',['党团代表','院内代表','党鞭','首席代表'],'每个党派或派系仅一位主要代表。可会见回应诉求；符合组阁条件时，还可通过此人邀请该党加入联合政府。','政体与职务');
  for(let t of TRAITS)add('trait-'+t.name,t.name,[],t.desc,'人物倾向');
- for(let [key,label]of Object.entries(TASKS))add('task-'+key,label,[],`内阁任务方向。官员优先围绕“${label}”施政，但具体手段仍由其倾向、能力和忠诚决定，季度报告显示结果。`,'内阁任务');
+ for(let key of LEADERSHIP_TASKS105){let label=TASKS[key];add('task-'+key,label,[],key==='balanced'?'由官员自主判断施政方向。部长按政治倾向选择本部门任务，报告列出实际方向；政府首脑与副职保持综合协调。':`政府首脑与副职的综合任务。优先围绕“${label}”施政，季度报告显示实际结果。`,'内阁任务')}
+ for(let task of [DEPARTMENT_ECONOMY105,...Object.values(DEPARTMENT_TASKS105).flat()]){let entry=Object.entries(DEPARTMENT_TASKS105).find(([,tasks])=>tasks.includes(task)),scope=entry?PORTFOLIOS.find(p=>p[0]===entry[0])[1]:'各部部长';add('task-'+task.id,task.name,[],`${scope}的任务方向。${task.text}每季度基准额外效果：${departmentImpact105(task.values)}；按能力和忠诚加权，面板显示当前预估。执行受阻时效果与财政节约降至30%，投入仍全额支出。${task.values.growth?'增长影响持续1季度。':''}实际执行会计入9维任期评估。`,'内阁任务')}
  for(let r of REFORMS)add('reform-'+r.key,r.name,r.key==='inheritance'?['遗产税征收','遗产税']:[],r.text+` 启动成本 ${r.cost}% GDP，执行 ${r.lag} 季度，长期潜在增长修正 ${r.boost} 个百分点；完成效果：${impactText(r.values)}。`,'结构性改革');
  for(let [key,p]of Object.entries(MINISTER_PROGRAMMES103)){add('programme-'+key,p.name,[],`属于${key==='head'?'政府首脑':PORTFOLIOS.find(x=>x[0]===key)[1]}的持续提案。${key==='education'?'完成后科研系数从2永久提高为3。':''}完成效果：${impactText(p.reward)}；未完成期间每季主管忠诚−0.5。`,'部长提案');for(let [i,a]of p.options.entries())add('programme-action-'+key+'-'+i,a[0],[],`“${p.name}”的推进选项：基础支出 ${a[1]}% GDP、基础进度 ${a[2]}、主管忠诚＋${a[3]}。实际费用受相关投资折扣影响，进度受能力与倾向加权；每季每项一次，耗1行动点。`,'部长提案')}
  let seen=new Set(entries.flatMap(e=>e.aliases.map(guideNormalize104)));for(let kind of Object.keys(SIT_NAMES))for(let a of situationActions({kind,progress:100,responsibility:false})){if(seen.has(guideNormalize104(a.label)))continue;add('situation-action-'+kind+'-'+a.key,a.label,[],`${SIT_NAMES[kind]}中的处置措施。${a.detail}执行需1行动点。`,'局势处置');seen.add(guideNormalize104(a.label))}
@@ -152,14 +153,23 @@ function guideCatalog104(){
 let guideEntries104=[];
 function guideMatches104(query,entries=guideCatalog104()){let q=guideNormalize104(query);if(!q)return entries.filter(e=>['stability','ap','pass-rate','programme','research','olympics','coalition','local-demands'].includes(e.id));let exact=entries.filter(e=>e.aliases.some(a=>guideNormalize104(a)===q));return exact.length?exact:entries.filter(e=>e.aliases.some(a=>guideNormalize104(a).includes(q)))}
 function guideArticle104(entry){return `<article class="guide-entry"><span class="tag">${esc(entry.category)}</span><h3>${esc(entry.title)}</h3><p>${esc(entry.text)}</p>${entry.aliases.length>1?`<small>同义词：${entry.aliases.slice(1).map(esc).join('、')}</small>`:''}</article>`}
-showHelp=function(){guideEntries104=guideCatalog104();modal(`<div class="guide-header"><div><span class="tag">国策 · 概念搜索</span><h2>治国指南</h2></div><button class="guide-close" aria-label="关闭治国指南" onclick="$('modal').close()">关闭</button></div><label for="guide-query">输入你想了解的游戏概念</label><input id="guide-query" class="guide-query" type="search" placeholder="例如：稳定、通过率、奥运、教育现代化" autocomplete="off" oninput="searchGuide104(this.value)"><p class="guide-hint">支持同义词。收录机制、政体、职务、改革、提案与局势；不收录普通事件和随机人名、地名、党名。</p><div class="guide-chips">${['稳定','通过率','行动点','奥运','联合政府'].map(x=>`<button onclick="$('guide-query').value='${x}';searchGuide104('${x}')">${x}</button>`).join('')}</div><div id="guide-results" aria-live="polite"></div>`);searchGuide104('');setTimeout(()=>$('guide-query')?.focus?.(),0)};
+showHelp=function(){guideEntries104=guideCatalog104();modal(`<div class="guide-header"><div><span class="tag">国策 · 概念搜索</span><h2>治国指南</h2></div><button class="guide-close" aria-label="关闭治国指南" onclick="$('modal').close()">关闭</button></div><label for="guide-query">输入你想了解的游戏概念</label><input id="guide-query" class="guide-query" type="search" placeholder="例如：稳定、院内支持率、奥运、教育现代化" autocomplete="off" oninput="searchGuide104(this.value)"><p class="guide-hint">支持同义词。收录机制、政体、职务、改革、提案与局势；不收录普通事件和随机人名、地名、党名。</p><div class="guide-chips">${['稳定','院内支持率','行动点','奥运','联合政府'].map(x=>`<button onclick="$('guide-query').value='${x}';searchGuide104('${x}')">${x}</button>`).join('')}</div><div id="guide-results" aria-live="polite"></div>`);searchGuide104('');setTimeout(()=>$('guide-query')?.focus?.(),0)};
 function searchGuide104(query){let matches=guideMatches104(query,guideEntries104.length?guideEntries104:guideCatalog104());$('guide-results').innerHTML=matches.length?`<p class="guide-result-count">${query?'找到 '+matches.length+' 个条目':'常用概念'}</p>`+matches.map(guideArticle104).join(''):'<p class="guide-empty">该概念不存在于此游戏，请检查输入是否正确</p>'}
 
+const TUTORIAL_HOST105={
+ constitutional:['总理大人','枢密院'],presidential:['总统大人','总统行政办公室'],semi:['总统大人','总统府秘书处'],westminster:['首相大人','枢密院'],federal:['总理大人','联邦委员会秘书处'],theorepublic:['最高领袖','最高领袖办公室'],symbolic:['总统大人','总统行政办公室'],party:['主席同志','中央办公厅'],absolute:['陛下','枢密院'],aristocratic:['公爵阁下','枢密院'],tyranny:['最高执政官阁下','执政官办公厅'],theoabsolute:['最高教长','教廷国务秘书处']
+};
+function tutorialWelcome105(){let [address,host]=TUTORIAL_HOST105[regime().id];return `欢迎您，${address}。受${host}委托，我将为您介绍本游戏的基本游玩方式。`}
 // Every tour target is an existing UI element. Missing optional controls are skipped.
 let tutorial104=null;
 function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>steps.push({page,id,selector,text,title});
  const nav=(page,id,text)=>add(page,id,`#nav button[onclick="changeTab('${page}')"]`,text);
  const target=(page,id,selector,text)=>add(page,id,selector,text);
+ add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
+ add('overview','tour-roadmap','#tutorial-start','接下来，我会逐个讲解本游戏的目标、概念、功能和后果。您可随时用右下角按钮跳过教程。','开始之前');
+ add('overview','tour-duration','#date',()=>regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
+ add('overview','tour-mission','[data-guide="country"]','在此期间，您需要在维持统治的前提下，推进自己的理想议程。支持、稳定、财政与制度选择都会影响您的执政道路。','您的目标');
+ add('overview','tour-assessment',`#nav button[onclick="changeTab('settlement')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。接下来，我们从国家与核心指标开始。','留下怎样的任期');
  nav('overview','overview','这里是执政总览，先从国家身份与核心指标开始。');
  target('overview','country','[data-guide="country"]','这是你所扮演的国家。随机国名用于区分世界，玩法由政体和国家状况决定。');
  target('overview','regime','[data-guide="regime"]',()=>REGIME_GUIDE104[regime().id]);target('overview','player','[data-guide="player"]',playerGuide104);
@@ -170,7 +180,7 @@ function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>step
  nav('assembly','assembly',()=>`这是${regime().body}，用于争取支持并通过预算和改革。`);
  target('assembly','groups','.seat-strip',legislativeGroups104);
  for(let id of ['seats','faction-relation','agenda','faction-profile','faction-support','negotiate','faction-details','full-support','effective-agenda'])target('assembly',id,`[data-guide="${id}"]`);
- target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是议案通过率。它是按席位加权的支持比例，达到${threshold()}%即可通过；先从预算或改革页送交议案。`);
+ target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是院内支持率。它是按席位加权的支持比例，达到${threshold()}%即可通过；先从预算或改革页送交议案。`);
  target('assembly','vote','button[onclick="voteBill()"]');target('assembly','withdraw','button[onclick="withdrawBill()"]');
  target('assembly','meet','button[onclick^="meetMember("]','点击这里会见主要成员并回应诉求，每人每季一次。党团总召也负责符合条件时的联合政府邀请。');
  target('assembly','promise','[data-guide="promise"]');

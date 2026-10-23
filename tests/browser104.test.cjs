@@ -1,4 +1,4 @@
-// Optional browser smoke test: install playwright, then run node tests/browser104.test.cjs.
+// Current-version browser regression: install playwright, then run node tests/browser104.test.cjs.
 // CHROMIUM_PATH can select an existing Chromium executable.
 const {chromium}=require('playwright'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_ROOT;
@@ -18,12 +18,15 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
    await page.fill('#guide-query','不存在的词XYZ');assert.match(await page.locator('#guide-results').textContent(),/该概念不存在于此游戏，请检查输入是否正确/);await page.click('.guide-close');
    const original=await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot}));
    await page.click('#tutorial-start');assert(await page.locator('#tutorial-skip').isVisible());
-   await page.keyboard.press('ArrowRight');assert.equal(await page.evaluate(()=>tutorial104.steps[tutorial104.index].id),'country');await page.keyboard.press('ArrowLeft');assert.equal(await page.evaluate(()=>tutorial104.index),0);
+   await page.keyboard.press('ArrowRight');assert.equal(await page.evaluate(()=>tutorial104.steps[tutorial104.index].id),'tour-roadmap');await page.keyboard.press('ArrowLeft');assert.equal(await page.evaluate(()=>tutorial104.index),0);
    const quarter=await page.evaluate(()=>s.q);await page.evaluate(()=>$('advance').click());assert.equal(await page.evaluate(()=>s.q),quarter,'underlying actions blocked during tour');
    let visited=[],limit=0;
    while(await page.evaluate(()=>!!tutorial104)){
     const step=await page.evaluate(()=>({id:tutorial104.steps[tutorial104.index].id,page:tab,target:!!tutorial104.target}));visited.push(step);assert(step.target);
     const panel=await page.locator('#tutorial-controls').boundingBox(),skip=await page.locator('#tutorial-skip').boundingBox();assert(panel.x>=0&&panel.x+panel.width<=viewport.width+1,'panel within viewport');assert(skip.y+skip.height<=viewport.height,'skip stays visible');
+    if(step.id==='welcome'){assert.match(await page.locator('#tutorial-controls').textContent(),/欢迎您，最高领袖。受最高领袖办公室委托/);await page.screenshot({path:'/tmp/nation105-welcome-'+viewport.width+'.png'})}
+    if(step.id==='tour-duration')assert.match(await page.locator('#tutorial-controls').textContent(),/手动延长/);
+    if(step.id==='tour-assessment')assert.match(await page.locator('#tutorial-controls').textContent(),/9维任期评估报告/);
     if(step.id==='regime')assert.match(await page.locator('#tutorial-controls').textContent(),/神权君主立宪/);
     if(step.id==='player')assert.match(await page.locator('#tutorial-controls').textContent(),/最高领袖掌握重大国务决策权，没有任期/);
     if(step.id==='faction-details'){
@@ -34,12 +37,22 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
    }
    assert.equal(await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot})),original,'walkthrough must not mutate game or draft');
    for(let required of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive','settlement'])assert(visited.some(s=>s.page===required),'tour page '+required);
-   for(let required of ['regime','player','stability','pass-rate','negotiate','programme','research','export','import','guide'])assert(visited.some(s=>s.id===required),'tour concept '+required);
+   for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','regime','player','stability','pass-rate','negotiate','programme','research','export','import','guide'])assert(visited.some(s=>s.id===required),'tour concept '+required);
    // Skip and Escape must restore the exact page and pending event modal.
    await page.click('#tutorial-start');await page.click('#tutorial-skip');assert.equal(await page.evaluate(()=>tab),'budget');
    await page.evaluate(()=>{pstate().current=eventFrom('待处理事务','此事尚未决定',[option('确认','无即时变化')]);showPoliticalEvent();startTutorial()});await page.keyboard.press('Escape');assert(await page.locator('#modal').isVisible());assert.match(await page.locator('#modal').textContent(),/待处理事务/);assert.equal(await page.evaluate(()=>pstate().current.title),'待处理事务');
    await page.evaluate(()=>$('modal').close());await page.click('#guide-open');await page.fill('#guide-query','奥运');await page.screenshot({path:'/tmp/nation104-guide-'+viewport.width+'.png'});
-   assert.deepEqual(errors,[]);console.log('PASS browser '+viewport.width+'px: '+visited.length+' tutorial steps, live search, overlays, restore, skip and Escape; no page errors.');await page.close();await browser.close();
+   await page.evaluate(()=>{$('modal').close();tab='cabinet';cabinetSlot='foreign';render()});
+   assert.deepEqual(await page.locator('#task option').allTextContents(),['自主判断','改善本部门财政','民粹型外交','稳健型外交','经济扩张型外交']);
+   const ap=await page.evaluate(()=>pstate().ap);await page.selectOption('#task','foreign_trade');
+   assert.match(await page.locator('[data-office-task="foreign"]').textContent(),/本季任务：经济扩张型外交/);assert.match(await page.locator('.task-brief').textContent(),/就业调整/);assert.equal(await page.evaluate(()=>pstate().ap),ap);
+   await page.locator('.cabinet-layout').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation105-cabinet-'+viewport.width+'.png'});
+   if(viewport.width===390){await page.locator('#task').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation105-task-390.png'})}
+   await page.locator('.office[onclick*="education"]').click();assert.equal(await page.locator('#task option').count(),5);assert((await page.locator('#task option').allTextContents()).includes('发展职业教育'));
+   await page.locator('.office[onclick*="head"]').click();assert.equal(await page.locator('#task option').count(),9);assert((await page.locator('#task option').allTextContents()).includes('稳健财政'));
+   await page.reload({waitUntil:'domcontentloaded'});assert.equal(await page.evaluate(()=>pstate().cabinet.foreign.task),'foreign_trade','saved instruction survives reload');
+   await page.evaluate(()=>{$('modal').close();selectedRegime='absolute';create('welcome105');startTutorial()});assert.match(await page.locator('#tutorial-controls').textContent(),/欢迎您，陛下。受枢密院委托/);await page.keyboard.press('Escape');
+   assert.deepEqual(errors,[]);console.log('PASS browser '+viewport.width+'px: '+visited.length+' tutorial steps, regime preface, live search, overlays, unchanged state, portfolio options, live task status and saved directions; no page errors.');await page.close();await browser.close();
   }
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve))}
 })().catch(e=>{console.error(e);process.exitCode=1});
