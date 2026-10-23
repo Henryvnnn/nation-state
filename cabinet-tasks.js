@@ -36,6 +36,11 @@ const DEPARTMENT_TASKS105={
   {id:'culture_heritage',name:'保护文化遗产',text:'修缮遗产并支持地方传承，增加文化基础和稳定，需要维护费用。',values:{culture:.12,stability:.3,cost:.12},axes:{nation:1,green:1},tags:['culture'],traits:[4,6]},
   {id:'culture_exchange',name:'拓展文化交流',text:'支持文化出口与交流活动，增加文化基础、信心和短期增长，需推广经费。',values:{culture:.06,confidence:.35,growth:.04,cost:.1},axes:{market:1,law:1},tags:['trade','culture'],traits:[1,8]}
  ],
+ labour:[
+  {id:'labour_employment',name:'就业促进',text:'提供就业匹配和企业招工支持，降低失业、改善支持，需要就业服务经费。',values:{unemployment:-.18,approval:.3,cost:.18},axes:{welfare:2,nation:1},tags:['industry','welfare'],traits:[4,6]},
+  {id:'labour_rights',name:'劳动权益保障',text:'加强劳动监察与工时保障，提高支持和稳定，但增加企业合规压力与财政支出。',values:{approval:.45,stability:.25,confidence:-.2,cost:.1},axes:{welfare:2,law:1},tags:['welfare','industry'],traits:[3,5]},
+  {id:'labour_mediation',name:'劳资协商',text:'通过协商缓解劳资争议，改善稳定、投资信心和就业，需要协调经费。',values:{stability:.35,confidence:.2,unemployment:-.05,cost:.06},axes:{law:1,welfare:1},tags:['industry'],traits:[0,1,7,8]}
+ ],
  environment:[
   {id:'environment_restore',name:'生态修复',text:'修复水土与公共绿地，增加基建资本和支持，但治理费用较高。',values:{capitalStock:.3,approval:.25,cost:.16},axes:{green:2,welfare:1},tags:['green','agriculture'],traits:[0,3,5]},
   {id:'environment_enforce',name:'严格环保执法',text:'提高环保标准与治理能力；短期停产整顿会降低增长并增加失业。',values:{capitalStock:.35,approval:.15,growth:-.06,unemployment:.08,cost:.08},axes:{green:2,law:1,authority:1},tags:['green'],traits:[1,4,6]},
@@ -68,6 +73,7 @@ const LEGACY_DEPARTMENT_TASKS105={
  education:{social:'education_basic',order:'education_basic',law:'education_basic',industry:'education_vocational',agriculture:'education_basic',technology:'education_research',green:'education_basic'},
  health:{social:'health_primary',order:'health_prevention',law:'health_prevention',industry:'health_efficiency',agriculture:'health_primary',technology:'health_prevention',green:'health_prevention'},
  culture:{social:'culture_public',order:'culture_heritage',law:'culture_exchange',industry:'culture_exchange',agriculture:'culture_heritage',technology:'culture_exchange',green:'culture_heritage'},
+ labour:{social:'labour_rights',order:'labour_mediation',law:'labour_rights',industry:'labour_employment',agriculture:'labour_employment',technology:'labour_employment',green:'labour_mediation'},
  environment:{social:'environment_restore',order:'environment_enforce',law:'environment_enforce',industry:'environment_transition',agriculture:'environment_restore',technology:'environment_transition',green:'environment_restore'}
 };
 function migrate105(){

@@ -28,12 +28,13 @@ function factionProfile(f){
  else key=['conservative','market','social','local','law'][f.id];
  return FACTION_PROFILES103[key];
 }
-function cabinetEligible(c){return !!c&&(!coalitionRegime()||(rules103()?.coalition||[0]).includes(c.faction))}
+function cabinetEligible(c){return !!c&&(!coalitionRegime()||(rules103()?.coalition||[playerFactionId107()]).includes(c.faction))}
 function cabinetSlots103(){return [...(regime().head?['head']:[]),...PORTFOLIOS.map(x=>x[0])]}
+function ensureCandidates103(){let p=pstate();while(p.candidates.length<75){let id=p.candidates.length;p.candidates.push({id,name:personName(),faction:id%5,trait:pick(factionProfile(p.factions[id%5]).traits),skill:45+Math.floor(rand()*46),loyalty:45+Math.floor(rand()*41),achievements:0,tenure:0})}}
 function alignPeople103(){
  let p=pstate();
- // Twelve candidates per faction provide a full single-party cabinet and replacements.
- while(p.candidates.length<60){let id=p.candidates.length;p.candidates.push({id,name:personName(),faction:id%5,trait:0,skill:45+Math.floor(rand()*46),loyalty:45+Math.floor(rand()*41),achievements:0,tenure:0})}
+ // Fifteen candidates per faction cover the expanded cabinet and replacement pool.
+ ensureCandidates103();
  for(let c of [...p.candidates,...p.members])c.trait=pick(factionProfile(p.factions[c.faction]).traits);
  let replaced=[];
  for(let k of cabinetSlots103()){
@@ -49,7 +50,7 @@ function migrate103(){
  // Old queued event text is also part of the visible game, not just new templates.
  function normalizeText(obj){for(let key of Object.keys(obj)){let value=obj[key];if(typeof value==='string')obj[key]=value.replace(/≥/g,'＞').replace(/≤/g,'＜');else if(value&&typeof value==='object')normalizeText(value)}}
  normalizeText(s);
- s.rules103={version:1,research:{level:0,progress:0,educationModernized:false,lastQ:s.q},coalition:[0],proposals:{},lastAgendaQ:s.q,lastProposalQ:s.q};
+ s.rules103={version:1,research:{level:0,progress:0,educationModernized:false,lastQ:s.q},coalition:[playerFactionId107()],proposals:{},lastAgendaQ:s.q,lastProposalQ:s.q};
  let replaced=alignPeople103();
  pstate().factions.forEach(f=>f.agendaDecay=0);
  for(let k of cabinetSlots103())rules103().proposals[k]={progress:0,completed:false,spent:0,actions:[]};
@@ -85,7 +86,7 @@ votes=function(){return Math.round(pstate().factions.reduce((sum,f)=>sum+f.seats
 function billStabilityPenalty(){return pstate().factions.reduce((sum,f)=>sum+Math.max(0,50-votingTendency(f))*.1,0)}
 function decayAgendas103(){
  let g=rules103();if(g.lastAgendaQ===s.q)return;g.lastAgendaQ=s.q;
- for(let f of pstate().factions)if(f.id!==0)f.agendaDecay=Math.min(supportBase103(f),(f.agendaDecay||0)+2);
+ for(let f of pstate().factions)if(f.id!==playerFactionId107())f.agendaDecay=Math.min(supportBase103(f),(f.agendaDecay||0)+2);
 }
 function preferenceText103(f){return Object.entries(factionProfile(f).budget).map(([k,w])=>`${policyMeta[k][0]}每提高 1%，门槛${w>0?' −':' +'}${Math.abs(w)}`).join('；')}
 function factionVotingRows(){let p=pstate();return p.factions.map(f=>`<div class="faction-row"><div><b style="color:${COLORS[f.id]}">${esc(f.name)}${rules103().coalition.includes(f.id)&&coalitionRegime()?' · 执政联盟':''}</b><small>${f.seats} 席 · 团体关系 ${fmt(f.relation,1)} · 议程倾向 ${fmt(support(f),1)}</small><small>全票支持门槛 ${fmt(budgetRequirement(f),2)} · 折算倾向 ${fmt(votingTendency(f),2)} · 支持席位 ${fmt(f.seats*factionSeatRatio(f),2)}</small><small>${factionProfile(f).name} · ${preferenceText103(f)}</small></div><span class="badge">${fmt(factionSeatRatio(f)*100,1)}% 支持</span><button onclick="factionTalk(${f.id})">协商</button></div>`).join('')+`<p>折算倾向 = 议程倾向 −（本案全票门槛 − 60）。折算为 50 时无席位支持，51 时支持 10%，60 时全票支持；席位按比例权重计算，不按整团投票。低于 50 的每一点，在议案通过后降低稳定度 0.1。</p><p>本案预计额外稳定损失：${fmt(billStabilityPenalty(),2)}。仅在通过时兑现，另计原有通过收益。非玩家派系每季倾向 −2；协商可抵消累计损耗。执政党也受预算偏好影响。</p><details><summary>预算门槛的计算</summary><p>以现行预算为基准：个人所得税每提高 1%、消费税每提高 1.5%、企业所得税每提高 2%，所有派系全票支持门槛各 +1；降税相反。公共支出按各派系偏好加减门槛，所有变化叠加。偏好为正表示支持增加该项投入；社会民主派福利预算 +1% 时门槛 −2。</p></details>`}
@@ -97,8 +98,8 @@ const factionTalkBefore103=factionTalk;
 factionTalk=function(id){factionTalkBefore103(id);$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2><p>成功协商还会抵消最多 8 点累计季度倾向损耗。'+(coalitionRegime()?'组建联合政府需会见该党团总召，并将团体关系提高至 70。':'')+'</p>')};
 
 const meetBefore103=meetMember;
-meetMember=function(id){meetBefore103(id);let m=pstate().members[id];if(!m||m.id<4||m.faction===0||!coalitionRegime())return;let f=pstate().factions[m.faction],joined=rules103().coalition.includes(f.id);$('modal').innerHTML+=`<div class="coalition-invite"><h3>联合政府协商</h3><p>团体关系 ${fmt(f.relation,1)} / 70。达成联合执政后，该党人物进入全部内阁职位的候选池；加入不免除每季倾向损耗。</p><button class="primary" onclick="inviteCoalition(${id})" ${joined||s.ended||f.relation<70||pstate().ap<1||m.last===s.q?'disabled':''}>${joined?'已加入联合政府':'邀请组建联合政府 · 1 行动点'}</button></div>`};
-function inviteCoalition(id){let p=pstate(),m=p.members[id];if(!coalitionRegime()||!m||m.id<4||m.faction===0||rules103().coalition.includes(m.faction)||p.factions[m.faction].relation<70||m.last===s.q||!spendAction('member'+id))return;m.last=s.q;rules103().coalition.push(m.faction);noteDecision('邀请'+p.factions[m.faction].name+'组建联合政府',{law:2,authority:-2,elite:1});log('联合政府成立',p.factions[m.faction].name+'的人物现可出任内阁。');$('modal').close();pSave()}
+meetMember=function(id){meetBefore103(id);let m=pstate().members[id];if(!m||m.id<4||m.faction===playerFactionId107()||!coalitionRegime())return;let f=pstate().factions[m.faction],joined=rules103().coalition.includes(f.id);$('modal').innerHTML+=`<div class="coalition-invite"><h3>联合政府协商</h3><p>团体关系 ${fmt(f.relation,1)} / 70。达成联合执政后，该党人物进入全部内阁职位的候选池；加入不免除每季倾向损耗。</p><button class="primary" onclick="inviteCoalition(${id})" ${joined||s.ended||f.relation<70||pstate().ap<1||m.last===s.q?'disabled':''}>${joined?'已加入联合政府':'邀请组建联合政府 · 1 行动点'}</button></div>`};
+function inviteCoalition(id){let p=pstate(),m=p.members[id];if(!coalitionRegime()||!m||m.id<4||m.faction===playerFactionId107()||rules103().coalition.includes(m.faction)||p.factions[m.faction].relation<70||m.last===s.q||!spendAction('member'+id))return;m.last=s.q;rules103().coalition.push(m.faction);noteDecision('邀请'+p.factions[m.faction].name+'组建联合政府',{law:2,authority:-2,elite:1});log('联合政府成立',p.factions[m.faction].name+'的人物现可出任内阁。');$('modal').close();pSave()}
 const cabinetBefore103=cabinet;
 cabinet=function(){return `<div class="card" style="margin-bottom:18px"><b>组阁资格</b><p>${coalitionRegime()?'可任命：'+rules103().coalition.map(id=>esc(pstate().factions[id].name)).join('、')+'。其他党派须先由总召接受联合政府邀请。':'所有派系的人物均可任命，不设联合政府邀请。'}未完成的部门提案使主管官员每季忠诚 −0.5；更换官员保留部门进度，完成奖励只发放一次。</p></div>`+cabinetBefore103()};
 const previewBefore103=appointPreview,appointBefore103=appointOfficial;
@@ -117,6 +118,7 @@ const MINISTER_PROGRAMMES103={
  education:{name:'教育现代化',fit:[5,3,7,1],axes:{welfare:3,law:1},tags:['technology'],reward:{human:4,unemployment:-.3,approval:2},options:[['建设现代化师范设施',1.05,32,3,{education:.03,infrastructure:.02}],['翻新城市教育设施',.75,24,2,{education:.025,infrastructure:.025}],['新增乡村基本教育机构',.45,16,1,{education:.025,infrastructure:.02,welfare:.01}]]},
  health:{name:'普惠医疗网络',fit:[3,5,7],axes:{welfare:3},tags:['welfare'],reward:{approval:4,unemployment:-.5},options:[['建设区域公共医院',1.2,34,3,{health:.025,infrastructure:.025}],['更新城市基层诊所',.7,24,2,{health:.03,infrastructure:.02}],['培训乡村医疗人员',.4,16,1,{health:.025,education:.025}]]},
  culture:{name:'公共文化振兴',fit:[3,5,0],axes:{welfare:2,nation:1},tags:['green'],reward:{approval:4,unemployment:-.2},options:[['修建国家公共文化中心',.9,32,3,{infrastructure:.025,education:.02}],['改造地方图书馆',.55,23,2,{education:.03,infrastructure:.02}],['支持社区文化团体',.3,16,1,{welfare:.025,education:.015}]]},
+ labour:{name:'就业与劳动保障计划',fit:[0,1,3,5,7],axes:{welfare:3,law:2},tags:['industry','welfare'],reward:{unemployment:-.7,approval:3,stability:2},options:[['建设公共就业服务中心',.9,32,3,{welfare:.025,education:.02,infrastructure:.02}],['开展职业转岗培训',.55,24,2,{education:.035,welfare:.015}],['完善劳动争议调解网络',.35,16,1,{security:.02,welfare:.02}]]},
  environment:{name:'生态修复与清洁发展',fit:[1,5,7],axes:{green:4},tags:['green'],reward:{approval:2,capitalStock:2,confidence:1},options:[['建设流域污染治理设施',1.15,34,3,{infrastructure:.03,education:.02}],['更新城市垃圾处理系统',.7,24,2,{infrastructure:.03,health:.015}],['恢复乡村湿地与林地',.4,16,1,{education:.025,welfare:.015}]]}
 };
 function programmeQuote(k,index){let def=MINISTER_PROGRAMMES103[k],a=def?.options[index],item=pstate().cabinet[k];if(!a||!item)return null;let c=pstate().candidates[item.candidate],discount=Math.min(.55,Object.entries(a[4]).reduce((sum,[key,w])=>sum+s.policies[key]*w,0)),skill=.75+c.skill/200,fit=def.fit.includes(c.trait)?1.25:1;return {a,c,discount,cost:a[1]*(1-discount),skill,fit,progress:a[2]*skill*fit}}
@@ -136,17 +138,17 @@ function programmeQuarter103(){let g=rules103();if(g.lastProposalQ===s.q)return;
 const maintenance103=politicalMaintenance;
 politicalMaintenance=function(){researchQuarter103();programmeQuarter103();maintenance103();decayAgendas103()};
 const transitionBefore103=transitionDemocracy;
-transitionDemocracy=function(x){transitionBefore103(x);rules103().coalition=[0];alignPeople103();for(let k of cabinetSlots103())if(!rules103().proposals[k])rules103().proposals[k]={progress:0,completed:false,spent:0,actions:[]};log('新宪法下的组阁规则','内阁改为执政党组成；其他党派须经联合政府协商方可入阁。')};
+transitionDemocracy=function(x){transitionBefore103(x);rules103().coalition=[playerFactionId107()];alignPeople103();for(let k of cabinetSlots103())if(!rules103().proposals[k])rules103().proposals[k]={progress:0,completed:false,spent:0,actions:[]};log('新宪法下的组阁规则','内阁改为执政党组成；其他党派须经联合政府协商方可入阁。')};
 const helpBefore103=showHelp;
 showHelp=function(){helpBefore103();$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2><p><b>1.0.3：</b>部长提案每季忠诚 −0.5，完成后停止；投资减少提案费用，能力和倾向提高进度。国家档案可查看科研进度与每季行动额度。民主及象征性民主政体仅执政党可入阁，其他党团关系达到 70 后可由总召加入联合政府。表决采用比例席位，并显示预算门槛、折算倾向与通过后的额外稳定损失。</p>')};
 const validBefore103=validSave;
 validSave=function(v){
  if(!validBefore103(v))return false;let g=v.rules103;if(!g)return true;let r=g.research;
  if(g.version!==1||!r||!Number.isInteger(r.level)||r.level<0||!Number.isFinite(r.progress)||r.progress<0||r.progress>=100||typeof r.educationModernized!=='boolean'||!Number.isInteger(r.lastQ)||!Number.isInteger(g.lastAgendaQ)||!Number.isInteger(g.lastProposalQ))return false;
- if(!Array.isArray(g.coalition)||!g.coalition.includes(0)||new Set(g.coalition).size!==g.coalition.length||g.coalition.some(id=>!Number.isInteger(id)||!v.political.factions[id]))return false;
+ if(!Array.isArray(g.coalition)||!g.coalition.includes(playerFactionId107(v.political))||new Set(g.coalition).size!==g.coalition.length||g.coalition.some(id=>!Number.isInteger(id)||!v.political.factions[id]))return false;
  if(!g.proposals||typeof g.proposals!=='object'||v.political.factions.some(f=>!Number.isFinite(f.agendaDecay)||f.agendaDecay<0||f.agendaDecay>100))return false;
  let slots=[...(REGIMES.find(r=>r.id===v.political.regime).head?['head']:[]),...PORTFOLIOS.map(x=>x[0])];
- if(slots.some(k=>!g.proposals[k]))return false;
+ if(slots.some(k=>!g.proposals[k]&&(k!=='labour'||v.release107)))return false;
  return Object.entries(g.proposals).every(([k,p])=>MINISTER_PROGRAMMES103[k]&&p&&Number.isFinite(p.progress)&&p.progress>=0&&p.progress<=100&&typeof p.completed==='boolean'&&p.completed===(p.progress===100)&&Number.isFinite(p.spent)&&p.spent>=0&&Array.isArray(p.actions));
 };
 

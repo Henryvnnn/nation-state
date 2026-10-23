@@ -6,7 +6,8 @@ technology:['扩大科研资助与技术人才培养','建设创新孵化器和�
 trade:['简化通关并改善港口效率','保障中小出口商融资','提高金融透明度并拓展海外市场'],
 welfare:['扩充基层医疗和社会保障','改善养老照护与低收入家庭服务','缓解住房成本与公共服务排队'],
 green:['保护森林水源与地方文化','治理污染并发展清洁能源','修复生态旅游设施与传统聚落'],
-security:['改善边境交通与基本治安','建设灾害避难设施与应急网络','整顿地方安全机构并保障边民生活']};
+security:['改善边境交通与基本治安','建设灾害避难设施与应急网络','整顿地方安全机构并保障边民生活'],
+capital:['改善首都通勤与公共住房','提升政务服务和青年就业','保障首都医疗教育与应急体系']};
 function countryStem(){let suffixes=REGIMES.map(r=>r.suffix).sort((a,b)=>b.length-a.length);let x=s.name;for(let a of suffixes)if(x.endsWith(a))return x.slice(0,-a.length);return x}
 function factionNames12(){let r=regime(),n=countryStem(),g=v3(),p=pstate();
  if(r.id==='party'){
@@ -28,12 +29,13 @@ function factionNames12(){let r=regime(),n=countryStem(),g=v3(),p=pstate();
  };
  let names=pools[r.id].map(pool=>pick(pool));
  if(r.body!=='枢密院'&&rand()<.7)names[0]=n+names[0];
- p.rulingParty=names[0];return names;
+ p.rulingParty=names[playerFactionId107(p)];return names;
 }
 function demandText(z){return LOCAL_DEMANDS[z.sector][z.demandVariant]}
 function unfinishedRegions(){return v3().regions.filter(z=>z.demandProgress<1&&!s.situations?.active.some(x=>x.kind==='disaster'&&x.region===z.id))}
 function migrate12(){let g=v3();if(g.release==='1.2')return;let p=pstate(),oldNames=p.factions.map(f=>f.name),names=factionNames12();
  p.factions.forEach((f,i)=>{f.name=names[i];if(regime().id==='party')f.seats=[35,22,25,16,2][i];else if(regime().id==='symbolic'&&s.q===0)f.seats=[60,15,12,8,5][i]});
+ initializeDemocraticParty107();
  p.members.forEach(m=>{if(m.id>=4)m.role=names[m.faction]+(regime().body==='议会'?'党团总召':'首席代表')});
  for(let e of [p.current,...p.queue].filter(Boolean))for(let key of ['title','text'])if(typeof e[key]==='string')oldNames.forEach((name,i)=>{e[key]=e[key].split(name).join(names[i])});
  g.release='1.2';g.localCycle=Math.floor(s.q/12);g.localRefreshAt=s.q-s.q%12;g.localHistory=[];g.pressure=null;
@@ -41,7 +43,7 @@ function migrate12(){let g=v3();if(g.release==='1.2')return;let p=pstate(),oldNa
  log('1.2 版本生效','政体派别与席位已校正；地方诉求每 12 季度换届；启用执政损耗、地方履约和财政压力。');
 }
 const initBefore12=initPolitics;initPolitics=function(id=selectedRegime){initBefore12(id);migrate12()};
-const decisionBefore12=noteDecision;noteDecision=function(label,axes={},tags=[],region=null,amount=1){decisionBefore12(label,axes,tags,region,amount);for(let z of v3().regions)if((region===null||z.id===region)&&tags.includes(z.sector))z.demandProgress=clamp(z.demandProgress+amount,0,1)};
+const decisionBefore12=noteDecision;noteDecision=function(label,axes={},tags=[],region=null,amount=1){decisionBefore12(label,axes,tags,region,amount);for(let z of v3().regions)if((region===null||z.id===region)&&regionMatchesTags107(z,tags))z.demandProgress=clamp(z.demandProgress+amount,0,1)};
 // Autonomous administrative tasks also advance the current local mandate.
 const cabinetBefore12=runCabinet;runCabinet=function(){let before=v3().regions.map(z=>z.totalProgress);cabinetBefore12();for(let z of v3().regions)z.demandProgress=clamp(z.demandProgress+z.totalProgress-before[z.id],0,1)};
 function localReviewEvent(){return eventFrom('地方履约后的资源分配','本轮各地诉求均已完成。地方代表转而讨论项目维护费用；此次决定不会重复发放地方履约奖励。',[

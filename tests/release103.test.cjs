@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
 const root=path.resolve(__dirname,'..');let storage={};
-function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','guide.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
+function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','guide.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}
@@ -44,16 +44,16 @@ fresh103();{
  s.q++;p.ap=3;p.bill={kind:'budget',description:'测试方案',title:'失败压力测试',policies:{...s.policies}};p.factions.forEach(f=>f.relation=10);p.members.forEach(m=>m.relation=10);stability=s.stability;voteBill();near(s.stability,stability-1,'failure has only original penalty');
 }
 fresh103();{
- let p=pstate(),initial=p.factions.map(f=>support(f));s.q=1;decayAgendas103();near(support(p.factions[0]),initial[0],'ruling party exempt');for(let i=1;i<5;i++)near(support(p.factions[i]),initial[i]-2,'opposition drift');decayAgendas103();near(support(p.factions[1]),initial[1]-2,'drift once per quarter');
- for(let q=2;q<=8;q++){s.q=q;decayAgendas103()}let old=p.factions[1].agendaDecay;deal(1,'grant');near(p.factions[1].agendaDecay,old-8,'negotiation recovers drift');
+ let p=pstate(),own=playerFactionId107(),opposition=p.factions.find(f=>f.id!==own).id,initial=p.factions.map(f=>support(f));s.q=1;decayAgendas103();near(support(p.factions[own]),initial[own],'ruling party exempt');for(let i=0;i<5;i++)if(i!==own)near(support(p.factions[i]),initial[i]-2,'opposition drift');decayAgendas103();near(support(p.factions[opposition]),initial[opposition]-2,'drift once per quarter');
+ for(let q=2;q<=8;q++){s.q=q;decayAgendas103()}let old=p.factions[opposition].agendaDecay;deal(opposition,'grant');near(p.factions[opposition].agendaDecay,old-8,'negotiation recovers drift');
 }
 // Cabinet qualification, leader-only coalition invitation, party-linked traits.
-for(let r of REGIMES){fresh103(r.id);let p=pstate();assert(p.candidates.length===60,'expanded candidates');assert(new Set(Object.values(p.cabinet).map(i=>i.candidate)).size===Object.keys(p.cabinet).length,'no duplicate ministers');assert(p.candidates.every(c=>factionProfile(p.factions[c.faction]).traits.includes(c.trait)),'traits follow party');
+for(let r of REGIMES){fresh103(r.id);let p=pstate();assert(p.candidates.length===75,'expanded candidates');assert(new Set(Object.values(p.cabinet).map(i=>i.candidate)).size===Object.keys(p.cabinet).length,'no duplicate ministers');assert(p.candidates.every(c=>factionProfile(p.factions[c.faction]).traits.includes(c.trait)),'traits follow party');
  if(coalitionRegime()){
-  assert(Object.values(p.cabinet).every(i=>p.candidates[i.candidate].faction===0),'single-party initial government');assert(p.candidates.filter(c=>cabinetEligible(c)&&!Object.values(p.cabinet).some(i=>i.candidate===c.id)).length>=2,'replacement candidates');
-  let candidate=p.candidates.find(c=>c.faction===1),before=p.ap;appointOfficial('education',candidate.id);assert(p.ap===before,'outside appointment blocked');
-  let rep=p.members.find(m=>m.id>=4&&m.faction===1);p.factions[1].relation=69.9;inviteCoalition(rep.id);assert(rules103().coalition.length===1,'below70 blocked');p.factions[1].relation=70;inviteCoalition(0);assert(rules103().coalition.length===1,'speaker cannot invite');
-  inviteCoalition(rep.id);assert(rules103().coalition.includes(1)&&p.ap===before-1,'70 coalition allowed');assert(cabinetEligible(candidate),'coalition candidate eligible');appointOfficial('education',candidate.id);assert(p.cabinet.education.candidate===candidate.id,'coalition appointment');
+  assert(Object.values(p.cabinet).every(i=>p.candidates[i.candidate].faction===playerFactionId107()),'single-party initial government');assert(p.candidates.filter(c=>cabinetEligible(c)&&!Object.values(p.cabinet).some(i=>i.candidate===c.id)).length>=2,'replacement candidates');
+  let opposition=p.factions.find(f=>f.id!==playerFactionId107()).id,candidate=p.candidates.find(c=>c.faction===opposition),before=p.ap;appointOfficial('education',candidate.id);assert(p.ap===before,'outside appointment blocked');
+  let rep=p.members.find(m=>m.id>=4&&m.faction===opposition);p.factions[opposition].relation=69.9;inviteCoalition(rep.id);assert(rules103().coalition.length===1,'below70 blocked');p.factions[opposition].relation=70;inviteCoalition(0);assert(rules103().coalition.length===1,'speaker cannot invite');
+  inviteCoalition(rep.id);assert(rules103().coalition.includes(opposition)&&p.ap===before-1,'70 coalition allowed');assert(cabinetEligible(candidate),'coalition candidate eligible');appointOfficial('education',candidate.id);assert(p.cabinet.education.candidate===candidate.id,'coalition appointment');
   let ap=p.ap;inviteCoalition(rep.id);assert(p.ap===ap,'no duplicate invitation');
  }else{assert(p.candidates.every(cabinetEligible),'all factions eligible');let rep=p.members.find(m=>m.id>=4&&m.faction===1);p.factions[1].relation=100;inviteCoalition(rep.id);assert(rules103().coalition.length===1,'no nondem coalition');meetMember(rep.id);assert(!$('modal').innerHTML.includes('邀请组建联合政府'),'no nondem coalition UI')}
  assert(validSave(JSON.parse(JSON.stringify(s))),'valid cabinet save '+r.id);
