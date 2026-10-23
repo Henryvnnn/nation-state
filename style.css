@@ -8,3 +8,7 @@
 
 /* 1.1.2 persistent situation dashboard */
 .situation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.situation-grid .card{min-width:0}.situation-grid .choices{display:grid;gap:10px}.situation-grid .choices button{text-align:left;white-space:normal}.situation-grid button:disabled{opacity:.45;cursor:not-allowed}.difficulty-option{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:8px}.difficulty-option input{width:20px;height:20px}aside{overflow-y:auto}@media(max-width:1100px){.situation-grid{grid-template-columns:1fr}}
+
+/* Release 1.0.3 */
+.research-card{margin-bottom:20px}.minister-programme{border-top:1px solid var(--line,#d9dfd8);margin-top:24px;padding-top:24px}.minister-programme h3{margin:12px 0}.minister-programme .choices button small{display:block;line-height:1.7}.coalition-invite{border-top:1px solid var(--line,#d9dfd8);margin-top:18px;padding-top:16px}.faction-row small{display:block;line-height:1.65}.faction-row>div{min-width:0}.faction-row .badge{white-space:nowrap}.minister-programme details p{font-size:12px}dialog{max-height:88vh;overflow-y:auto}
+@media(max-width:600px){.faction-row{flex-wrap:wrap;gap:8px}.faction-row>div{flex-basis:100%}.minister-programme .choices button{overflow-wrap:anywhere}}
