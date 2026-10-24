@@ -128,8 +128,8 @@ function guideCatalog104(){
  add('charts','历史折线图',['完整任期指标','折线图','历史图表'],'国家档案实时展示经济、支持、稳定与司法等十二项指标的季度变化。点击指标卡片或图表可打开屏幕中央的大图；任期结束后评估页也保留相同图表。旧版存档未记录的数据保留空缺，不补造历史。','历史与评估');
  add('score','综合治理评分',['综合评分','当前综合评分'],'根据国家经济和政治表现计算的游戏内评分，便于比较执政结果；它与统治倾向契合度分别计算。','历史与评估');
  add('guide','治国指南',['指南','概念搜索','搜索'],'输入游戏里的概念或同义词，查看统一条目的解释。搜索不改变进度、不消耗行动点；不收录普通事件标题和随机人物、政党或国家名字。','页面与操作');
- add('tutorial','入门教程',['教程','开启教程','新手教程','跳过教程'],'左栏的入门教程简要介绍政体称呼、受托机构、任期、执政目标、9维评估、治国指南和本页教程的使用方法。不会自动讲解所有板块；可用左右方向键浏览，右下角跳过或Esc退出。','页面与操作');
- add('page-tutorial','本页教程',['页面教程','板块教程'],'先在左栏选择需要了解的板块，再点击主窗口右上方“本页教程”。只高亮和讲解当前板块中的概念与功能按钮，不跳转到其他板块，不执行政策或消耗行动点。','页面与操作');
+ add('tutorial','入门教程',['教程','开启教程','新手教程','跳过教程'],'左栏的入门教程简要介绍政体称呼、受托机构、任期、执政目标、9维评估、治国指南和本页教程的使用方法。不会自动讲解所有板块；可按空格进入下一步，或用左右方向键浏览，右下角跳过或Esc退出。','页面与操作');
+ add('page-tutorial','本页教程',['页面教程','板块教程'],'先在左栏选择需要了解的板块，再点击主窗口右上方“本页教程”。按空格进入下一步。只高亮和讲解当前板块中的概念与功能按钮，不跳转到其他板块，不执行政策或消耗行动点。','页面与操作');
  for(let r of REGIMES)add('regime-'+r.id,r.name,r.id==='presidential'?['总统制','民主共和制']:r.id==='theorepublic'?['神权君主立宪体制']:[],REGIME_GUIDE104[r.id]+' '+r.note,'政体与职务');
  add('player','玩家职务',[],playerGuide104(),'政体与职务');
  for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',政府协调总理:'联邦委员会制中的玩家职务，直接安排内阁，重大议案须达到60%院内支持率。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
@@ -153,7 +153,7 @@ function guideCatalog104(){
  for(let [name,vector]of ideologies){if(entries.some(e=>e.title===name))continue;let focus=vector.map((v,i)=>({v,name:AXIS_NAMES[i]})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.name).join('、');add('ideology-'+name,name,[],`一种游戏内的结算统治倾向。该模型较重视${focus}；系统比较你的决策和最终政策画像，计算与它的契合度。是否进入候选列表取决于政体与经济制度。`,'统治倾向')}
  add('political-ally','政治盟友',['盟友','联合政府信任'],'君主立宪制和西敏议会制的新世界自动与最接近的党派结盟，再补充其他党派直到联盟拥有至少50%席位。盟友初始议程倾向为60，团体关系随机60至70，人物可入阁；其他民主与象征性民主开局不自动结盟。盟友关系低于50触发政府危机。','内阁与科研');
  add('government','政府危机',['联合政府危机','政府不信任案'],'任一政治盟友关系低于50时出现，持续期间每季支持率−1、政治稳定−3。必须在三季度内把失信盟友关系恢复到60以上，或按关系达到70的邀请规则争取新党派，组成至少50%席位的新联盟。本局势无独立选项，只能在议事机关协商；另组新联盟会让原盟友所属阁员全部辞职，并逐人承担强制辞职后果。君主立宪与西敏政体逾期直接倒阁；其他支持联合政府的政体逾期解散联盟、盟友阁员离任，不直接结束游戏。','局势与处置');
- add('alerts','执政提醒',['红点','提示','风险提示','提醒'],'问题出现时首次弹出提醒，红点持续到问题解决。关闭提醒不会清除红点；提醒不会加入待决事件，不阻碍季度推进。包括空缺、忠诚低于35、未解决局势、选票或支持低于50%、稳定低于35、失业超过8%、通胀超过45%、债务率超过90%、司法独立低于30，以及下季度将刷新未查看改革草案。','页面与操作');
+ add('alerts','执政提醒',['红点','提示','风险提示','提醒'],'问题出现时首次弹出提醒，红点持续到问题解决。点击“知道了”会将提醒收至页面边缘，可点击侧边按钮重新展开，也可上下拖动按钮调整位置。收起提醒不会清除红点；提醒不会加入待决事件，不阻碍季度推进。包括空缺、忠诚低于35、未解决局势、选票或支持低于50%、稳定低于35、失业超过8%、通胀超过45%、债务率超过90%、司法独立低于30，以及下季度将刷新未查看改革草案。','页面与操作');
  add('console','控制台',['管理员模式','管理员模式（不建议）'],'仅在创建新世界时选择管理员模式后开放，按钮位于左侧导航最下方。可直接调整经济、政治、预算、地区、人物、科研与局势数据，生成事件或测试内阁空缺；保留正常模拟，但取消所有失败结局和回合上限。只有开启新历史才能替换本局。此模式与存档一起保存，普通存档不会自动开启。','页面与操作');
  return entries;
 }
@@ -173,7 +173,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  const nav=(page,id,text)=>add(page,id,`#nav button[onclick="changeTab('${page}')"]`,text);
  const target=(page,id,selector,text,title)=>add(page,id,selector,text,title);
  add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
- add('overview','tour-roadmap','#tutorial-start','这段入门介绍只说明执政目标与教程的使用方法。各板块的具体规则可随时通过“本页教程”查看；右下角可跳过。','开始之前');
+ add('overview','tour-roadmap','#tutorial-start','这段入门介绍只说明执政目标与教程的使用方法。各板块的具体规则可随时通过“本页教程”查看；按空格进入下一步，右下角可跳过。','开始之前');
  add('overview','tour-duration','#date',()=>s.adminMode?'本存档已启用管理员模式，季度没有上限，所有失败与结算均不会终止本局；开启新历史才会替换此存档。':regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
  add('overview','tour-mission','[data-guide="country"]','在此期间，您需要在维持统治的前提下，推进自己的理想议程。支持、稳定、财政与制度选择都会影响您的执政道路。','您的目标');
  add('overview','tour-assessment',`#nav button[onclick="changeTab('archive')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。任期进行中可在国家档案查看指标走势。','留下怎样的任期');
@@ -181,7 +181,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('overview','country','[data-guide="country"]','这是你所扮演的国家。随机国名用于区分世界，玩法由政体和国家状况决定。');
  target('overview','regime','[data-guide="regime"]',()=>REGIME_GUIDE104[regime().id]);target('overview','player','[data-guide="player"]',playerGuide104);
  target('overview','calendar','#date','本游戏每年6季度，每届24季度。这里显示当前日期。');
- target('overview','alerts','#advance','页面中的红点表示仍需处理的问题。首次出现会显示提醒，提醒本身不会阻止推进季度；问题解除后红点消失。');
+ target('overview','alerts','#advance','页面中的红点表示仍需处理的问题。首次出现会显示提醒，点击“知道了”会收起至侧边，点击侧边按钮可重新展开，并可上下拖动按钮。提醒本身不会阻止推进季度；问题解除后红点消失。');
  target('overview','advance','#advance','推进季度会结算经济与施政，并恢复行动点。出现待决事件时，按钮会先带你回复事件。');
  target('overview','ap','.political-banner .action-count',actionTutorialText);
  for(let id of ['approval','stability','judicial','growth','unemployment','inflation','debt','rating','gdp','population','balance'])target('overview',id,`[data-guide="${id}"]`);
@@ -241,7 +241,7 @@ function decorateGuide104(){if(!document.querySelectorAll)return;
 const renderBeforeGuide104=render;render=function(){renderBeforeGuide104();decorateGuide104()};
 function tourFind104(selector){try{return document.querySelector(selector)}catch{return null}}
 function tourBlock104(event){if(!tutorial104)return;if(event.target.closest?.('#tutorial-controls,#tutorial-skip'))return;event.preventDefault();event.stopImmediatePropagation()}
-function tourKey104(event){if(!tutorial104)return;if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();stopTutorial()}else if(event.key==='ArrowRight'){event.preventDefault();tutorialMove(1)}else if(event.key==='ArrowLeft'){event.preventDefault();tutorialMove(-1)}else if(event.key==='Tab'){let nodes=[...document.querySelectorAll('#tutorial-controls button:not(:disabled),#tutorial-skip')],i=nodes.indexOf(document.activeElement);event.preventDefault();nodes[(i+(event.shiftKey?-1:1)+nodes.length)%nodes.length]?.focus()}}
+function tourKey104(event){if(!tutorial104)return;if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();stopTutorial()}else if(event.code==='Space'||event.key===' '||event.key==='Spacebar'){event.preventDefault();event.stopImmediatePropagation();if(!event.repeat)tutorialMove(1)}else if(event.key==='ArrowRight'){event.preventDefault();event.stopImmediatePropagation();tutorialMove(1)}else if(event.key==='ArrowLeft'){event.preventDefault();tutorialMove(-1)}else if(event.key==='Tab'){let nodes=[...document.querySelectorAll('#tutorial-controls button:not(:disabled),#tutorial-skip')],i=nodes.indexOf(document.activeElement);event.preventDefault();nodes[(i+(event.shiftKey?-1:1)+nodes.length)%nodes.length]?.focus()}}
 function startPageTutorial(){startTutorial('page')}
 function startTutorial(scope='intro'){
  if(tutorial104)return;
@@ -256,7 +256,7 @@ function showTutorialStep104(direction=1){
   let step=t.steps[t.index];if(!step){stopTutorial();return}if(tab!==step.page){tab=step.page;render()}
   let el=tourFind104(step.selector);if(el){let details=el.closest('details');if(details&&!details.open&&el.tagName!=='SUMMARY'){details.open=true;t.opened.push(details)}
    if(el.getClientRects().length){t.target=el;let entry=guideCatalog104().find(e=>e.id===step.id),brief=entry?.text.match(/[^。！？]+[。！？]?/g)?.slice(0,2).join(''),body=typeof step.text==='function'?step.text():step.text||brief||'查看此处的信息，了解国家当前状态。';
-    $('tutorial-controls').innerHTML=`<span class="tour-count">${t.scope==='page'?'本页教程':'入门教程'} · ${t.index+1} / ${t.steps.length} · 可随时跳过</span><h2 id="tour-title">${esc(step.title||entry?.title||(step.id==='regime'?'国家政体':'玩家职务'))}</h2><p>${esc(body)}</p><div class="tour-buttons"><button onclick="tutorialMove(-1)" ${t.index===0?'disabled':''}>上一步</button><button class="primary" onclick="tutorialMove(1)">${t.index===t.steps.length-1?'完成教程':'下一步 →'}</button></div>`;
+    $('tutorial-controls').innerHTML=`<span class="tour-count">${t.scope==='page'?'本页教程':'入门教程'} · ${t.index+1} / ${t.steps.length} · 可随时跳过</span><h2 id="tour-title">${esc(step.title||entry?.title||(step.id==='regime'?'国家政体':'玩家职务'))}</h2><p>${esc(body)}</p><div class="tour-buttons"><button onclick="tutorialMove(-1)" ${t.index===0?'disabled':''}>上一步</button><button class="primary" onclick="tutorialMove(1)">${t.index===t.steps.length-1?'空格完成教程':'空格进入下一步'}</button></div>`;
     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});positionTutorial104();$('tutorial-controls').querySelector('.primary').focus({preventScroll:true});return;
    }
   }

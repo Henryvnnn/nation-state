@@ -53,6 +53,7 @@ save=function(){if(s?.governance&&features107()){syncCoalition107();refreshAlert
 function visibleTabs107(){return [...politicalTabs,['situations','⚑','局势'],...(s.ended?[['settlement','◷','任期评估']]:[]),...(s.adminMode?[['console','⌨','控制台']]:[])]}
 render=function(){
  initPolitics();let r=regime(),list=visibleTabs107();if(!list.some(row=>row[0]===tab))tab='overview';
+ $('executive-heading').textContent=executiveName()+' / 战略决策室';
  $('heading').textContent=tab==='assembly'?r.body:tab==='judiciary'?r.court:list.find(row=>row[0]===tab)[2];$('date').textContent=date()+(s.adminMode?' · 管理员模式':'');
  $('advance').innerHTML=s.ended?'查看任期结算 →':pstate().current?'回复季度事件 →':v3().settlementDue?'选择结算或继续 →':'推进季度 →';
  let alerts=activeAlerts107();$('nav').innerHTML=list.map(row=>{let matches=alerts.filter(a=>a.tabs.includes(row[0]));return `<button class="nav-item ${tab===row[0]?'active':''}" data-nav="${row[0]}" onclick="changeTab('${row[0]}')"><span>${row[1]}</span>${row[0]==='assembly'?r.body:row[2]}${row[0]==='situations'?' · '+sits().active.length:''}${matches.length?redDot107(matches.map(a=>a.title).join('；')):''}</button>`}).join('');

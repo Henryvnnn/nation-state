@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','guide.js'];
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','guide.js'];
 function boot(storage={},directory=root){let nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(let f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});return c}
 const storage={},c=boot(storage);
 vm.runInContext(`
