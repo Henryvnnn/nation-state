@@ -13,7 +13,7 @@ const REGIME_GUIDE104={
  tyranny:'你所扮演的是僭主制国家。最高执政官依赖精英、地方和安全系统的配合维持统治。',
  theoabsolute:'你所扮演的是神权专制国家。最高教长统治国家，教团组成枢密院，宰相负责行政执行。'
 };
-function playerGuide104(){let r=regime();if(r.id==='theorepublic')return '最高领袖掌握重大国务决策权，没有任期。本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩；仍须维持政治稳定。';if(r.democratic)return `你担任${r.player}，决定预算、人事与重大政策，并兼管财政。选举决定是否留任，最多执政两届、48 个季度。`;return `你担任${r.player}，决定重大国务并兼管财政，没有民主选举的强制任期限制。低稳定仍会导致统治结束，第 48 季度起可选择结算。`}
+function playerGuide104(){let r=regime();if(s.adminMode)return `你担任${r.player}并兼管财政。本存档已启用管理员模式，控制台可修改数据，选举失败与其他结束条件均不会终止本局。`; if(r.id==='theorepublic')return '最高领袖掌握重大国务决策权，没有任期。本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩；仍须维持政治稳定。';if(r.democratic)return `你担任${r.player}，决定预算、人事与重大政策，并兼管财政。选举决定是否留任，最多执政两届、48 个季度。`;return `你担任${r.player}，决定重大国务并兼管财政，没有民主选举的强制任期限制。低稳定仍会导致统治结束，第 48 季度起可选择结算。`}
 function legislativeGroups104(){return regime().id==='party'?'这些是你的立法机关中的政党和你所在政党的派系，也包括无党籍团体。':regime().body==='枢密院'?'这些是枢密院中的派系与政治团体。':'这些是你立法机关中的政党／派系。'}
 function guideNormalize104(text){return String(text).normalize('NFKC').replace(/\s+/g,'').replace(/^[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+|[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+$/g,'').toLowerCase()}
 function guideCatalog104(){
@@ -122,9 +122,9 @@ function guideCatalog104(){
  add('difficulty','困难模式',['普通模式','开局局势'],'普通模式开局随机一个局势，困难模式两个不同局势。开局池仅包含大罢工、司法公平、经济危机和政治丑闻；其他局势在执政期间触发。','存档与设置');
  add('economic-model','经济制度',['经济类型','沿海贸易国','内陆工业国','北境福利国','新兴农业国','非民主社会主义国家'],'经济类型决定初始产业、收入水平与增长潜力。非民主社会主义设定还决定结算时是否开放额外社会主义统治倾向。','经济与财政');
  add('capital-city','首都',[],'国家行政中心的虚构地名。本版不单独模拟首都政策，随机名称本身不会改变经济或政治指标。','基本概念');
- add('settlement','任期评估',['任期结算','结算','查看任期结算','任期评估预览'],'汇总完整历史指标与三种最接近的统治倾向。进行中可预览；民主国家第二届结束后自动结算，其他政体从第48季度起可以选择继续。','页面与操作');
+ add('settlement','任期评估',['任期结算','结算','查看任期结算','任期评估预览'],'汇总完整历史指标与三种最接近的统治倾向。仅在游戏结束后出现；进行中请在国家档案查看历史图表。民主国家第二届结束后自动结算，其他政体从第48季度起可以选择继续。','页面与操作');
  add('ideology','统治倾向',['契合度','统治倾向评估','治理画像','评估依据'],'根据实际决策（70%）和最终政策与指标（30%）生成治理画像，与各倾向模型比较后列出前三名。契合度是相似度，不要求三项相加等于100%。','历史与评估');
- add('charts','历史折线图',['完整任期指标','折线图','历史图表'],'展示经济、支持、稳定与司法等十二项指标的季度变化。旧版存档未记录的数据保留空缺，不补造历史。','历史与评估');
+ add('charts','历史折线图',['完整任期指标','折线图','历史图表'],'国家档案实时展示经济、支持、稳定与司法等十二项指标的季度变化。点击指标卡片或图表可打开屏幕中央的大图；任期结束后评估页也保留相同图表。旧版存档未记录的数据保留空缺，不补造历史。','历史与评估');
  add('score','综合治理评分',['综合评分','当前综合评分'],'根据国家经济和政治表现计算的游戏内评分，便于比较执政结果；它与统治倾向契合度分别计算。','历史与评估');
  add('guide','治国指南',['指南','概念搜索','搜索'],'输入游戏里的概念或同义词，查看统一条目的解释。搜索不改变进度、不消耗行动点；不收录普通事件标题和随机人物、政党或国家名字。','页面与操作');
  add('tutorial','开启教程',['教程','新手教程','跳过教程'],'逐步高亮页面概念和功能按钮，不执行政策、不消耗行动点。可用上一步、下一步或键盘左右键浏览；右下角“跳过教程”和Esc可随时退出并返回原页面。','页面与操作');
@@ -149,6 +149,10 @@ function guideCatalog104(){
  for(let [i,axis]of AXIS_NAMES.entries())add('axis-'+i,axis,[],`统治画像的一个维度，用于概括你在“${axis}”方面的决策与政策偏好。最终与其他八个维度共同决定统治倾向契合度。`,'历史与评估');
  let ideologies=[...DEMO_IDEOLOGIES,...NONDEMO_IDEOLOGIES,...SOCIALIST_IDEOLOGIES];
  for(let [name,vector]of ideologies){if(entries.some(e=>e.title===name))continue;let focus=vector.map((v,i)=>({v,name:AXIS_NAMES[i]})).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.name).join('、');add('ideology-'+name,name,[],`一种游戏内的结算统治倾向。该模型较重视${focus}；系统比较你的决策和最终政策画像，计算与它的契合度。是否进入候选列表取决于政体与经济制度。`,'统治倾向')}
+ add('political-ally','政治盟友',['盟友','联合政府信任'],'君主立宪制和西敏议会制的新世界自动与最接近的党派结盟，再补充其他党派直到联盟拥有至少50%席位。盟友初始议程倾向为60，团体关系随机60至70，人物可入阁；其他民主与象征性民主开局不自动结盟。盟友关系低于50触发政府危机。','内阁与科研');
+ add('government','政府危机',['联合政府危机','政府不信任案'],'任一政治盟友关系低于50时出现，持续期间每季支持率−1、政治稳定−3。必须在三季度内把失信盟友关系恢复到60以上，或按关系达到70的邀请规则争取新党派，组成至少50%席位的新联盟。本局势无独立选项，只能在议事机关协商；另组新联盟会让原盟友所属阁员全部辞职，并逐人承担强制辞职后果。君主立宪与西敏政体逾期直接倒阁；其他支持联合政府的政体逾期解散联盟、盟友阁员离任，不直接结束游戏。','局势与处置');
+ add('alerts','执政提醒',['红点','提示','风险提示','提醒'],'问题出现时首次弹出提醒，红点持续到问题解决。关闭提醒不会清除红点；提醒不会加入待决事件，不阻碍季度推进。包括空缺、忠诚低于35、未解决局势、选票或支持低于50%、稳定低于35、失业超过8%、通胀超过45%、债务率超过90%、司法独立低于30，以及下季度将刷新未查看改革草案。','页面与操作');
+ add('console','控制台',['管理员模式','管理员模式（不建议）'],'仅在创建新世界时选择管理员模式后开放，按钮位于左侧导航最下方。可直接调整经济、政治、预算、地区、人物、科研与局势数据，生成事件或测试内阁空缺；保留正常模拟，但取消所有失败结局和回合上限。只有开启新历史才能替换本局。此模式与存档一起保存，普通存档不会自动开启。','页面与操作');
  return entries;
 }
 let guideEntries104=[];
@@ -168,13 +172,14 @@ function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>step
  const target=(page,id,selector,text)=>add(page,id,selector,text);
  add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
  add('overview','tour-roadmap','#tutorial-start','接下来，我会逐个讲解本游戏的目标、概念、功能和后果。您可随时用右下角按钮跳过教程。','开始之前');
- add('overview','tour-duration','#date',()=>regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
+ add('overview','tour-duration','#date',()=>s.adminMode?'本存档已启用管理员模式，季度没有上限，所有失败与结算均不会终止本局；开启新历史才会替换此存档。':regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
  add('overview','tour-mission','[data-guide="country"]','在此期间，您需要在维持统治的前提下，推进自己的理想议程。支持、稳定、财政与制度选择都会影响您的执政道路。','您的目标');
- add('overview','tour-assessment',`#nav button[onclick="changeTab('settlement')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。接下来，我们从国家与核心指标开始。','留下怎样的任期');
+ add('overview','tour-assessment',`#nav button[onclick="changeTab('archive')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。接下来，我们从国家与核心指标开始。','留下怎样的任期');
  nav('overview','overview','这里是执政总览，先从国家身份与核心指标开始。');
  target('overview','country','[data-guide="country"]','这是你所扮演的国家。随机国名用于区分世界，玩法由政体和国家状况决定。');
  target('overview','regime','[data-guide="regime"]',()=>REGIME_GUIDE104[regime().id]);target('overview','player','[data-guide="player"]',playerGuide104);
  target('overview','calendar','#date','本游戏每年6季度，每届24季度。这里显示当前日期。');
+ target('overview','alerts','#advance','页面中的红点表示仍需处理的问题。首次出现会显示提醒，提醒本身不会阻止推进季度；问题解除后红点消失。');
  target('overview','advance','#advance','推进季度会结算经济与施政，并恢复行动点。出现待决事件时，按钮会先带你回复事件。');
  target('overview','ap','.political-banner .action-count','这是本季剩余政治行动点。初始每季3点，科研可提高到6点；协商、人事、表决和局势处置会消耗它。');
  for(let id of ['approval','stability','judicial','growth','unemployment','inflation','debt','rating','gdp','population','balance'])target('overview',id,`[data-guide="${id}"]`);
@@ -213,8 +218,8 @@ function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>step
  target('archive','research','.research-card h2','教育投入每季推进科研；每100%升一级，提高季度行动额度，最多6点。教育现代化会加快积累。');
  for(let id of ['gdp','per-capita','capital','human','seed','economic-model'])target('archive',id,`[data-guide="${id}"]`);
  target('archive','export','button[onclick="exportSave()"]');target('archive','import','button[onclick*="import\').click"]');
- nav('settlement','settlement','这里随时预览执政结果，任期结束后形成最终评估。');
- target('settlement','ideology','.ideology-cards .card','三张卡片展示最接近的统治倾向和契合度，依据实际决策与最终政策，不是随机抽取。');target('settlement','charts','.charts-grid article h3','这些图表按季度记录经济与政治指标，可回看每项选择的长期结果。');
+ if(s.ended){nav('settlement','settlement','游戏结束后，这里显示最终执政评估。');
+ target('settlement','ideology','.ideology-cards .card','三张卡片展示最接近的统治倾向和契合度，依据实际决策与最终政策，不是随机抽取。');}target('archive','charts','.charts-grid article h3','这些图表与季度记录同步更新。点击图表标题或指标卡片，可以打开居中的大图。');
  target('overview','new-world','button[onclick="newDialog()"]','这会重新生成世界并替换当前进度。希望保留这一局时，请先导出存档。');
  target('overview','guide','#guide-open','若对游戏概念不清楚，可查看“治国指南”的详细介绍。输入“稳定”“稳定度”或“政治稳定”，都会找到同一条目；也可搜索改革、职务和局势。','教程完成');
  return steps;

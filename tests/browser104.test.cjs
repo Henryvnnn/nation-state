@@ -36,7 +36,7 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
     await page.locator('#tutorial-controls .primary').click();if(++limit>150)throw Error('tutorial did not finish');
    }
    assert.equal(await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot})),original,'walkthrough must not mutate game or draft');
-   for(let required of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive','settlement'])assert(visited.some(s=>s.page===required),'tour page '+required);
+   for(let required of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive'])assert(visited.some(s=>s.page===required),'tour page '+required);
    for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','regime','player','stability','pass-rate','negotiate','programme','research','export','import','guide'])assert(visited.some(s=>s.id===required),'tour concept '+required);
    // Skip and Escape must restore the exact page and pending event modal.
    await page.click('#tutorial-start');await page.click('#tutorial-skip');assert.equal(await page.evaluate(()=>tab),'budget');
@@ -64,7 +64,7 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
    await page.evaluate(()=>changeTab('politics'));assert.equal(await page.locator('.region-grid article').count(),8);
    assert.match(await page.locator('.region-grid article').last().textContent(),/首都地区/);await page.locator('.region-grid article').last().scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation107-capital-'+viewport.width+'.png'});
    await page.evaluate(()=>{changeTab('cabinet');cabinetSlot='labour';render()});assert.equal(await page.locator('#task option').count(),5);assert.match(await page.locator('.minister-programme h3').textContent(),/就业与劳动保障计划/);await page.selectOption('#task','labour_employment');assert.match(await page.locator('[data-office-task="labour"]').textContent(),/就业促进/);
-   await page.evaluate(()=>changeTab('settlement'));await page.getByRole('button',{name:'解释政策利率',exact:true}).click();assert.match(await page.locator('#guide-results').textContent(),/玩家不能直接设定/);await page.fill('#guide-query','政策利率、');assert.match(await page.locator('#guide-results').textContent(),/国债收益率/);await page.screenshot({path:'/tmp/nation107-rate-'+viewport.width+'.png'});await page.locator('.guide-close').click();
+   await page.evaluate(()=>changeTab('archive'));await page.getByRole('button',{name:'解释政策利率',exact:true}).click();assert.match(await page.locator('#guide-results').textContent(),/玩家不能直接设定/);await page.fill('#guide-query','政策利率、');assert.match(await page.locator('#guide-results').textContent(),/国债收益率/);await page.screenshot({path:'/tmp/nation107-rate-'+viewport.width+'.png'});await page.locator('.guide-close').click();
    assert.deepEqual(errors,[]);console.log('PASS browser '+viewport.width+'px: '+visited.length+' tutorial steps, regime preface, live search, overlays, unchanged state, portfolio options, live task status and saved directions; no page errors.');await page.close();await browser.close();
   }
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve))}
