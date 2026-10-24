@@ -36,8 +36,21 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
     await page.locator('#tutorial-controls .primary').click();if(++limit>150)throw Error('tutorial did not finish');
    }
    assert.equal(await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot})),original,'walkthrough must not mutate game or draft');
-   for(let required of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive'])assert(visited.some(s=>s.page===required),'tour page '+required);
-   for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','regime','player','stability','pass-rate','negotiate','programme','research','export','import','guide'])assert(visited.some(s=>s.id===required),'tour concept '+required);
+   assert.equal(visited.length,7,'short intro');assert(visited.every(step=>step.page==='overview'),'intro only');
+   for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','guide','page-tutorial'])assert(visited.some(s=>s.id===required),'intro concept '+required);
+   for(let section of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive']){
+    await page.evaluate(section=>changeTab(section),section);const initial=await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot}));await page.locator('#page-tutorial').click();let count=0,ids=[];
+    while(await page.evaluate(()=>!!tutorial104)){
+     assert.equal(await page.evaluate(()=>tab),section,'page tutorial stays in selected section');const id=await page.evaluate(()=>tutorial104.steps[tutorial104.index].id);ids.push(id);
+     const panel=await page.locator('#tutorial-controls').boundingBox();assert(panel.x>=0&&panel.x+panel.width<=viewport.width+1,'page tour fits screen');
+     await page.locator('#tutorial-controls .primary').click();if(++count>60)throw Error('page tour did not finish');
+    }
+    assert(count>1,'page-specific contents');assert(!ids.includes('welcome'),'no repeated intro');assert.equal(await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot})),initial,'page tour leaves state unchanged');
+    if(section==='overview')for(let id of ['regime','player','ap','stability'])assert(ids.includes(id),'overview concept '+id);
+    if(section==='assembly')for(let id of ['pass-rate','negotiate','faction-details'])assert(ids.includes(id),'assembly concept '+id);
+    if(section==='archive')for(let id of ['research','export','import','charts'])assert(ids.includes(id),'archive concept '+id);
+   }
+   await page.evaluate(()=>changeTab('budget'));
    // Skip and Escape must restore the exact page and pending event modal.
    await page.click('#tutorial-start');await page.click('#tutorial-skip');assert.equal(await page.evaluate(()=>tab),'budget');
    await page.evaluate(()=>{pstate().current=eventFrom('待处理事务','此事尚未决定',[option('确认','无即时变化')]);showPoliticalEvent();startTutorial()});await page.keyboard.press('Escape');assert(await page.locator('#modal').isVisible());assert.match(await page.locator('#modal').textContent(),/待处理事务/);assert.equal(await page.evaluate(()=>pstate().current.title),'待处理事务');

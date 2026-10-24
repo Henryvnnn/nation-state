@@ -22,7 +22,8 @@ function guideCatalog104(){
  add('overview','执政总览',['国家总览','总览'],'查看国家主要指标、当前局势、待决事件与执政压力，是统筹本季工作的入口。','页面与操作');
  add('advance','推进季度',['下一回合','推进回合','回复季度事件','本季已回复事件','待决事件'],'推进一季度会结算经济、官员施政、科研和持续局势，并恢复行动点。每季度至少三件决策事件，回复完成后才进行选举和任期结算。','页面与操作');
  add('calendar','季度',['回合','年份','年','任期','本届已过','距选举 / 评议'],'本游戏每年有 6 季度，每届 24 季度。民主国家在第24、48季度选举，完成两届后结算；其他国家第48季度可继续，此后每12季度再次询问。');
- add('ap','政治行动点',['行动点','可用行动点','可用政治行动点','本季政治行动点','本季度政治行动点','本季政治行动点总数','每季度政治行动点总数','本季度剩余行动点'],'每季初始3点，科研每升一级增加1点，上限6点。协商、会见、任免、表决、提案推进与局势处置通常各耗1点；季度事件回复、浏览页面和更换任务方向不耗点。未用完的点数不会累积。');
+ add('ap','政治行动点',['行动点','可用行动点','可用政治行动点','本季政治行动点','本季度政治行动点','本季政治行动点总数','每季度政治行动点总数','本季度剩余行动点'],`本局采用${ACTION_POINT_MODES[actionMode()]}。${actionModeDescription()}协商、会见、任免、表决、提案推进与局势处置通常各耗1点；季度事件回复、浏览页面和更换任务方向不耗点。未用完的点数不会累积，刷新和读档不会重新投骰。`);
+ for(let [mode,label]of Object.entries(ACTION_POINT_MODES))add('ap-'+mode,label,mode==='random'?['掷骰','投骰子','随机行动点模式']:mode==='planned'?['伪随机','预排行动点']:['固定行动点模式'],actionModeDescription(mode)+' 创建世界时选择，本局期间不能切换。开局另有一份初始行动点；预排表对应随后第1—48季度。','政治机制');
  add('approval','公众支持',['支持','支持度','支持率','全国支持率','民意'],'衡量公众对政府的认可，是地区选票的基准。民生、就业、事件选择和履约会影响支持；通胀、失业、失信等会削弱支持。非民主政体中，支持每季额外影响稳定，修正为（支持−55）×0.08。');
  add('stability','政治稳定',['稳定','稳定度','国家稳定'],'反映社会秩序与统治基础，范围0至100。低于20会结束游戏。连续两季度低于35，且至少三个地区尚未完成地方诉求后，每季有35%概率触发叛乱，并非只要低于35就必然出现。事件和局势选项、增加行政安全预算等可提高稳定；削减行政安全预算、危机和撤换部长、总理或宰相等可能降低稳定，撤换后果还受政绩与政体影响。');
  add('growth','实际年化增长',['GDP增长','GDP 增长','增长','增长率','经济增长','年化增长','潜在增长','增长压力','年化增长压力'],'实际经济产出的年化增长速度。教育、基础设施、改革、预算需求和投资信心都会影响增长；利率、外部环境与危机会带来压力。增长压力是持续若干季度的增长修正，不是直接发放现金。','经济与财政');
@@ -45,7 +46,7 @@ function guideCatalog104(){
  for(let [key,m]of Object.entries(policyMeta)){let extra={income:'每提高1个百分点，新预算全票支持门槛＋1，降低时相反。',corporate:'每提高2个百分点，新预算全票支持门槛＋1，降低时相反。',vat:'每提高1.5个百分点，新预算全票支持门槛＋1，降低时相反。',education:'每季度科研进度增加预算数值×2；教育现代化完成后改为×3，还可降低相关提案费用。',health:'公共服务改善有利民意，也可降低相关医疗提案费用。',welfare:'社会民主派尤其重视此项，预算每提高1个百分点，其全票支持门槛降低2。',infrastructure:'提高资本存量，支持长期生产与部分地区诉求，也降低相关建设提案费用。',security:'投入越高，经济模型中的稳定目标越高；削减预算可能逐步损害稳定，也会影响相关提案费用。'}[key];add('policy-'+key,m[0],({income:['个税','所得税'],corporate:['企业税','公司税'],vat:['增值税'],education:['教育科研','教育与科研支出'],health:['卫生预算','医疗预算'],welfare:['福利','福利预算','社会保障支出'],infrastructure:['基建','基建预算','基础设施预算'],security:['行政安全预算','安全预算']})[key],m[3]+extra+' 可调整范围 '+m[1]+'% 至 '+m[2]+'%。','经济与财政')}
  add('capital','基础设施水平',['基础设施等级','基建资本','资本存量'],'反映已有交通、能源和公共设施的积累，与本季基础设施预算不同。持续投资、公共工程和改革可提高它；灾害会破坏设施。','经济与财政');
  add('human','人力资本',['教育资本'],'反映知识、技能与生产能力的积累，影响潜在经济增长。教育投入、教育现代化和相关改革可以提高它；科研等级另外决定政治行动额度。','经济与财政');
- add('research','科研水平',['科研等级','科研','科研进度','下一级进度'],'每季度科研进度增加教育预算数值×2，教育现代化完成后×3。每100%升一级，保留溢出进度；每级增加1点季度行动额度，上限6点。等级达到额度上限后仍可继续提升。','内阁与科研');
+ add('research','科研水平',['科研等级','科研','科研进度','下一级进度'],`每季度科研进度增加教育预算数值×2，教育现代化完成后×3。每100%升一级，保留溢出进度；${actionResearchDescription()}升级在当季发放行动点前结算，已经发放的点数不会因浏览、刷新或导入重复增加。`,'内阁与科研');
  add('assembly','权力机关',['议会','立法机关','枢密院','全国人大','人大','全国人民代表大会'],'审议预算和改革的机关。民主及部分共和政体使用议会，一党独大制使用全国人大，专制和贵族政体使用枢密院。可协商党派、会见负责人、提出并表决议案。','页面与操作');
  add('groups','政党与派系',['政党','党派','派系','党团','政治团体','执政党','执政派系','民主党派','无党籍团体','主流派','新锐派','改革派'],'政党和派系代表不同政治力量。席位决定其表决权重，团体关系、成员关系、倾向和政策偏好决定支持。一党独大制中的前三组是执政党内部派系，并非三个竞争执政党。','立法与政治');
  add('seats','席位',['议席','席','议席比例','议事权重','权力构成'],'决定各党或派系在立法机关的表决权重。它与支持比例共同计算总院内支持率；枢密院使用同样机制表示政治配合程度。','立法与政治');
@@ -127,7 +128,8 @@ function guideCatalog104(){
  add('charts','历史折线图',['完整任期指标','折线图','历史图表'],'国家档案实时展示经济、支持、稳定与司法等十二项指标的季度变化。点击指标卡片或图表可打开屏幕中央的大图；任期结束后评估页也保留相同图表。旧版存档未记录的数据保留空缺，不补造历史。','历史与评估');
  add('score','综合治理评分',['综合评分','当前综合评分'],'根据国家经济和政治表现计算的游戏内评分，便于比较执政结果；它与统治倾向契合度分别计算。','历史与评估');
  add('guide','治国指南',['指南','概念搜索','搜索'],'输入游戏里的概念或同义词，查看统一条目的解释。搜索不改变进度、不消耗行动点；不收录普通事件标题和随机人物、政党或国家名字。','页面与操作');
- add('tutorial','开启教程',['教程','新手教程','跳过教程'],'逐步高亮页面概念和功能按钮，不执行政策、不消耗行动点。可用上一步、下一步或键盘左右键浏览；右下角“跳过教程”和Esc可随时退出并返回原页面。','页面与操作');
+ add('tutorial','入门教程',['教程','开启教程','新手教程','跳过教程'],'左栏的入门教程简要介绍政体称呼、受托机构、任期、执政目标、9维评估、治国指南和本页教程的使用方法。不会自动讲解所有板块；可用左右方向键浏览，右下角跳过或Esc退出。','页面与操作');
+ add('page-tutorial','本页教程',['页面教程','板块教程'],'先在左栏选择需要了解的板块，再点击主窗口右上方“本页教程”。只高亮和讲解当前板块中的概念与功能按钮，不跳转到其他板块，不执行政策或消耗行动点。','页面与操作');
  for(let r of REGIMES)add('regime-'+r.id,r.name,r.id==='presidential'?['总统制','民主共和制']:r.id==='theorepublic'?['神权君主立宪体制']:[],REGIME_GUIDE104[r.id]+' '+r.note,'政体与职务');
  add('player','玩家职务',[],playerGuide104(),'政体与职务');
  for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',政府协调总理:'联邦委员会制中的玩家职务，直接安排内阁，重大议案须达到60%院内支持率。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
@@ -167,23 +169,24 @@ const TUTORIAL_HOST105={
 function tutorialWelcome105(){let [address,host]=TUTORIAL_HOST105[regime().id];return `欢迎您，${address}。受${host}委托，我将为您介绍本游戏的基本游玩方式。`}
 // Every tour target is an existing UI element. Missing optional controls are skipped.
 let tutorial104=null;
-function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>steps.push({page,id,selector,text,title});
+function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,selector,text,title)=>steps.push({page,id,selector,text,title});
  const nav=(page,id,text)=>add(page,id,`#nav button[onclick="changeTab('${page}')"]`,text);
- const target=(page,id,selector,text)=>add(page,id,selector,text);
+ const target=(page,id,selector,text,title)=>add(page,id,selector,text,title);
  add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
- add('overview','tour-roadmap','#tutorial-start','接下来，我会逐个讲解本游戏的目标、概念、功能和后果。您可随时用右下角按钮跳过教程。','开始之前');
+ add('overview','tour-roadmap','#tutorial-start','这段入门介绍只说明执政目标与教程的使用方法。各板块的具体规则可随时通过“本页教程”查看；右下角可跳过。','开始之前');
  add('overview','tour-duration','#date',()=>s.adminMode?'本存档已启用管理员模式，季度没有上限，所有失败与结算均不会终止本局；开启新历史才会替换此存档。':regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
  add('overview','tour-mission','[data-guide="country"]','在此期间，您需要在维持统治的前提下，推进自己的理想议程。支持、稳定、财政与制度选择都会影响您的执政道路。','您的目标');
- add('overview','tour-assessment',`#nav button[onclick="changeTab('archive')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。接下来，我们从国家与核心指标开始。','留下怎样的任期');
+ add('overview','tour-assessment',`#nav button[onclick="changeTab('archive')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。任期进行中可在国家档案查看指标走势。','留下怎样的任期');
  nav('overview','overview','这里是执政总览，先从国家身份与核心指标开始。');
  target('overview','country','[data-guide="country"]','这是你所扮演的国家。随机国名用于区分世界，玩法由政体和国家状况决定。');
  target('overview','regime','[data-guide="regime"]',()=>REGIME_GUIDE104[regime().id]);target('overview','player','[data-guide="player"]',playerGuide104);
  target('overview','calendar','#date','本游戏每年6季度，每届24季度。这里显示当前日期。');
  target('overview','alerts','#advance','页面中的红点表示仍需处理的问题。首次出现会显示提醒，提醒本身不会阻止推进季度；问题解除后红点消失。');
  target('overview','advance','#advance','推进季度会结算经济与施政，并恢复行动点。出现待决事件时，按钮会先带你回复事件。');
- target('overview','ap','.political-banner .action-count','这是本季剩余政治行动点。初始每季3点，科研可提高到6点；协商、人事、表决和局势处置会消耗它。');
+ target('overview','ap','.political-banner .action-count',actionTutorialText);
  for(let id of ['approval','stability','judicial','growth','unemployment','inflation','debt','rating','gdp','population','balance'])target('overview',id,`[data-guide="${id}"]`);
  nav('assembly','assembly',()=>`这是${regime().body}，用于争取支持并通过预算和改革。`);
+ target('assembly','ap','.political-banner .action-count',actionTutorialText);
  target('assembly','groups','.seat-strip',legislativeGroups104);
  for(let id of ['seats','faction-relation','agenda','faction-profile','faction-support','negotiate','faction-details','full-support','effective-agenda'])target('assembly',id,`[data-guide="${id}"]`);
  target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是院内支持率。它是按席位加权的支持比例，达到${threshold()}%即可通过；先从预算或改革页送交议案。`);
@@ -203,6 +206,7 @@ function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>step
  nav('judiciary','judiciary','这里与最高司法机关互动，观察司法独立和行政干预的影响。');
  target('judiciary','judicial','.political-banner .action-count');target('judiciary','judicial-pressure','[data-guide="judicial-pressure"]');target('judiciary','court-actions','.choices','此区域提供司法互动。具体代价和收益会写在各按钮里，可按国家状况选择。');
  nav('politics','elections','这里查看全国民意、地方诉求、选举预测与历次结果。');
+ target('politics','approval','[data-guide="approval"]');
  target('politics','forecast','[data-guide="forecast"]');target('politics','capital-region','.region-grid article:last-child .tag');target('politics','regions','.region-grid article .tag','各地区有不同产业和社会基础，名称中的省、州、领等称谓随政体变化。');
  for(let id of ['population','base','development','local-demands'])target('politics',id,`[data-guide="${id}"]`);
  nav('budget','budget','这里拟定税收与公共预算。调整滑块只是草案，表决通过后才实施。');
@@ -215,14 +219,17 @@ function tutorialSteps104(){let steps=[],add=(page,id,selector,text,title)=>step
  for(let kind of sits().active.map(x=>x.kind)){let id=({justice:'justice-situation',economy:'economy-situation'})[kind]||kind;target('situations',id,`[data-situation-kind="${kind}"] h2`)}
  target('situations','cooldown','.situation-grid .choices','这里的处置会消耗行动点，部分有冷却或限次要求。按钮会直接列出费用、效果和限制。');
  nav('archive','archive','国家档案保存科研、国家结构与执政记录，也提供存档备份。');
- target('archive','research','.research-card h2','教育投入每季推进科研；每100%升一级，提高季度行动额度，最多6点。教育现代化会加快积累。');
+ target('archive','research','.research-card h2',()=>`教育投入每季推进科研，每100%升一级。本局采用${ACTION_POINT_MODES[actionMode()]}，${actionResearchDescription()}教育现代化会加快积累。`);
  for(let id of ['gdp','per-capita','capital','human','seed','economic-model'])target('archive',id,`[data-guide="${id}"]`);
  target('archive','export','button[onclick="exportSave()"]');target('archive','import','button[onclick*="import\').click"]');
  if(s.ended){nav('settlement','settlement','游戏结束后，这里显示最终执政评估。');
- target('settlement','ideology','.ideology-cards .card','三张卡片展示最接近的统治倾向和契合度，依据实际决策与最终政策，不是随机抽取。');}target('archive','charts','.charts-grid article h3','这些图表与季度记录同步更新。点击图表标题或指标卡片，可以打开居中的大图。');
+ target('settlement','ideology','.ideology-cards .card','三张卡片展示最接近的统治倾向和契合度，依据实际决策与最终政策，不是随机抽取。');target('settlement','charts','.charts-grid article h3','这些图表记录整个任期的变化，点击可查看大图。');}target('archive','charts','.charts-grid article h3','这些图表与季度记录同步更新。点击图表标题或指标卡片，可以打开居中的大图。');
+ if(s.adminMode){nav('console','console','控制台允许直接编辑存档数据和触发局势，用于测试；本存档不会因失败条件或回合数而结束。');target('console','console-field','#console-field','选择要调整的国家、预算、人物、派系、地区、科研或局势参数。','选择参数');target('console','console-value','#console-value','输入目标值或增减幅度，再用下方按钮应用。修改立即保存；已有行动点投骰结果不会因修改科研而重投，新科研等级从下次发放起生效。','输入数值');target('console','console-actions','.console-buttons','设为此值会替换当前数值；增加或减少以当前数值为起点。','应用调整');target('console','console-situation','#console-situation','选择要测试的局势，再使用触发或结束按钮。','局势测试')}
  target('overview','new-world','button[onclick="newDialog()"]','这会重新生成世界并替换当前进度。希望保留这一局时，请先导出存档。');
  target('overview','guide','#guide-open','若对游戏概念不清楚，可查看“治国指南”的详细介绍。输入“稳定”“稳定度”或“政治稳定”，都会找到同一条目；也可搜索改革、职务和局势。','教程完成');
- return steps;
+ const introIds=['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment'];
+ if(scope==='intro')return [...steps.filter(step=>introIds.includes(step.id)),{page:'overview',id:'guide',selector:'#guide-open',text:'治国指南是概念搜索器。输入“稳定”“稳定度”或“政治稳定”可找到同一条解释；不清楚游戏概念时，可在这里查看详细介绍。',title:'随时查阅规则'},{page:'overview',id:'page-tutorial',selector:'#page-tutorial',text:'先点击左栏需要了解的板块，再点击右上方“本页教程”，只学习该页的概念和功能。例如进入“民意与选举”后开启，就不会讲解议会。本段介绍结束后会返回您原来的页面。',title:'按需学习各板块'}];
+ return [...steps.filter(step=>step.page===page&&!introIds.includes(step.id)&&step.id!=='guide'),{page,id:'guide',selector:'#guide-open',text:'本页教程到此结束。若仍有不清楚的概念，可在“治国指南”中搜索详细解释。',title:'本页教程完成'}];
 }
 function decorateGuide104(){if(!document.querySelectorAll)return;
  let concepts=[['approval',/^(公众支持|全国支持率)$/],['stability',/^(政治稳定|国家稳定)$/],['judicial',/^司法独立$/],['growth',/^(实际年化增长|GDP 增长)$/],['unemployment',/^失业率$/],['inflation',/^(通胀|通货膨胀)$/],['debt',/^债务\s*\/\s*GDP$/],['faction-relation',/^团体关系/],['skill',/^能力\s*\d/],['loyalty',/^忠诚\s*\d/],['achievements',/^累计政绩/],['tenure',/^任职\s*\d/],['reports',/^季度施政报告$/],['promise',/^协商承诺追踪$/],['coalition',/^组阁资格$/],['judicial-pressure',/^司法干预历史$/],['forecast',/^(当前加权选票预测|预测票率)$/],['population',/^(人口|人口权重|地区人口)/],['base',/^(地理|主要产业|产业|宗教|社会基本盘|基本盘)/],['development',/^(发展|当前发展)/],['local-demands',/^(本轮诉求|地方诉求|地区诉求|诉求|本轮地方诉求|本届诉求)/],['revenue',/^预计财政收入$/],['spending',/^公共支出/],['interest',/^利息支出/],['balance',/^预计(盈余|赤字)$/],['per-capita',/^当前人均名义 GDP$/],['seed',/^世界种子$/],['economic-model',/^经济类型$/]];
@@ -235,9 +242,10 @@ const renderBeforeGuide104=render;render=function(){renderBeforeGuide104();decor
 function tourFind104(selector){try{return document.querySelector(selector)}catch{return null}}
 function tourBlock104(event){if(!tutorial104)return;if(event.target.closest?.('#tutorial-controls,#tutorial-skip'))return;event.preventDefault();event.stopImmediatePropagation()}
 function tourKey104(event){if(!tutorial104)return;if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();stopTutorial()}else if(event.key==='ArrowRight'){event.preventDefault();tutorialMove(1)}else if(event.key==='ArrowLeft'){event.preventDefault();tutorialMove(-1)}else if(event.key==='Tab'){let nodes=[...document.querySelectorAll('#tutorial-controls button:not(:disabled),#tutorial-skip')],i=nodes.indexOf(document.activeElement);event.preventDefault();nodes[(i+(event.shiftKey?-1:1)+nodes.length)%nodes.length]?.focus()}}
-function startTutorial(){
+function startPageTutorial(){startTutorial('page')}
+function startTutorial(scope='intro'){
  if(tutorial104)return;
- let dialog=$('modal');tutorial104={index:0,steps:tutorialSteps104(),initialTab:tab,initialSlot:cabinetSlot,scrollX:window.scrollX,scrollY:window.scrollY,asideScroll:document.querySelector('aside')?.scrollTop||0,dialogOpen:dialog.open,dialogHTML:dialog.innerHTML,focus:document.activeElement,opened:[]};if(dialog.open)dialog.close();
+ let dialog=$('modal');tutorial104={index:0,scope,steps:tutorialSteps104(scope,tab),initialTab:tab,initialSlot:cabinetSlot,scrollX:window.scrollX,scrollY:window.scrollY,asideScroll:document.querySelector('aside')?.scrollTop||0,dialogOpen:dialog.open,dialogHTML:dialog.innerHTML,focus:document.activeElement,opened:[]};if(dialog.open)dialog.close();
  let layer=document.createElement('div');layer.id='tutorial-layer';layer.innerHTML='<div class="tutorial-shade" id="tour-top"></div><div class="tutorial-shade" id="tour-left"></div><div class="tutorial-shade" id="tour-right"></div><div class="tutorial-shade" id="tour-bottom"></div><div id="tutorial-focus" aria-hidden="true"></div><section id="tutorial-controls" role="dialog" aria-modal="true" aria-label="新手教程"></section><button id="tutorial-skip" onclick="stopTutorial()">跳过教程</button>';document.body.appendChild(layer);document.body.classList.add('tutorial-active');
  document.addEventListener('click',tourBlock104,true);document.addEventListener('change',tourBlock104,true);document.addEventListener('keydown',tourKey104,true);window.addEventListener('resize',positionTutorial104);window.addEventListener('scroll',positionTutorial104,true);showTutorialStep104(1);
 }
@@ -248,7 +256,7 @@ function showTutorialStep104(direction=1){
   let step=t.steps[t.index];if(!step){stopTutorial();return}if(tab!==step.page){tab=step.page;render()}
   let el=tourFind104(step.selector);if(el){let details=el.closest('details');if(details&&!details.open&&el.tagName!=='SUMMARY'){details.open=true;t.opened.push(details)}
    if(el.getClientRects().length){t.target=el;let entry=guideCatalog104().find(e=>e.id===step.id),brief=entry?.text.match(/[^。！？]+[。！？]?/g)?.slice(0,2).join(''),body=typeof step.text==='function'?step.text():step.text||brief||'查看此处的信息，了解国家当前状态。';
-    $('tutorial-controls').innerHTML=`<span class="tour-count">${t.index+1} / ${t.steps.length} · 可随时跳过</span><h2 id="tour-title">${esc(step.title||entry?.title||(step.id==='regime'?'国家政体':'玩家职务'))}</h2><p>${esc(body)}</p><div class="tour-buttons"><button onclick="tutorialMove(-1)" ${t.index===0?'disabled':''}>上一步</button><button class="primary" onclick="tutorialMove(1)">${t.index===t.steps.length-1?'完成教程':'下一步 →'}</button></div>`;
+    $('tutorial-controls').innerHTML=`<span class="tour-count">${t.scope==='page'?'本页教程':'入门教程'} · ${t.index+1} / ${t.steps.length} · 可随时跳过</span><h2 id="tour-title">${esc(step.title||entry?.title||(step.id==='regime'?'国家政体':'玩家职务'))}</h2><p>${esc(body)}</p><div class="tour-buttons"><button onclick="tutorialMove(-1)" ${t.index===0?'disabled':''}>上一步</button><button class="primary" onclick="tutorialMove(1)">${t.index===t.steps.length-1?'完成教程':'下一步 →'}</button></div>`;
     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});positionTutorial104();$('tutorial-controls').querySelector('.primary').focus({preventScroll:true});return;
    }
   }

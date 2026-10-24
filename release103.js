@@ -65,10 +65,10 @@ function politicalCapacity(){return 3+Math.min(3,rules103()?.research.level||0)}
 function researchQuarter103(){
  let r=rules103().research;if(r.lastQ===s.q)return;r.lastQ=s.q;
  let gain=s.policies.education*(2+(r.educationModernized?1:0));r.progress+=gain;
- let levels=Math.floor((r.progress+1e-9)/100);if(levels){r.level+=levels;r.progress=Math.max(0,r.progress-levels*100);log('科研水平提升',`科研等级 ${r.level}；每季度政治行动点总数 ${politicalCapacity()}。`)}
+ let levels=Math.floor((r.progress+1e-9)/100);if(levels){r.level+=levels;r.progress=Math.max(0,r.progress-levels*100);log('科研水平提升',`科研等级 ${r.level}；${actionResearchStatus()}`)}
 }
 const archiveBefore103=archive;
-archive=function(){let r=rules103().research,m=2+(r.educationModernized?1:0);return `<div class="card research-card"><span class="tag">科研与行政能力 / 1.0.3</span><h2>科研等级 ${r.level}</h2><div class="bar"><i style="width:${r.progress}%"></i></div><p>下一级进度 ${fmt(r.progress,2)}% / 100% · 每季增加 ${fmt(s.policies.education*m,2)} 个百分点。</p><p>教育与科研 ${fmt(s.policies.education)}% × ${m}；教育现代化${r.educationModernized?'已完成，永久加速 +1':'尚未完成'}。</p><div class="row"><span>每季度政治行动点总数</span><b>${politicalCapacity()} / 6</b></div><div class="row"><span>本季度剩余行动点</span><b>${pstate().ap}</b></div><p>每积累 100% 提升一级，保留溢出进度。每级增加 1 点季度行动额度，上限 6 点；达到上限后科研仍继续积累。升级前的季度不追溯计算。</p></div>`+archiveBefore103()};
+archive=function(){let r=rules103().research,m=2+(r.educationModernized?1:0);return `<div class="card research-card"><span class="tag">科研与行政能力 / 1.0.3</span><h2>科研等级 ${r.level}</h2><div class="bar"><i style="width:${r.progress}%"></i></div><p>下一级进度 ${fmt(r.progress,2)}% / 100% · 每季增加 ${fmt(s.policies.education*m,2)} 个百分点。</p><p>教育与科研 ${fmt(s.policies.education)}% × ${m}；教育现代化${r.educationModernized?'已完成，永久加速 +1':'尚未完成'}。</p><div class="row"><span>本季政治行动点总数</span><b>${politicalCapacity()}${actionMode()==='planned'?'':' / 6'}</b></div><div class="row"><span>本季度剩余行动点</span><b>${pstate().ap}</b></div><p>本局采用${ACTION_POINT_MODES[actionMode()]}。${actionModeDescription()}每积累100%科研提升一级，保留溢出进度；科研在新季度发放行动点前结算。升级前的季度不追溯计算。</p></div>`+archiveBefore103()};
 
 // Budget preference coefficients: +1 budget point lowers the full-support requirement by this value.
 function budgetRequirement(f){

@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','guide.js'];let storage={};
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','guide.js'];let storage={};
 function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of files)vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
@@ -38,7 +38,7 @@ for(let regimeInfo of REGIMES){fresh104(regimeInfo.id);let catalog=guideCatalog1
  for(let r of REFORMS)assert(guideMatches104(r.name,catalog).length,'all reforms');for(let t of TRAITS)assert(guideMatches104(t.name,catalog).length,'all traits');for(let p of Object.values(MINISTER_PROGRAMMES103)){assert(guideMatches104(p.name,catalog).length,'all programmes');for(let a of p.options)assert(guideMatches104(a[0],catalog).length,'all programme options')}
  for(let r of REGIMES)assert(guideMatches104(r.name,catalog).length,'all regimes');assert(!guideMatches104('不存在的词语XYZ',catalog).length,'unknown term');assert(!guideMatches104(pstate().candidates[0].name,catalog).length,'random names excluded');
  showHelp();searchGuide104('稳定');assert($('guide-results').innerHTML.includes('低于20'),'stability threshold explained');searchGuide104('不存在的词语XYZ');assert($('guide-results').innerHTML.includes('该概念不存在于此游戏，请检查输入是否正确'),'unknown message');
- assert(tutorialSteps104().some(x=>x.id==='guide')&&tutorialSteps104().some(x=>x.id==='regime'),'tour includes guide/regime');
+ assert(tutorialSteps104().some(x=>x.id==='guide')&&tutorialSteps104('page','overview').some(x=>x.id==='regime'),'tour includes guide/regime');
  assert(guideMatches104('最高领袖',catalog)[0].text.includes('没有任期'),'role-specific definition');
  assert(validSave(JSON.parse(JSON.stringify(s))),'new save valid');
 }
