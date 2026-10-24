@@ -1,5 +1,7 @@
 **国策 Wiki**
 
+展开上方 **Pages** 即可使用搜索栏。
+
 [🏠 主页](https://github.com/Henryvnnn/nation-state/wiki/Home)
 
 [🔎 搜索与术语索引](https://github.com/Henryvnnn/nation-state/wiki/%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%9C%AF%E8%AF%AD%E7%B4%A2%E5%BC%95)

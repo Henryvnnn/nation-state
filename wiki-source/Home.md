@@ -8,7 +8,7 @@
 
 ## 如何查找内容
 
-- **找页面：** 使用右侧 Pages 的 Find a page 搜索栏。
+- **找页面：** 点击右侧 **Pages** 展开 **Find a page or section** 搜索栏。
 - **找概念：** 打开[搜索与术语索引](https://github.com/Henryvnnn/nation-state/wiki/%E6%90%9C%E7%B4%A2%E4%B8%8E%E6%9C%AF%E8%AF%AD%E7%B4%A2%E5%BC%95)，例如“稳定”“稳定度”“政治稳定”会指向同一条目。
 - **查全文：** 使用上方全文搜索入口，在仓库限定条件后添加关键词；新页面未被索引时，可先用词条索引与 Ctrl+F。
 

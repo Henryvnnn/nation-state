@@ -2,6 +2,8 @@
 
 在线游戏：https://Henryvnnn.github.io/nation-state/
 
+[Wiki 主页与玩法手册](https://github.com/Henryvnnn/nation-state/wiki) · [搜索与术语索引](https://github.com/Henryvnnn/nation-state/wiki/搜索与术语索引)
+
 ## 1.0.1 更新
 
 - 修正党派身份：每党只有一位党团总召或首席代表；四位议事机关负责人独立保留。
