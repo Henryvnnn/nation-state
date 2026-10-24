@@ -1,4 +1,4 @@
-/* 1.0.7 additions: an opt-in, persistent sandbox for testing simulation values. */
+/* 1.0.6 additions: an opt-in, persistent sandbox for testing simulation values. */
 const newDialogBeforeConsole107=newDialog;
 newDialog=function(){newDialogBeforeConsole107();$('modal').innerHTML=$('modal').innerHTML.replace('<label for="seed">','<label class="difficulty-option"><input type="checkbox" id="admin-mode" style="width:auto"> 管理员模式（不建议）</label><p>开放控制台，取消所有失败结局和任期上限；此设置只作用于新存档，须开启新历史才能结束本局。</p><label for="seed">').replace("pendingDifficulty=$('hard-mode').checked;","pendingAdmin107=$('admin-mode').checked;pendingDifficulty=$('hard-mode').checked;")};
 let consoleField107='approval';

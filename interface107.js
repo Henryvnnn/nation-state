@@ -1,4 +1,4 @@
-/* 1.0.7 additions: live history charts and non-blocking government reminders. */
+/* 1.0.6 additions: live history charts and non-blocking government reminders. */
 const EXTRA_SERIES107=[['forecast','当前加权选票预测','%'],['eventsChosen','本季已回复事件','件'],['human','人力资本','/100'],['capitalStock','基础设施资本','/100'],['researchLevel','科研等级','级'],['researchProgress','科研进度','%'],['politicalCapacity','每季度政治行动点总数','点']];
 const snapshotBeforeCharts107=snapshot;
 snapshot=function(){return {...snapshotBeforeCharts107(),...(v3()?.regions?.length?{forecast:electionForecast().total,eventsChosen:v3().eventsChosen}:{}),human:s.human,capitalStock:s.capitalStock,...(rules103()?{researchLevel:rules103().research.level,researchProgress:rules103().research.progress,politicalCapacity:politicalCapacity()}:{} )}};

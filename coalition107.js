@@ -1,4 +1,4 @@
-/* 1.0.7 additions: parliamentary allies and three-quarter government crises. */
+/* 1.0.6 additions: parliamentary allies and three-quarter government crises. */
 let pendingAdmin107=false;
 function features107(){return s.features107}
 function automaticCoalition107(){return ['constitutional','westminster'].includes(regime().id)}
