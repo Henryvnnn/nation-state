@@ -141,7 +141,7 @@ function constitutionalDocketHTML(){
 }
 function meetJudge(id){
  let j=constitution().judges.find(x=>x.id===id);if(!j||s.ended)return;
- let d=constitution().docket,w=judgeWillingness(j),busy=pstate().lastAction['judge:'+id]===s.q;
+ let d=constitution().docket?.route==='court'?constitution().docket:null,w=judgeWillingness(j,d),busy=pstate().lastAction['judge:'+id]===s.q;
  modal(`<span class="tag">${esc(constitutionBaseRegime().court)} · ${judgeTitle(j)}</span><h2>${esc(j.name)}</h2><p><b style="color:${JUDICIAL_VIEWS[j.trait].color}">${JUDICIAL_VIEWS[j.trait].name}</b> · 关系 ${fmt(j.relation,0)}</p><p>${JUDICIAL_VIEWS[j.trait].text}</p>${d?`<p>对“${esc(d.title)}”的意愿：<b>${fmt(w,1)} / 100</b>。${w>=60?'预计赞成':'预计反对'}；60 点起投赞成票。游说加成仅用于这份议案，持续至第 ${s.q+3} 季度（当前已有加成各按原到期日计算）。</p>`:'<p>尚无宪制议案。可以先公开会谈，改善关系。</p>'}${j.chief&&constitutionalRoute()==='court'?'<div class="constitution-actions"><button onclick="constitutionalMenu(\'interpret\')">请求释宪</button><button onclick="constitutionalMenu(\'amend\')">提出修宪</button></div>':''}<div class="choices">${[
   ['hearing','公开法律论证',d?'1 行动点；本案意愿 +12，关系 +3，司法独立 +1。':'1 行动点；关系 +6，司法独立 +1。'],
   ['bribe','秘密贿赂','1 行动点、0.18% GDP；本案意愿 +26。下一季度有 3% 概率引发政治丑闻。'],
@@ -150,7 +150,7 @@ function meetJudge(id){
  ].map(([key,title,detail])=>`<button onclick="influenceJudge(${id},'${key}')" ${busy||(!d&&key!=='hearing')?'disabled':''}>${title}<small>${detail}</small></button>`).join('')}</div><p>每位法官每季度可互动一次；公开论证没有丑闻风险。所有决定记入任期评估。</p><button onclick="$('modal').close()">返回</button>`);
 }
 function influenceJudge(id,method){
- let c=constitution(),j=c.judges.find(x=>x.id===id),d=c.docket;
+ let c=constitution(),j=c.judges.find(x=>x.id===id),d=c.docket?.route==='court'?c.docket:null;
  if(!j||!['hearing','bribe','exchange','pressure'].includes(method)||(!d&&method!=='hearing')||!spendAction('judge:'+id))return;
  let amount={hearing:12,bribe:26,exchange:20,pressure:24}[method];
  if(d)j.boosts.push({docketId:d.id,amount,until:s.q+3});
