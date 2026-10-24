@@ -2,8 +2,6 @@
 
 在线游戏：https://Henryvnnn.github.io/nation-state/
 
-纯静态网页，使用 GitHub Pages 从 main 分支根目录发布。无需构建或后端。
-
 ## 1.0.1 更新
 
 - 修正党派身份：每党只有一位党团总召或首席代表；四位议事机关负责人独立保留。
