@@ -18,7 +18,7 @@ const REGIME_ART={
  tyranny:{motto:'秩序系于忠诚与威望',focus:'个人权威 · 安全系统',alt:'僭主制示意图片'},
  theoabsolute:{motto:'教法与政令来自同一权威',focus:'宗教等级 · 宰相行政',alt:'神权专制示意图片'}
 };
-function regimeImage(id){return `assets/regimes/${id}.png?v=1.0.6-r8`}
+function regimeImage(id){return `assets/regimes/${id}.png?v=1.0.7-r1`}
 function regimePreview(id){
  let r=REGIMES.find(r=>r.id===id);if(!r)return '<div class="regime-random-art" aria-hidden="true">✦</div><div><span class="tag">尚未揭晓的历史</span><h3>让世界决定你的起点</h3><p>从十二种政体中抽取一个。国家名称、社会条件与政治人物随后生成。</p><small>选择下方卡片，可预览各制度的执政身份与主要挑战。</small></div>';
  let art=REGIME_ART[id];return `<img src="${regimeImage(id)}" alt="${art.alt}" width="600" height="400"><div><span class="tag">${art.motto}</span><h3>${r.name}</h3><p>${r.note}</p><div class="regime-preview-facts"><span>你的身份：<b>${r.player}</b></span><span>议事机关：<b>${r.body}</b></span><span>行政机构：<b>${EXECUTIVE_NAMES[id]}</b></span></div></div>`;

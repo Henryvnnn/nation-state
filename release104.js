@@ -3,7 +3,7 @@ const SURNAMES104=[...new Set('赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨�
 const GIVEN_FIRST104=[...new Set('承启书怀明景思文修绍正允彦致庭弘立宏元嘉令维尚时秉怀仲伯季崇若闻长守昭穆敬致兴云清安乐永庆熙瑞靖远世宗德泰诚光奕和仁峻志宇泽言哲俊锦卓培荣新博星华君逸凌钧谦至青朗厚知成亦东舒勤信建振朝廷天少仲兆林宁其汉盛学道鸿腾孟礼方玉之见恺成奎嘉翰复敬蔚允善政群')];
 const GIVEN_LAST104=[...new Set('衡川宁远泽岳章文泉松柏桐楷棠竹林岚澄源清渊涛河洲汀江海湖舟帆峰岭山岩峦庭堂轩亭桥原野牧禾稷硕稻秋春夏冬晨昕晖曜旭曦明晟辉昭辰星月朗晏和谦正直诚信义仁礼智睿哲思知行达济民安泰平康健宁福祥瑞祺禧佑惠嘉良善卓英杰俊才彦贤儒博学书墨砚翰章锦绣琛瑾瑜珩璋琅琦琮璞玉振铎钧铭铮锋锐坚毅恒定朴实谨敬勤勉修齐治兴隆盛荣昌熙雍豫宽裕慕望靖允畅述澜逸颖宁启')];
 function leastUsed104(pool,used){let counts=new Map(pool.map(x=>[x,0]));for(let x of used)if(counts.has(x))counts.set(x,counts.get(x)+1);let min=Math.min(...counts.values());return pick(pool.filter(x=>counts.get(x)===min))}
-personName=function(){let people=[...(s.political?.members||[]),...(s.political?.candidates||[])],names=people.map(p=>p.name).filter(Boolean);let surname=leastUsed104(SURNAMES104,names.map(n=>n[0])),first=leastUsed104(GIVEN_FIRST104,names.map(n=>n[1])),last=leastUsed104(GIVEN_LAST104.filter(x=>x!==first),names.map(n=>n[2]));let name=surname+first+last;
+personName=function(){let people=[...(s.political?.members||[]),...(s.political?.candidates||[]),...(s.constitution?.judges||[])],names=people.map(p=>p.name).filter(Boolean);let surname=leastUsed104(SURNAMES104,names.map(n=>n[0])),first=leastUsed104(GIVEN_FIRST104,names.map(n=>n[1])),last=leastUsed104(GIVEN_LAST104.filter(x=>x!==first),names.map(n=>n[2]));let name=surname+first+last;
  // A bounded fallback is only needed after an unusually large imported roster.
  if(names.includes(name)){for(let x of SURNAMES104)for(let a of GIVEN_FIRST104)for(let b of GIVEN_LAST104)if(a!==b&&!names.includes(x+a+b))return x+a+b;throw Error('姓名池已耗尽')}return name};
 function migrate104(){

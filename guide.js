@@ -57,7 +57,7 @@ function guideCatalog104(){
  add('full-support','全票支持门槛',['预算门槛','支持门槛'],'基准60。相对现行预算，税率变化会提高或降低门槛，公共支出按各派系偏好另行修正，执政党也适用。议程倾向达到该门槛时，该派系全体议席支持。','立法与政治');
  add('effective-agenda','折算倾向',[],'折算倾向＝议程倾向−（本案全票支持门槛−60）。50对应0%支持、51对应10%、60对应100%，中间按比例计算。','立法与政治');
  add('faction-support','党团支持比例',['支持比例','支持席位权重'],'该派系支持议案的议席比例，范围0%至100%。将各派系的支持比例按席位加权，即得到院内支持率。','立法与政治');
- add('pass-rate','院内支持率',['通过率','议案通过率','议会通过率','表决支持率','通过门槛','政府议程支持','当前基础院内支持率','所需院内支持率'],'按各党席位加权的总体支持百分比。一般政体达到51%即通过，联邦委员会制需60%；达到门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
+ add('pass-rate','院内支持率',['通过率','议案通过率','议会通过率','表决支持率','通过门槛','政府议程支持','当前基础院内支持率','所需院内支持率'],'按各党席位加权的总体支持百分比。一般预算／改革达到51%即通过，联邦委员会制需60%；宪制议案统一须严格超过50%。达到相应门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
  add('opposition-cost','反对压力',['额外稳定损失','稳定损失'],'各派系折算倾向低于50的每一点，在议案通过后扣除0.1稳定度，多个派系累加。原有通过收益另计；表决失败不额外扣这部分损失。','立法与政治');
  add('negotiate','协商',['派系协商'],'打开该党派或派系的谈判选项，以资源、监督或承诺争取支持。执行选项通常消耗1点行动点；查看窗口不消耗。临时支持有期限，承诺会接受核查。','页面与操作');
  add('faction-details','查看细则',['细则','查看表决计算规则'],'展开或收起门槛、折算倾向、席位权重及公共预算偏好。不消耗行动点，也不改变政策。','页面与操作');
@@ -155,6 +155,7 @@ function guideCatalog104(){
  add('government','政府危机',['联合政府危机','政府不信任案'],'任一政治盟友关系低于50时出现，持续期间每季支持率−1、政治稳定−3。必须在三季度内把失信盟友关系恢复到60以上，或按关系达到70的邀请规则争取新党派，组成至少50%席位的新联盟。本局势无独立选项，只能在议事机关协商；另组新联盟会让原盟友所属阁员全部辞职，并逐人承担强制辞职后果。君主立宪与西敏政体逾期直接倒阁；其他支持联合政府的政体逾期解散联盟、盟友阁员离任，不直接结束游戏。','局势与处置');
  add('alerts','执政提醒',['红点','提示','风险提示','提醒'],'问题出现时首次弹出提醒，红点持续到问题解决。点击“知道了”会将提醒收至页面边缘，可点击侧边按钮重新展开，也可上下拖动按钮调整位置。收起提醒不会清除红点；提醒不会加入待决事件，不阻碍季度推进。包括空缺、忠诚低于35、未解决局势、选票或支持低于50%、稳定低于35、失业超过8%、通胀超过45%、债务率超过90%、司法独立低于30，以及下季度将刷新未查看改革草案。','页面与操作');
  add('console','控制台',['管理员模式','管理员模式（不建议）'],'仅在创建新世界时选择管理员模式后开放，按钮位于左侧导航最下方。可直接调整经济、政治、预算、地区、人物、科研与局势数据，生成事件或测试内阁空缺；保留正常模拟，但取消所有失败结局和回合上限。只有开启新历史才能替换本局。此模式与存档一起保存，普通存档不会自动开启。','页面与操作');
+ if(typeof constitutionGuideEntries==='function')entries.push(...constitutionGuideEntries());
  return entries;
 }
 let guideEntries104=[];
@@ -174,7 +175,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  const target=(page,id,selector,text,title)=>add(page,id,selector,text,title);
  add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
  add('overview','tour-roadmap','#tutorial-start','这段入门介绍只说明执政目标与教程的使用方法。各板块的具体规则可随时通过“本页教程”查看；按空格进入下一步，右下角可跳过。','开始之前');
- add('overview','tour-duration','#date',()=>s.adminMode?'本存档已启用管理员模式，季度没有上限，所有失败与结算均不会终止本局；开启新历史才会替换此存档。':regime().democratic?'本游戏的标准总回合数为48个季度（回合），即两届任期，共8年。':'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
+ add('overview','tour-duration','#date',()=>s.adminMode?'本存档已启用管理员模式，季度没有上限，所有失败与结算均不会终止本局；开启新历史才会替换此存档。':regime().democratic?`本游戏的标准总回合数为48个季度（回合），即两届任期，共8年；当前宪法规定：${typeof constitutionalTermText==='function'?constitutionalTermText():'两届，共48季度'}。`:'本游戏的标准总回合数为48个季度（回合）。由于政体特殊，您可以在之后的事件中手动延长总回合数。','任期与回合');
  add('overview','tour-mission','[data-guide="country"]','在此期间，您需要在维持统治的前提下，推进自己的理想议程。支持、稳定、财政与制度选择都会影响您的执政道路。','您的目标');
  add('overview','tour-assessment',`#nav button[onclick="changeTab('archive')"]`,'您的议程与治理结果将在游戏结束后汇成一份9维任期评估报告，分析统治倾向。任期进行中可在国家档案查看指标走势。','留下怎样的任期');
  nav('overview','overview','这里是执政总览，先从国家身份与核心指标开始。');
@@ -189,7 +190,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('assembly','ap','.political-banner .action-count',actionTutorialText);
  target('assembly','groups','.seat-strip',legislativeGroups104);
  for(let id of ['seats','faction-relation','agenda','faction-profile','faction-support','negotiate','faction-details','full-support','effective-agenda'])target('assembly',id,`[data-guide="${id}"]`);
- target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是院内支持率。它是按席位加权的支持比例，达到${threshold()}%即可通过；先从预算或改革页送交议案。`);
+ target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是院内支持率，按席位加权。${pstate().bill?.kind==='constitution'?'宪制议案必须严格超过50%':'普通议案达到'+threshold()+'%即可通过'}；先提出预算、改革或宪制议案。`);
  target('assembly','vote','button[onclick="voteBill()"]');target('assembly','withdraw','button[onclick="withdrawBill()"]');
  target('assembly','meet','button[onclick^="meetMember("]','点击这里会见主要成员并回应诉求，每人每季一次。党团总召也负责符合条件时的联合政府邀请。');
  target('assembly','promise','[data-guide="promise"]');
@@ -205,6 +206,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('cabinet','appoint','button[onclick^="appointPreview("]');target('cabinet','reports','[data-guide="reports"]');
  nav('judiciary','judiciary','这里与最高司法机关互动，观察司法独立和行政干预的影响。');
  target('judiciary','judicial','.political-banner .action-count');target('judiciary','judicial-pressure','[data-guide="judicial-pressure"]');target('judiciary','court-actions','.choices','此区域提供司法互动。具体代价和收益会写在各按钮里，可按国家状况选择。');
+ target('judiciary','judges','#constitutional-court');target('judiciary','constitutional-docket','#constitutional-docket');target('judiciary','judge-interaction','button[onclick^="meetJudge("]');
  nav('politics','elections','这里查看全国民意、地方诉求、选举预测与历次结果。');
  target('politics','approval','[data-guide="approval"]');
  target('politics','forecast','[data-guide="forecast"]');target('politics','capital-region','.region-grid article:last-child .tag');target('politics','regions','.region-grid article .tag','各地区有不同产业和社会基础，名称中的省、州、领等称谓随政体变化。');
@@ -218,6 +220,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  nav('situations','situations','局势会跨季度持续。先看结束条件与每季损耗，再决定如何分配行动点和资金。');
  for(let kind of sits().active.map(x=>x.kind)){let id=({justice:'justice-situation',economy:'economy-situation'})[kind]||kind;target('situations',id,`[data-situation-kind="${kind}"] h2`)}
  target('situations','cooldown','.situation-grid .choices','这里的处置会消耗行动点，部分有冷却或限次要求。按钮会直接列出费用、效果和限制。');
+ target('archive','constitution','#constitution-articles');
  nav('archive','archive','国家档案保存科研、国家结构与执政记录，也提供存档备份。');
  target('archive','research','.research-card h2',()=>`教育投入每季推进科研，每100%升一级。本局采用${ACTION_POINT_MODES[actionMode()]}，${actionResearchDescription()}教育现代化会加快积累。`);
  for(let id of ['gdp','per-capita','capital','human','seed','economic-model'])target('archive',id,`[data-guide="${id}"]`);

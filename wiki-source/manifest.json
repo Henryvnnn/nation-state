@@ -1,6 +1,6 @@
 {
-  "version": "1.0.6",
-  "entryCount": 360,
+  "version": "1.0.7",
+  "entryCount": 373,
   "pages": [
     {
       "title": "创建世界与政体",
@@ -15,7 +15,7 @@
     {
       "title": "快速入门",
       "file": "快速入门.md",
-      "characters": 1177
+      "characters": 1185
     },
     {
       "title": "行动点与科研",
@@ -35,7 +35,7 @@
     {
       "title": "议事机关与联合政府",
       "file": "议事机关与联合政府.md",
-      "characters": 3509
+      "characters": 3529
     },
     {
       "title": "内阁与人事",
@@ -50,7 +50,7 @@
     {
       "title": "司法与政治稳定",
       "file": "司法与政治稳定.md",
-      "characters": 687
+      "characters": 2523
     },
     {
       "title": "民意与选举",
@@ -85,12 +85,12 @@
     {
       "title": "搜索与术语索引",
       "file": "搜索与术语索引.md",
-      "characters": 55423
+      "characters": 57566
     },
     {
       "title": "更新日志",
       "file": "更新日志.md",
-      "characters": 8382
+      "characters": 9594
     },
     {
       "title": "Home",
