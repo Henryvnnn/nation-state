@@ -60,7 +60,12 @@ function migrate107(){
  if(p.bill?.kind==='reform'&&REFORMS[p.bill.id]?.key==='inheritance')p.bill.description=(p.bill.description||REFORMS[p.bill.id].text).replace(/一次性清偿全部公债|全部公债清偿/g,'清偿完成时 50% 的公债');
  s.release107={version:1};log('1.0.6 更新','首都纳入地区选情，劳动部长加入内阁；遗产税改为清偿完成时一半公债。旧有党籍、人物属性与已完成成果保留。');
 }
-function normalizeReleaseLog107(){for(let entry of s.logs)if(entry.title==='1.0.7 更新')entry.title='1.0.6 更新'}
+function normalizeReleaseLog107(){
+ for(let entry of s.logs)if(entry.title==='1.0.7 更新')entry.title='1.0.6 更新';
+ // Update legacy display text without changing identities, event outcomes or save structure.
+ function visit(value){if(!value||typeof value!=='object')return;for(let key of Object.keys(value)){if(typeof value[key]==='string'&&['title','text','description','label','summary'].includes(key))value[key]=value[key].replace(/全国人民代表大会|全国人大|人大代表/g,name=>name==='人大代表'?'最高人民会议代表':'最高人民会议');else if(value[key]&&typeof value[key]==='object')visit(value[key])}}
+ let p=pstate();for(let value of [s.logs,p.current,p.queue,p.reports,p.promises,p.bill,p.passed,v3().decisions])visit(value);
+}
 const initBefore107=initPolitics;initPolitics=function(id=selectedRegime){initBefore107(id);migrate107();normalizeReleaseLog107()};
 function chamberSeatData107(){
  let factions=pstate().factions,total=Math.round(factions.reduce((sum,f)=>sum+f.seats,0)),counts=allocateUnits107(factions.map(f=>f.seats),Math.min(500,total));

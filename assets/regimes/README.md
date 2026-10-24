@@ -1,53 +1,18 @@
-# 政体场景插图
+# 政体选择图片
 
-使用内置 image_gen 工具生成；未使用 CLI。所有场景均为虚构制度的表现性插图，不作为真实国家建筑或人物的再现。仅进行网站所需的等比例缩小与 WebP 编码，未改绘生成内容。
+使用玩家于 2026-10-24 提供并指定对应关系的十二张图片。保留原始 PNG 文件内容、原色和完整画面；不使用此前生成的插图。页面仅等比例缩放显示。
 
-## 文件与生成提示词
-
-### westminster.webp
-
-Use case: historical-scene. Asset type: an immersive regime-selection card illustration for a fictional political strategy game. Generate one landscape illustration, about 3:2 aspect ratio. Subject: Westminster parliamentary chamber, view along a central aisle toward the Speaker's chair, facing benches densely occupied by debating legislators in civilian suits, dispatch boxes and papers on the central table, dark carved timber galleries, a round clock high on the far wall. Style: detailed monochrome graphite and copperplate engraving, cross-hatched shading, archival book illustration on subtly warm gray paper, calm realistic architecture, coherent human silhouettes. Composition must read clearly as opposing parliamentary benches at thumbnail size, generous perspective, no dominant close-up face. Entire scene fictional: no recognizable real politicians, no real national flags, no labels, no letters, no text, no watermark. The image itself is just the artwork, not a mockup or card UI.
-
-### constitutional.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A constitutional monarchy opening parliament: legislators on semicircular benches, a ceremonial crown resting on a cushion on a side table, a civilian prime minister addressing the chamber, royal balcony in the background. Emphasize parliamentary government alongside a ceremonial monarchy. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### presidential.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional president's spacious executive office: one civilian elected president at a large desk, two advisers standing with documents, distant domed legislature seen through tall windows. Emphasize a separate executive and legislature. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### semi.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A semi-presidential republic's cabinet conference: a civilian president and prime minister seated at two equally prominent chairs at the head of a long cabinet table, ministers on both sides, tall windows overlooking a civic square. Show shared executive responsibilities without labels. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### federal.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A federal council with seven equally prominent civilian councillors seated around a circular table, seven distinct plain civic shields on the far wall, alpine town and mountains through windows, no single elevated leader. Show regional cooperation and collective leadership. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### theorepublic.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional religious republic's political chamber: seated elected civilian representatives in curved rows in the foreground and a modest raised reviewing bench of robed religious jurists at the back, civic and sacred architecture combined. No real religion's emblem or sacred text. Show elected institutions coexisting with religious authority. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### symbolic.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A formally parliamentary but centralized republic: ranks of legislators in a monumental assembly hall oriented toward one powerful civilian president at an oversized elevated podium, identical plain banners, orderly synchronized attention. Show a dominant executive amid ceremonial democratic institutions. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### party.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional one-party-dominant socialist state's national people's congress: a modern monumental auditorium filled with rows of civilian delegates and regional worker representatives, a broad presidium with several equal desks, a simple geometric star relief on the wall, no actual national or party emblems and no text. Show institutional party leadership and organized representation. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### absolute.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional absolute monarchy's privy council in an imposing royal chamber: crowned monarch on an elevated throne, chancellor presenting a scroll below, noble advisers gathered at a long lower council table, draped stone arches. Emphasize the monarch's commanding position. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### aristocratic.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: An aristocratic council in a Renaissance stone hall: several equally wealthy noble families represented by dignitaries in embroidered coats around a polygonal council table, hereditary family shields with abstract geometric designs, one duke acting as chair but no throne. Show negotiation among hereditary elites. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### tyranny.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional supreme ruler's executive council: one commanding leader in a plain military-style coat at the head of a map table, officers and civilian advisers below, austere fortified chamber, city silhouette outside. No weapons in use, no real uniforms or extremist insignia. Show personalized rule supported by a security apparatus. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
-
-### theoabsolute.webp
-
-Use case: historical-scene. Asset type: immersive regime-selection card illustration for a fictional political strategy game. Generate ONE landscape illustration, 3:2 aspect ratio. Scene: A fictional theocratic absolute ruler in a vast sacred council hall: an elevated high cleric in elaborate neutral robes, senior clergy and a chancellor seated below in a formal hierarchy, monumental arches and manuscript stands, abstract geometric ornament but no actual religious symbols or readable text. Show centralized religious and political authority. Style: detailed monochrome graphite and copperplate engraving, fine cross-hatched shading, archival book illustration on subtly warm gray paper, realistic architectural perspective and coherent human silhouettes, matched visual family to nineteenth-century parliamentary engravings. Strong composition that makes this political institution understandable at thumbnail size. No dominant close-up face. No recognizable real politicians, no actual national flags, no labels, no letters, no watermark. Artwork only, no card UI, no collage.
+| 顺序 | 政体 | 游戏资源 | 上传文件 |
+| --- | --- | --- | --- |
+| 1 | 君主立宪制 | `constitutional.png` | `image(20261024-183354).png` |
+| 2 | 西敏议会制 | `westminster.png` | `image(20261024-183513).png` |
+| 3 | 象征性民主制 | `symbolic.png` | `image(20261024-183803).png` |
+| 4 | 民主共和制·总统制 | `presidential.png` | `image(20261024-184033).png` |
+| 5 | 半总统制 | `semi.png` | `image(20261024-184307).png` |
+| 6 | 联邦委员会制 | `federal.png` | `image(20261024-184528).png` |
+| 7 | 神权共和制 | `theorepublic.png` | `image(20261024-184806).png` |
+| 8 | 一党独大制 | `party.png` | `image(20261024-185207).png` |
+| 9 | 君主专制 | `absolute.png` | `image(20261024-185456).png` |
+| 10 | 贵族制 | `aristocratic.png` | `image(20261024-185633).png` |
+| 11 | 僭主制 | `tyranny.png` | `image(20261024-185911).png` |
+| 12 | 神权专制 | `theoabsolute.png` | `image(20261024-190133).png` |
