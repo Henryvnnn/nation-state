@@ -158,6 +158,6 @@ node tests/release104.test.cjs
 - 枢密院政体可强行颁行：释宪额外支持−8、稳定−8；修宪额外支持−12、稳定−10，并承担议案本身效果。公开论证、政治交易、施压和宪制选择均纳入九维任期评估。
 - 国家档案新增重要宪法条目及宪制沿革，治国指南和本页教程同步补充。旧档自动补充法官与宪法，不改变原有人物、待决预算、行动点、历史及随机数进度；迁移前备份为 `nation-state-v1-pre-constitution107`。
 
-实现入口：`constitution.js`。预算上限和改革实际收费分别通过 `budgetCap`、`reformStartCost` 读取本局规则。当前显示版本 **1.0.7**，缓存版本 **1.0.7-r1**。
+实现入口：`constitution.js`。预算上限和改革实际收费分别通过 `budgetCap`、`reformStartCost` 读取本局规则。当前显示版本 **1.0.7**，缓存版本 **1.0.7-r2**。
 
 验证：`node tests/constitution.test.cjs` 覆盖十二政体、96个种子世界、严格过半表决、费用与预算实际生效、次季度风险、可选任期、存档校验及真实1.0.6旧档迁移。浏览器交互检查见 `tests/constitution.browser.cjs`。

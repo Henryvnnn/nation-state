@@ -199,6 +199,8 @@ function voteConstitution(force=false){
 }
 
 const judiciaryBeforeConstitution=judiciary;
+const overviewBeforeConstitution=overview;
+overview=function(){return overviewBeforeConstitution().replace('两届任期共 48 季度',constitutionalTermText())};
 judiciary=function(){
  let c=constitution(),legacy=judiciaryBeforeConstitution(),split=legacy.indexOf('<div class="split"'),route=constitutionalRoute();
  let roster=`<div class="grid constitutional-grid"><section id="constitutional-court" class="card"><span class="tag">${esc(constitutionBaseRegime().court)} · ${c.judges.length} 席</span><h2>法官席位与倾向</h2>${judgeSeatChart()}<p>每人一票，★ 为${JUDGE_TITLES[pstate().regime][1]}，已计入总席位。社会进步与政治自由两类合计少于半数。</p>${route==='assembly'?`<p class="note">宪制事项由${esc(regime().body)}表决，此处法官不参与宪制表决。</p>`:''}</section>${constitutionalDocketHTML()}</div><div class="section-label"><h3>法官名录</h3><span>逐人互动 · 每人每季一次</span></div><div class="member-grid judge-roster">${c.judges.map(j=>`<article class="card person"><span class="tag">${judgeTitle(j)}</span><h3>${esc(j.name)}</h3><p style="color:${JUDICIAL_VIEWS[j.trait].color}">${JUDICIAL_VIEWS[j.trait].name}</p><p>${JUDICIAL_VIEWS[j.trait].text}</p><div class="row"><span>关系</span><b>${fmt(j.relation,0)}</b></div>${c.docket&&c.docket.route==='court'?`<div class="row"><span>本案意愿</span><b>${fmt(judgeWillingness(j),1)} · ${judgeWillingness(j)>=60?'赞成':'反对'}</b></div>`:''}<button onclick="meetJudge(${j.id})" ${s.ended?'disabled':''}>${j.chief&&route==='court'?'会见 / 修宪与释宪':'会见法官'}</button></article>`).join('')}</div>`;
