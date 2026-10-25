@@ -1,8 +1,7 @@
 /* Regime-specific presentation, illustrated world setup and a movable reminder dock. */
 const EXECUTIVE_NAMES={constitutional:'内阁府',presidential:'总统行政办公室',semi:'总统府',westminster:'首相府',federal:'联邦委员会',theorepublic:'最高领袖办公室',symbolic:'总统府',party:'政务院',absolute:'御前政务院',aristocratic:'公爵政务厅',tyranny:'执政官署',theoabsolute:'教廷国务署'};
 function executiveName(){return EXECUTIVE_NAMES[regime().id]||'政府'}
-function isVersionBulletin(entry){return entry.kind==='release'||/^(?:v?\d+(?:\.\d+){1,3}\s*(?:更新|修复|规则已启用|版本生效)|治理系统更新|版本更新)$/.test(entry.title)}
-function governmentBriefings(limit=4){return s.logs.filter(entry=>!isVersionBulletin(entry)).slice(0,limit)}
+function governmentBriefings(limit=4){return governingChronicle().slice(0,limit)}
 
 const REGIME_ART={
  constitutional:{motto:'王冠之下，议会执政',focus:'议会信任 · 自动联合政府',alt:'君主立宪制示意图片'},
