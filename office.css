@@ -1,0 +1,161 @@
+/* 国策 1.0.7 · Office presentation. Simulation styles remain as the functional base. */
+:root{--office-toolbar-height:64px}
+body.office-mode{--bg:#ded3b5;--paper:#efe6cf;--ink:#343e34;--muted:#73715e;--green:#526b51;--line:#baad8d;--orange:#9c6d4e;margin:0;background:#26362e;color:var(--ink);font-family:'Noto Sans SC','Microsoft YaHei',system-ui,sans-serif}
+.office-mode [hidden]{display:none!important}
+.office-mode button,.office-mode a{touch-action:manipulation}
+.office-mode button:focus-visible,.office-mode a:focus-visible{outline:3px solid #ba8c40;outline-offset:3px}
+.office-mode button{border-radius:2px;border:1px solid #8e8969;box-shadow:2px 2px #b2a583;background:#e5dcc0;color:#40503e;min-height:38px}
+.office-mode button:hover{background:#d7ddc0;border-color:#6c7959}
+.office-mode button.primary{background:#4f6850;color:#f2e7c9;border-color:#344b3a;box-shadow:2px 2px #314638}
+.office-mode button.primary:hover{background:#637c5b}
+.office-mode button:disabled{opacity:.5;box-shadow:none}
+.office-mode .quiet{box-shadow:none;background:transparent}
+.office-mode input,.office-mode select{font-family:inherit;accent-color:#576e51}
+.office-mode .tag{background:#e6dfc1;border:1px solid #adab82;color:#5d6b4b;border-radius:2px;font-size:11px}
+.office-mode .note{background:#d8d9bb;border-color:#a3ab83;color:#59634b}
+.office-mode .good{color:#426448}.office-mode .bad{color:#a05d44}
+.office-mode .bar{background:#d4ccb0;border-radius:1px}.office-mode .bar i{border-radius:1px;background:#7b9065}
+
+/* Title screen */
+#start-screen{position:relative;isolation:isolate;min-height:100svh;display:flex;align-items:center;color:#eee5cd;background-color:#26332c;background-image:linear-gradient(90deg,#0f1916e6,#0f191685 37%,#0f191614 76%),url('assets/office/republic.webp');background-position:center;background-size:cover;padding:65px 8%;overflow:hidden}
+#start-screen h1{font-family:'Noto Serif SC','Songti SC','SimSun','Noto Sans SC',serif;font-size:clamp(74px,8.8vw,138px);line-height:1.2;letter-spacing:.15em;color:#eee5cd;margin:0;text-shadow:0 3px 0 #1a241f}
+.start-english{font-size:13px;letter-spacing:.36em;color:#d5c6a6;margin:14px 0 0;white-space:nowrap}
+.start-rule{height:1px;width:226px;background:#a68e5c;margin:28px 0 30px;position:relative}.start-rule:after{content:'';width:5px;height:5px;background:#bfa774;transform:rotate(45deg);position:absolute;right:0;top:-2px}
+.start-menu{display:flex;flex-direction:column;width:270px;max-width:100%;gap:13px}
+.office-mode .start-button{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:53px;border:1px solid #8c886b;border-radius:3px;background:#202e29;color:#e9dfc7;padding:13px 20px;text-decoration:none;text-align:left;font-size:16px;letter-spacing:2px;box-shadow:0 3px 0 #101b17;transition:background .15s,border-color .15s,transform .15s;width:100%;margin:0}
+.office-mode .start-primary{background:#e0d0a8;color:#223029;border-color:#efe0bb;box-shadow:0 3px 0 #745f3f}
+.office-mode .start-button:hover{background:#35463b;border-color:#e3c994;transform:translateX(3px)}.office-mode .start-primary:hover{background:#f0dfb7}
+.start-button span{font-size:19px;letter-spacing:0;opacity:.7}.start-version{position:absolute;bottom:24px;right:30px;color:#e7dcc2;font-size:11px;letter-spacing:2px;text-shadow:0 1px 3px #111}
+#start-save-label{font-size:12px;color:#c7c5ab;margin:23px 0 0;max-width:280px}
+.at-title #alert-dock,.at-title #alert-notice{display:none!important}
+
+/* Office and the approved drawn artwork */
+#nation-office{--office-art:url('assets/office/republic.webp');color:#eee5cf;width:100%;max-width:1920px;margin:0 auto}
+.of-world[data-theme="republic"]{--office-art:url('assets/office/republic.webp')}.of-world[data-theme="palace"]{--office-art:url('assets/office/palace.webp')}.of-world[data-theme="party"]{--office-art:url('assets/office/party.webp')}.of-world[data-theme="theocratic"]{--office-art:url('assets/office/theocratic.webp')}
+.office-toolbar{position:sticky;top:0;z-index:250;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;background:#303c35;border-bottom:2px solid #8b825f;color:#e6ddc5;flex-wrap:wrap;min-height:64px;margin:0}
+.office-brand{color:#eee1bd;text-decoration:none;font-family:'Noto Serif SC','Noto Sans SC',serif;font-weight:600;letter-spacing:.14em;font-size:24px;display:flex;align-items:center;gap:16px}.office-brand small{font:10px 'Noto Sans SC',sans-serif;letter-spacing:.22em;color:#b8baa3}
+.office-tools{display:flex;gap:7px;flex-wrap:wrap}.office-tools button{background:#394a3d;color:#e5ddbd;border-color:#788365;box-shadow:none;font-size:12px;padding:7px 12px;min-height:34px}.office-tools button:hover{background:#4d5f49;color:#fff3cd}
+#nation-office .of-world{position:relative;background:#323a30;isolation:isolate;overflow:hidden}
+#nation-office .of-scene{position:relative;aspect-ratio:1672/941;background-color:#68705c;background-image:var(--office-art);background-size:100% 100%;background-repeat:no-repeat}
+#nation-office .of-hud{position:absolute;inset:0 0 auto;padding:13px 20px 20px;display:flex;justify-content:space-between;gap:18px;align-items:center;color:#f1e7ca;background:linear-gradient(#222e2bd9,#29332c88,transparent);z-index:8;pointer-events:none}
+#nation-office .of-hud-title{font:500 17px/1.5 "Noto Serif SC","Noto Sans SC",serif;letter-spacing:.14em}
+#nation-office .of-hud small{font-size:11px;color:#e0d9bd}
+#nation-office .of-hud-stats{display:flex;gap:23px;text-align:right}
+#nation-office .of-hud-stats span{display:block;color:#c8d0ba;font-size:11px}
+#nation-office .of-hud-stats strong{font-size:20px;line-height:1.2;font-variant-numeric:tabular-nums}
+#nation-office .of-object{position:absolute;z-index:5;background:transparent;border:0;padding:0;filter:none;overflow:visible;isolation:isolate;transition:filter .12s}
+#nation-office .of-art-piece{display:block;position:absolute;background-image:var(--office-art);background-repeat:no-repeat}
+#nation-office .of-object-label{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);white-space:nowrap;display:flex;align-items:center;gap:7px;padding:5px 11px;background:#ddd1ac;color:#374234;border:1.5px solid #534f3a;border-radius:1px;box-shadow:2px 2px 0 #282b24;letter-spacing:.13em;font-size:12px}
+#nation-office .of-object-label kbd{font:11px sans-serif;color:#797453}
+#nation-office .of-object-label b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;font-size:11px;background:#95664f;color:#f2e4bf;border:1px solid #694d3b;border-radius:50%;letter-spacing:0}
+#nation-office .of-object:hover,#nation-office .of-object:active,#nation-office .of-object:focus-visible,#nation-office .of-object.is-active{filter:drop-shadow(0 0 1px #ffefb7) drop-shadow(0 0 3px #edca74) drop-shadow(0 0 6px #dec27ccc)}
+#nation-office .of-object:hover .of-object-label,#nation-office .of-object.is-active .of-object-label{background:#edddb2}
+#nation-office .of-files-object .of-object-label{left:42%;bottom:7%}
+#nation-office .of-archive-object .of-object-label{left:61%;bottom:35%}
+#nation-office .of-map-object .of-object-label{bottom:3%}
+#nation-office .of-manual-object .of-object-label{bottom:7%;left:52%}
+#nation-office .of-phone-object .of-object-label{bottom:-17%;left:53%}
+#nation-office .of-calendar-object .of-object-label{bottom:4%;font-size:11px;padding:4px 7px}
+#nation-office .of-footbar{background:#303d32;border-top:2px solid #8b825f;padding:9px 19px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#c3cbb6;font-size:11px}
+#nation-office .of-footbar b{color:#e1d2aa;margin-right:12px}
+#nation-office .of-pocket{display:none}
+
+#nation-office .of-hud{padding:18px 26px 28px;align-items:flex-start}
+#nation-office .of-hud h1{font-family:'Noto Serif SC','Noto Sans SC',serif;font-size:clamp(15px,1.9vw,26px);font-weight:500;letter-spacing:.12em;line-height:1.5;color:#f1e7ca;margin:0 0 3px}
+#nation-office .of-hud-stats{pointer-events:auto;gap:12px}
+#nation-office .of-hud-stats button{position:relative;min-width:82px;border:0;border-radius:0;background:#24372da8;padding:4px 9px;color:#f1e7ca;box-shadow:none;text-align:right}
+#nation-office .of-hud-stats button:hover{background:#344936dc}
+#nation-office .of-hud-stats strong{font-size:clamp(17px,2vw,26px);font-weight:500}
+#nation-office .of-object{min-height:0;box-shadow:none;cursor:pointer;transform:none}
+#nation-office .of-object:hover{background:transparent;border:0}
+#nation-office .of-object:focus-visible{outline:none}
+#nation-office .of-object-label b{width:auto;min-width:17px;padding:0 3px}
+.office-object-dot{position:absolute;right:-5px;top:-5px;display:block;width:9px;height:9px;border-radius:50%;background:#bc4c39;box-shadow:0 0 0 2px #eedfc0;pointer-events:none}
+.office-footbar{display:flex;align-items:center;gap:18px;background:#303d32;color:#c4ceb8;padding:11px 24px;border-top:2px solid #8b825f;font-size:12px;flex-wrap:wrap}
+#office-memo{flex:1;min-width:160px}.office-footbar button{background:#d7cca8;color:#344633;border-color:#847e5c;box-shadow:2px 2px #1e2f24;white-space:nowrap}.office-footbar button:hover{background:#e9ddba}
+.of-pocket button{position:relative}
+
+/* The old pages retain their full content inside the new folio. */
+.office-open{overflow:hidden}
+#office-overlay{position:fixed;inset:var(--office-toolbar-height) 0 0;z-index:150;overflow:auto;background:#1e2924b8;padding:26px 32px 40px;overscroll-behavior:contain}
+#office-workspace{position:relative;width:min(1240px,100%);max-width:none;margin:0 auto;padding:23px 28px 15px;background:#d9c9a5;border:2px solid #554e3c;box-shadow:5px 5px 0 #252e24,8px 8px 0 #a69877;color:#343e34;min-height:440px}
+#office-workspace:before{content:'';position:absolute;inset:7px;border:1px solid #b7a27c;pointer-events:none;z-index:0}
+#office-workspace>*{position:relative}
+.workspace-top{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-bottom:16px}
+#office-sections{display:flex;flex-wrap:wrap;gap:5px;padding:0;margin:0;max-height:none}
+#office-sections button{position:relative;width:auto;margin:0;padding:6px 13px;min-height:34px;background:#bfc2a1;border:1px solid #888a66;color:#526049;box-shadow:none;font-size:12px}
+#office-sections button[aria-pressed="true"]{background:#4c6051;color:#efe3c4;border-color:#354a3e;box-shadow:inset 0 2px #839378}
+.office-mode .office-close{padding:7px 11px;white-space:nowrap;background:#ece2c8;color:#625e45;border-color:#776f51;box-shadow:2px 2px #8d8261;font-size:12px}
+#office-workspace .workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-bottom:2px solid #6c6b52;padding:0 0 17px;margin:0 0 0;height:auto;background:transparent}
+.workspace-heading h1{font-family:'Noto Serif SC','Noto Sans SC',serif;font-size:27px;letter-spacing:.12em;margin:8px 0 0;line-height:1.5;font-weight:500;color:#343e34}
+.workspace-heading .eyebrow{color:#6f6e56;font-size:11px}.workspace-heading .header-actions{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;gap:10px}.workspace-heading #date{font-size:11px;color:#6b6c55}.workspace-heading button{font-size:12px}
+#office-workspace #nav{display:flex;align-items:end;flex-wrap:wrap;gap:5px;padding:16px 0 0;margin:0 0 22px;border-bottom:1px solid #9e9675;max-height:none;overflow:visible}
+#office-workspace #nav button{position:relative;display:flex;align-items:center;gap:6px;width:auto;margin:0;padding:8px 13px;font-size:12px;border:1px solid #8d8b69;border-bottom:0;border-radius:4px 4px 0 0;background:#b8b99a;color:#4e5a43;box-shadow:inset 0 2px #e0d9b7;min-height:36px}
+#office-workspace #nav button.active{background:#4c6051;color:#efe3c4;border-color:#354a3e;box-shadow:inset 0 2px #839378}
+#office-workspace .card{background:#f0e8d1;border:1px solid #ac9f7d;border-radius:2px;box-shadow:2px 3px #c7b992,3px 4px #827859;min-width:0;padding:23px 22px}
+#office-workspace .card h2{font-family:'Noto Serif SC','Noto Sans SC',serif;font-size:22px;font-weight:500;line-height:1.6;letter-spacing:.03em;color:#384335}
+#office-workspace .card h3{font-size:14px;line-height:1.7;color:#43503d}#office-workspace p{line-height:1.9;color:#64664f;font-size:13px}
+#office-workspace .political-banner{border:1px solid #a6a27c;border-left:4px solid #677859;background:#e4ddc1;border-radius:2px;padding:20px 23px;margin-bottom:23px;box-shadow:2px 2px #b8ad8b}
+#office-workspace .political-banner h2{font-family:'Noto Serif SC','Noto Sans SC',serif;font-weight:500;font-size:23px;letter-spacing:.06em;color:#3f4c39}
+#office-workspace .action-count{background:#c9d0ae;border:1px solid #9fa77d;border-radius:2px;color:#4a5e42;min-width:110px}
+#office-workspace .action-count b{color:#4a5e42}#office-workspace .action-count span{color:#6c7457}
+#office-workspace .section-label{margin:25px 0 13px;color:#766f55}#office-workspace .section-label h3{font-size:14px;color:#515d44;letter-spacing:.08em}
+#office-workspace .grid{gap:21px}#office-workspace .member-grid{gap:19px}#office-workspace .split{gap:21px}
+#office-workspace .metric-label{color:#687154}#office-workspace .metric-value{font-size:30px;color:#3f5540}#office-workspace .sub{font-size:11px}
+#office-workspace .metric-chart:hover{border-color:#7b8961;box-shadow:2px 3px #b7b78b,3px 4px #657052}
+#office-workspace .hero{background:#e4ddc1;border:1px solid #a9a481;border-radius:2px;box-shadow:2px 3px #b8ad8a}
+#office-workspace .hero-copy{padding:28px}#office-workspace .hero h2{font-family:'Noto Serif SC','Noto Sans SC',serif;font-size:27px;line-height:1.6;color:#3d4e38;letter-spacing:.05em}
+#office-workspace .flag{border:1px solid #8f8e6c;border-radius:1px}#office-workspace .map{background:#d8d8b7}#office-workspace .map svg{filter:sepia(.28) saturate(.72)}
+#office-workspace .bottom-strip{background:#c9cead;color:#4f5e43;border:1px solid #9fa77b;border-radius:1px}
+#office-workspace .policy{border-bottom:1px solid #d1c5a5;padding-bottom:12px}#office-workspace .policy label{color:#46543e}#office-workspace input[type="range"]{accent-color:#617a54;height:23px}
+#office-workspace .row{border-color:#d6cbae}.office-mode details{border-color:#bdb18e;border-radius:2px}.office-mode summary{color:#526346}
+#office-workspace .office{background:#e1d9bb;border:1px solid #a9a07e;border-radius:2px;margin-bottom:9px;color:#536048;box-shadow:2px 2px #c1b38d}
+#office-workspace .office.selected,#office-workspace .office.active{background:#c6cfaa;border-color:#71825d;color:#3e503a}
+#office-workspace .office .tag{background:#e2dfbc}#office-workspace .candidate{border:1px solid #b4a785;background:#e4dcc0;border-radius:1px}
+#office-workspace .person{position:relative;border-top:5px solid #a4ad84;padding-top:20px;background:#eee4cb}
+#office-workspace .person:before{content:'';display:block;position:absolute;top:-8px;right:17px;width:32px;height:9px;transform:rotate(3deg);background:#bbc29d;border:1px solid #949e75}
+#office-workspace .person .avatar{border:1px solid #999b79;border-radius:3px;box-shadow:2px 2px #c9bd9b;font-family:serif}
+#office-workspace .minister-programme{background:#e0e0bd;border-color:#a5ae7e;border-radius:2px}#office-workspace .mini-stats span{color:#5e684e}
+#office-workspace .faction-row{background:#eee5ca;border-color:#b7aa86;border-radius:2px}#office-workspace .faction-detail{color:#706c54}
+#office-workspace .seat-strip{border-radius:1px}#office-workspace .chart text,#office-workspace .history-chart text{fill:#706d54}
+#office-workspace .history-card{padding:17px 14px}#office-workspace .chart-title,#office-workspace .chart-surface{box-shadow:none;background:transparent;border:0}
+#office-workspace .research-card{background:#e2e4c3}#office-workspace .guide-entry,#office-workspace .constitution-article{background:#eee6cc;border-color:#b9ad87}
+#office-workspace table{background:#eee6cd}#office-workspace th{background:#d2d4ae;color:#515f41}#office-workspace td{border-color:#c9bd9c}
+#office-workspace [data-folio]{position:relative;padding-top:38px}#office-workspace [data-folio]:before{content:attr(data-folio) ' / 改革草案';position:absolute;top:10px;right:16px;font-size:10px;color:#8e8060;letter-spacing:.1em}
+.workspace-footer{display:flex;justify-content:space-between;gap:12px;padding:12px 0 0;margin:26px 0 0;border-top:1px solid #b1a581;color:#756e53;font-size:11px;letter-spacing:.06em}
+.office-document-spread{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(240px,1fr);gap:25px;align-items:start}
+#office-workspace .office-letter{position:relative;padding:27px 26px;box-shadow:2px 3px #c7b992,3px 4px #827859,5px 6px #e7d9b9;min-height:380px}
+.office-letter:before{content:'';position:absolute;top:-8px;left:19px;width:12px;height:28px;border:2px solid #777e70;border-radius:7px;transform:rotate(-12deg);box-shadow:inset 2px 0 #d5d8c6;pointer-events:none}
+.office-letter-meta{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#7c7254;padding-bottom:12px;border-bottom:1px solid #b7ac88;margin-bottom:22px}
+.office-letter h2{margin:20px 0}.office-letter-sign{display:flex;justify-content:flex-end;align-items:center;gap:15px;font-size:11px;text-align:right;color:#84734f;margin:32px 0 16px}
+.office-seal{display:flex;align-items:center;justify-content:center;width:52px;height:52px;flex-shrink:0;border:2px solid #a26e55;border-radius:50%;color:#a26e55;transform:rotate(-12deg);box-shadow:inset 0 0 0 3px #f0e8d1,inset 0 0 0 4px #a26e55}
+.office-margin{padding:5px 0}.office-margin h3{font-size:13px;letter-spacing:.18em;color:#68684e;padding-bottom:10px;border-bottom:1px solid #a89e7a;margin:0 0 16px}
+.office-mode .office-docket{position:relative;width:100%;text-align:left;margin:0 0 14px;padding:16px;background:#e8debc;border:1px solid #a2936d;box-shadow:2px 2px #a39672;color:#4b5341;font-size:13px}
+.office-docket:before{content:'';position:absolute;top:-3px;right:9px;width:31px;height:7px;background:#a5ad8b;border:1px solid #8d9672;transform:rotate(2deg)}
+.office-docket small{display:block;font-size:11px;line-height:1.8;color:#7e7659;margin-top:6px}.office-briefs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.office-actions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+#office-workspace .office-map-sheet{display:grid;grid-template-columns:1.7fr 1fr;gap:20px;padding:15px;margin-bottom:24px;background:#e6ddbb}
+.office-map-picture{position:relative;align-self:start;border:1px solid #9fa180;background:#d4d2aa}.office-map-picture img{display:block;width:100%;height:auto;max-height:460px;object-fit:cover}.office-map-picture>small{position:absolute;bottom:7px;left:7px;padding:2px 6px;background:#e9e2bddd;color:#69694d;font-size:10px}
+.office-mode .office-map-pin{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;padding:0;width:32px;height:32px;min-height:32px;border-radius:50%;background:#e8dcb8;border:2px solid #687151;color:#3e503a;box-shadow:1px 2px #40563a99;font-size:13px}.office-mode .office-map-pin.capital{background:#a56345;color:#f7e7c2;border-color:#7e4e39}
+.office-region-index{min-width:0}.office-region-index h3{margin:0 0 10px}.office-region-index button{display:block;position:relative;width:100%;text-align:left;background:#ece2c4;border:0;border-bottom:1px solid #b9ae86;box-shadow:none;padding:10px 8px}.office-region-index button span{font-size:12px}.office-region-index button b{color:#6d7650}.office-region-index button small{display:block;font-size:11px;color:#76765a;margin-top:3px}
+.office-selected-region{outline:3px solid #7f8d5b;outline-offset:4px;scroll-margin-top:20px}
+
+/* All action dialogs use the same paper treatment; world creation keeps its original layout. */
+.office-mode dialog{background:#f0e8d1;color:#343e34;border:2px solid #6d644a;border-radius:3px;box-shadow:5px 5px 0 #b2a080,0 20px 70px #12221955;padding:29px;width:680px;max-width:calc(100vw - 32px);max-height:calc(100svh - 40px)}
+.office-mode dialog::backdrop{background:#15251eb8;backdrop-filter:blur(2px)}
+.office-mode dialog h2{font-family:'Noto Serif SC','Noto Sans SC',serif;font-size:24px;line-height:1.6;color:#3e4c38}.office-mode dialog p{color:#656750;line-height:1.9}.office-mode dialog .choices button{background:#e5ddbf;border-color:#afa27b;border-radius:2px;box-shadow:2px 2px #c1b28a;color:#485640}.office-mode dialog .choices button:hover{background:#d8dfba}.office-mode dialog .choices small{color:#72735a}
+.office-mode dialog input,.office-mode dialog select{background:#e9e3c9;border-color:#b8ab87;color:#44513b}.office-mode #chart-modal{width:900px}
+.office-mode #modal:has(.regime-picker){--bg:#20231a;--paper:#171a19;--ink:#d7d9d3;--muted:#a49f8b;--green:#b89c60;--line:#3e443c;background:#111413;color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 24px 80px #0008;width:min(1040px,calc(100vw - 32px));padding:28px}
+.office-mode #modal:has(.regime-picker) h2,.office-mode #modal:has(.regime-picker) h3{font-family:inherit;color:var(--ink);font-weight:700}.office-mode #modal:has(.regime-picker) p,.office-mode #modal:has(.regime-picker) small{color:var(--muted)}
+.office-mode #modal:has(.regime-picker) .tag{background:transparent;color:#b9a073;border-color:var(--line)}.office-mode #modal:has(.regime-picker) .note{background:transparent}
+.office-mode #modal:has(.regime-picker) input,.office-mode #modal:has(.regime-picker) select{background:#191e19;color:var(--ink);border-color:var(--line);accent-color:#c6ae74;font-size:16px}
+.office-mode #modal:has(.regime-picker) button{background:#1b211c;color:var(--ink);box-shadow:none;border-color:var(--line)}.office-mode #modal:has(.regime-picker) button.primary{background:#a68b52;color:#111b15;border-color:#b49b62}
+.office-mode #modal:has(.regime-picker) .regime-choice{background:var(--paper);min-height:0}.office-mode #modal:has(.regime-picker) .regime-choice[aria-pressed="true"]{border-color:#a88b54;box-shadow:inset 0 0 0 1px #a88b54,0 2px 12px #a88b5420}.office-mode #modal:has(.regime-picker) .regime-selected{background:#5c4c22;color:#dfcc91}
+.office-mode #alert-notice{background:#e9dfc2;color:#49533d;border:2px solid #8b815c;border-radius:3px;box-shadow:4px 4px #293a2c}.office-mode #alert-notice article{background:#f0e7cb;border-color:#c2b28a}.office-mode #alert-notice p,.office-mode #alert-notice small{color:#716c53}.office-mode #alert-dock{background:#4b6350;color:#efe2bf;border:1px solid #9b9d73;border-radius:5px 0 0 5px;box-shadow:2px 2px #293c2d}
+.office-mode #tutorial-controls{background:#eee4c9;color:#3d4e38;border:2px solid #8e805e;border-radius:3px;box-shadow:4px 4px #b7a982}.office-mode #tutorial-controls p{color:#66664d}.office-mode #tutorial-focus{border-color:#f0cb7b;border-radius:3px}.office-mode #tutorial-skip{background:#dfd2ac;color:#3e4d37;border:2px solid #807c57;border-radius:2px}
+.office-mode .guide-entry{background:#eee4c8;border-color:#b8ac86;border-radius:2px}.office-mode .guide-index button,.office-mode .guide-index a{box-shadow:none}.office-mode #toast{background:#3d553e;color:#f2e6c5;z-index:99999;max-width:calc(100vw - 32px)}
+
+@media(min-width:1600px){#nation-office .of-object-label{font-size:15px;padding:7px 14px}#office-workspace .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1050px){#office-overlay{padding:20px 21px 30px}#office-workspace{padding:20px}.office-document-spread{grid-template-columns:minmax(0,1.4fr) minmax(220px,1fr)}.workspace-heading .header-actions{justify-content:flex-start}#office-workspace .member-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#office-workspace .grid{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.office-toolbar{padding:10px 14px}.office-brand{font-size:20px;gap:10px}.office-brand small{font-size:9px}.office-tools{gap:5px}.office-tools button{font-size:11px;padding:6px 8px}#nation-office .of-hud{padding:12px 14px 22px;gap:8px}#nation-office .of-hud-stats{gap:3px}#nation-office .of-hud-stats button{min-width:61px;padding:2px 6px}#nation-office .of-hud-stats span{font-size:10px}#nation-office .of-hud small{font-size:10px}#nation-office .of-object-label{font-size:10px;padding:4px 7px;gap:4px}#nation-office .of-object-label kbd{display:none}.office-footbar{padding:10px 14px;gap:10px;font-size:11px}#office-overlay{padding:15px 13px 25px}#office-workspace{padding:17px 16px}.workspace-heading h1{font-size:23px}.workspace-top{gap:8px}.office-document-spread{grid-template-columns:1fr}#office-workspace .office-letter{min-height:0}.office-margin{display:grid;grid-template-columns:1fr 1fr;gap:10px}.office-margin h3,.office-margin .note{grid-column:1/-1}.office-mode .office-docket{margin:0 0 6px}.office-briefs{gap:14px}#office-workspace .office-map-sheet{grid-template-columns:1fr}.office-region-index{display:grid;grid-template-columns:1fr 1fr;gap:5px}.office-region-index h3{grid-column:1/-1}.office-map-picture img{max-height:350px}#office-workspace .grid,#office-workspace .split{grid-template-columns:1fr}#office-workspace .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#office-workspace .card{padding:18px 16px}#office-workspace .hero{display:block}#office-workspace .hero-copy{padding:22px}#office-workspace .hero .map{max-height:220px;overflow:hidden}#office-workspace .charts-grid{grid-template-columns:1fr 1fr}#office-workspace .cabinet-layout{grid-template-columns:1fr}.office-mode #modal:has(.regime-picker) .regime-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){#start-screen{padding:56px 26px;background-position:58% center;background-image:linear-gradient(90deg,#0f1916e8,#0f191686),url('assets/office/republic.webp')}.start-menu{width:252px}.start-version{right:20px;bottom:20px}.office-brand small{display:none}.office-toolbar{align-items:center;gap:6px}.office-tools{justify-content:flex-end}.office-tools button{min-height:35px;padding:6px 7px}.office-brand{font-size:22px}#nation-office .of-hud{position:relative;background:#334635;min-height:90px;align-items:center;flex-wrap:wrap;padding:12px 13px}#nation-office .of-hud h1{font-size:17px}#nation-office .of-hud-stats{width:100%;justify-content:flex-end}#nation-office .of-hud-stats button{min-width:65px;display:flex;gap:8px;align-items:baseline;padding:2px 6px}#nation-office .of-hud-stats strong{font-size:17px}#nation-office .of-scene{aspect-ratio:auto;height:390px;background-position:center bottom;background-size:auto 300px}#nation-office .of-object{display:none}#nation-office .of-pocket{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:13px;background:#3c4938}#nation-office .of-pocket button{padding:9px 6px;min-height:42px;background:#ddd0a9;color:#415239;border-color:#8c8c62;box-shadow:2px 2px #253b2a;font-size:13px}.office-footbar{gap:10px}#office-memo{flex:1 0 100%}#office-overlay{padding:10px 10px 24px}#office-workspace{padding:15px 12px}.workspace-top{align-items:flex-start;flex-wrap:wrap}#office-sections{gap:4px}#office-sections button{padding:6px 10px}.office-mode .office-close{margin-left:auto}#office-workspace .workspace-heading{gap:12px;padding-bottom:15px}.workspace-heading h1{font-size:22px}.workspace-heading .header-actions{gap:8px}#date{order:3;flex:1 0 100%}#office-workspace #nav{gap:4px;padding-top:13px}#office-workspace #nav button{font-size:11px;padding:7px 9px}#office-workspace .member-grid,#office-workspace .region-grid,#office-workspace .charts-grid,#office-workspace .ideology-cards{grid-template-columns:1fr}#office-workspace .metric-value{font-size:24px}#office-workspace .card{padding:17px 13px}#office-workspace .card h2{font-size:20px}#office-workspace .political-banner{padding:17px 14px;gap:12px}#office-workspace .political-banner h2{font-size:21px}.office-margin,.office-briefs{grid-template-columns:1fr}.office-letter-meta{flex-wrap:wrap}#office-workspace .office-letter{padding:24px 17px}#office-workspace .office-map-sheet{padding:9px}.office-region-index button{padding:9px 5px}.office-region-index button span{font-size:11px}.office-region-index button small{font-size:10px}.office-map-picture img{max-height:260px}.office-mode dialog{padding:22px 17px;max-width:calc(100vw - 22px)}.office-mode #modal:has(.regime-picker){padding:20px 15px;width:calc(100vw - 22px)}.office-mode #modal:has(.regime-picker) .regime-choice em{font-size:10px}.office-mode dialog input:not([type="checkbox"]):not([type="radio"]),.office-mode dialog select{font-size:16px}.office-mode .row{gap:9px}.office-mode .table-wrap{max-width:100%;overflow:auto}.office-mode .cabinet-layout{display:block}.office-mode .office-list{margin-bottom:20px}.office-mode .minister-programme .choices{display:grid;grid-template-columns:1fr}.workspace-footer{flex-wrap:wrap;font-size:10px}}
+@media(prefers-reduced-motion:reduce){.office-mode *{scroll-behavior:auto!important;transition:none!important}}

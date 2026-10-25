@@ -275,4 +275,6 @@ function positionTutorial104(){let t=tutorial104;if(!t?.target)return;let r=t.ta
 }
 function stopTutorial(){let t=tutorial104;if(!t)return;tutorial104=null;t.opened.forEach(el=>el.open=false);$('tutorial-layer')?.remove();document.body.classList.remove('tutorial-active');document.removeEventListener('click',tourBlock104,true);document.removeEventListener('change',tourBlock104,true);document.removeEventListener('keydown',tourKey104,true);window.removeEventListener('resize',positionTutorial104);window.removeEventListener('scroll',positionTutorial104,true);tab=t.initialTab;cabinetSlot=t.initialSlot;render();window.scrollTo(t.scrollX,t.scrollY);let aside=document.querySelector('aside');if(aside)aside.scrollTop=t.asideScroll;if(t.dialogOpen)modal(t.dialogHTML);t.focus?.focus?.({preventScroll:true})}
 
-bootGame();
+// The office entry screen loads an existing game only after the player chooses Continue.
+// Keep the original bootstrap for non-browser rule tests and legacy hosts.
+if(typeof window==='undefined'||!document.documentElement.hasAttribute('data-office-ui'))bootGame();
