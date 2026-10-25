@@ -69,7 +69,7 @@ function normalizeReleaseLog107(){
 const initBefore107=initPolitics;initPolitics=function(id=selectedRegime){initBefore107(id);migrate107();normalizeReleaseLog107()};
 function chamberSeatData107(){
  let factions=pstate().factions,total=Math.round(factions.reduce((sum,f)=>sum+f.seats,0)),counts=allocateUnits107(factions.map(f=>f.seats),Math.min(500,total));
- let seats=factions.flatMap((f,i)=>Array.from({length:counts[i]},()=>({faction:f.id,color:COLORS[f.id]})));
+ let seats=factions.flatMap((f,i)=>Array.from({length:counts[i]},()=>({faction:f.id,color:factionColor107(f.id)})));
  let benches=regime().id==='westminster'||regime().body==='枢密院';
  if(benches){let government=coalitionRegime()?rules103().coalition:[playerFactionId107()],sides=[seats.filter(s=>government.includes(s.faction)),seats.filter(s=>!government.includes(s.faction))],rows=Math.max(...sides.map(a=>Math.ceil(a.length/6)),8);return {layout:'benches',width:300,height:rows*14+24,seats:sides.flatMap((side,bank)=>side.map((seat,i)=>({...seat,x:(bank?188:28)+(i%6)*14,y:18+Math.floor(i/6)*14,r:4.8})))}}
  let rows=Math.max(3,Math.ceil(Math.sqrt(seats.length)/2.5)),radii=Array.from({length:rows},(_,i)=>64+i*24),outer=radii.at(-1),center=outer+16,points=[];

@@ -1,13 +1,13 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
 const root=path.resolve(__dirname,'..');let storage={};
-function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','guide.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
+function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of ['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','constitutional-process.js','guide.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}
 function near(a,b,m){assert(Math.abs(a-b)<1e-7,m+': '+a+' vs '+b)}
 function fresh103(id='presidential'){
  selectedRegime=id;pendingDifficulty=false;pendingModel='auto';create('release103-'+id);
- s.situations.active=[];s.situations.notices=[];s.inflation=3;s.unemployment=6;s.debt=s.gdp*.4;s.approval=75;s.stability=80;s.q=0;pstate().judicial=75;pstate().current=null;pstate().queue=[];
+ if(s.constitution?.minority)Object.assign(s.constitution.minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});s.situations.active=[];s.situations.notices=[];s.inflation=3;s.unemployment=6;s.debt=s.gdp*.4;s.approval=75;s.stability=80;s.q=0;pstate().judicial=75;pstate().current=null;pstate().queue=[];
 }
 // Strike: repeated relief in the same quarter consumes AP and funds, not cooldowns.
 fresh103();{

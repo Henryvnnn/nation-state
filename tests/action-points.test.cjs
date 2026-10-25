@@ -1,10 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','guide.js'];
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','constitutional-process.js','guide.js'];
 function boot(storage={},directory=root){let nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(let f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});return c}
 const storage={},c=boot(storage);
 vm.runInContext(`
 function check(v,m){if(!v)throw Error(m)}
-function fresh(mode='fixed',seed='action-tests',reg='presidential'){pendingActionMode=mode;pendingAdmin107=true;selectedRegime=reg;create(seed);sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];features107().notices=[]}
+function fresh(mode='fixed',seed='action-tests',reg='presidential'){pendingActionMode=mode;pendingAdmin107=true;selectedRegime=reg;create(seed);if(s.constitution?.minority)Object.assign(s.constitution.minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];features107().notices=[]}
 for(let regimeItem of REGIMES)for(let mode of Object.keys(ACTION_POINT_MODES)){
  fresh(mode,'ap-'+regimeItem.id,regimeItem.id);check(actionMode()===mode,'mode selected');check(validSave(JSON.parse(JSON.stringify(s))),'valid new save');
  let points=pstate().ap;check(points>0&&points<7,'opening points');let state=JSON.stringify(s);for(let i=0;i<5;i++){render();politicalCapacity();guideCatalog104()}check(JSON.stringify(s)===state,'render/read never reroll');

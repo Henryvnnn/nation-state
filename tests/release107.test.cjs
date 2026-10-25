@@ -1,9 +1,9 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','guide.js'];
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','constitutional-process.js','guide.js'];
 function boot(directory=root,storage={}){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),ctx,{filename:f});return ctx}
 const c=boot();vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}function near(a,b,m){assert(Math.abs(a-b)<1e-7,m+': '+a+' / '+b)}
-function fresh107(id='presidential',seed='release107'){selectedRegime=id;pendingDifficulty=false;create(seed);sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];s.debt=s.gdp*.7;s.approval=70;s.stability=75;s.confidence=65;s.unemployment=7;pstate().judicial=65}
+function fresh107(id='presidential',seed='release107'){selectedRegime=id;pendingDifficulty=false;create(seed);if(s.constitution?.minority)Object.assign(s.constitution.minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];s.debt=s.gdp*.7;s.approval=70;s.stability=75;s.confidence=65;s.unemployment=7;pstate().judicial=65}
 let seenNames=new Set(),identities=new Set(),minorityStarts=0;
 for(let r of REGIMES){fresh107(r.id);let p=pstate(),regions=v3().regions,diagram=chamberSeatData107();
  assert(regions.length===8&&regions[7].isCapital&&regions[7].name===s.capital,'independent capital '+r.id);
@@ -47,7 +47,7 @@ console.log('PASS 1.0.7: all 12 regimes, capital demands/elections/disaster, exa
 // Optional real-release migration check: BASELINE_DIR=/path/to/1.0.6 node tests/release107.test.cjs.
 // Without a baseline, construct a seven-region save using the same legacy fields.
 const baseline=process.env.BASELINE_DIR,old=boot(baseline||root);
-vm.runInContext(`selectedRegime='presidential';create('legacy107');sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];`,old);
+vm.runInContext(`selectedRegime='presidential';create('legacy107');if(s.constitution?.minority)Object.assign(s.constitution.minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});sits().active=[];sits().notices=[];pstate().current=null;pstate().queue=[];`,old);
 if(!baseline)vm.runInContext(`
  delete s.release107;delete pstate().playerFaction;pstate().rulingParty=pstate().factions[0].name;rules103().coalition=[0];delete pstate().cabinet.labour;delete rules103().proposals.labour;pstate().candidates=pstate().candidates.slice(0,60);cabinetSlots103().filter(k=>k!=='labour').forEach((k,i)=>pstate().cabinet[k]={candidate:i*5,task:'balanced'});v3().regions=v3().regions.slice(0,7);v3().regions.forEach((z,i)=>{z.weight=[22,18,16,14,12,10,8][i];z.name=['三河省','鹰隘省','新维兰省','双河省','晴川省','青峰省','远关省'][i];delete z.isCapital;delete z.stem});pstate().members.forEach((m,i)=>{m.regionId=i%7;m.region=v3().regions[m.regionId].name});
 `,old);

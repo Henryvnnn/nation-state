@@ -1,10 +1,10 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
-const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','guide.js'];let storage={};
+const root=path.resolve(__dirname,'..'),files=['game.js','political.js','governance.js','revision12.js','situations.js','release103.js','release104.js','cabinet-tasks.js','release107.js','coalition107.js','interface107.js','console107.js','action-points.js','immersion.js','constitution.js','constitutional-process.js','guide.js'];let storage={};
 function boot(){let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(ctx);for(let f of files)vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});return ctx}
 let ctx=boot();
 vm.runInContext(`
 function assert(v,m){if(!v)throw Error(m)}function near(a,b,m){assert(Math.abs(a-b)<1e-7,m+': '+a+' / '+b)}
-function fresh104(id='presidential',seed='r104'){selectedRegime=id;pendingDifficulty=false;create(seed);sits().active=[];sits().history=[];sits().notices=[];pstate().current=null;pstate().queue=[];s.inflation=3;s.unemployment=6;s.stability=80;s.approval=75;s.debt=s.gdp*.4;pstate().judicial=75}
+function fresh104(id='presidential',seed='r104'){selectedRegime=id;pendingDifficulty=false;create(seed);if(s.constitution?.minority)Object.assign(s.constitution.minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});sits().active=[];sits().history=[];sits().notices=[];pstate().current=null;pstate().queue=[];s.inflation=3;s.unemployment=6;s.stability=80;s.approval=75;s.debt=s.gdp*.4;pstate().judicial=75}
 fresh104();{
  let x=startSituation('olympics');assert(x&&sits().olympicsApplied,'bid consumed');assert(!startSituation('olympics'),'duplicate blocked');
  assert(situationsPage().includes('成功申办与赛后收益'),'benefit UI');assert(situationsPage().includes('支持 +6'),'success payoff');

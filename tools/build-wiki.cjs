@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'wiki-source');
 const WIKI='https://github.com/Henryvnnn/nation-state/wiki',GAME='https://Henryvnnn.github.io/nation-state/',REPO='https://github.com/Henryvnnn/nation-state';
 let nodes={},ctx={console,setTimeout:()=>{},localStorage:{getItem:()=>null,setItem(){}},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};
 vm.createContext(ctx);
-for(const name of ['game','political','governance','revision12','situations','release103','release104','cabinet-tasks','release107','coalition107','interface107','console107','action-points','immersion','constitution','guide'])vm.runInContext(fs.readFileSync(path.join(root,name+'.js'),'utf8'),ctx,{filename:name+'.js'});
+for(const name of ['game','political','governance','revision12','situations','release103','release104','cabinet-tasks','release107','coalition107','interface107','console107','action-points','immersion','constitution','constitutional-process','guide'])vm.runInContext(fs.readFileSync(path.join(root,name+'.js'),'utf8'),ctx,{filename:name+'.js'});
 vm.runInContext("selectedRegime='presidential';create('wiki-reference');",ctx);
 const data=JSON.parse(vm.runInContext('JSON.stringify({entries:guideCatalog104(),regimes:REGIMES,executives:EXECUTIVE_NAMES,regimeDescriptions:REGIME_GUIDE104,axes:AXIS_NAMES,democratic:DEMO_IDEOLOGIES,nonDemocratic:NONDEMO_IDEOLOGIES,socialist:SOCIALIST_IDEOLOGIES,policies:policyMeta})',ctx));
 let entries=data.entries.filter(e=>e.id!=='capital-city');
@@ -30,7 +30,7 @@ const intro={
  '民意与选举':'当前国家包含七个非首都地区和一个首都地区。全国支持率是地方选票的基准，并不等于全国加权选票；履约、发展、历史政策和人口权重都会改变结果。',
  '司法与政治稳定':'最高司法机关名称随政体变化。提高独立性可能带来更多审查互动；压低独立性则可能引发支持、稳定和持续局势风险。',
  '结构性改革':'查看草案即保留它。提交、通过、执行和完成是不同阶段；窗口刷新不会删除已查看、已提交和正在执行的项目。一次性遗产税当前清偿完成时公债的50%，不再清偿全部公债。',
- '局势与危机':'普通开局抽取一个局势，困难模式抽取两个不同局势。开局池只有大罢工、司法公平、经济危机和政治丑闻；奥运、灾害、叛乱、民主化运动及政府危机在执政中出现。局势持续影响可以相互叠加。',
+ '局势与危机':'普通模式抽取一个开局危机，困难模式两个；危机池为大罢工、司法公平、经济危机和政治丑闻。所有模式额外抽取一个宗教少数派问题或少数民族问题，各50%概率。奥运、灾害、叛乱、民主化运动、政府危机及宪法修订在执政中触发。局势持续影响可以相互叠加。',
  '任期评估与统治倾向':'标准时长为48季度，游戏历法每年6季度。民主国家完成两届后结算；非民主国家可在第48季度选择继续，此后每12季度再询问。提前失败也会结算。管理员模式无自动结算与失败结束。',
  '界面教程与存档':'入门教程只讲总体目标，具体概念由各页右上角“本页教程”介绍。两种教程都能按空格进入下一步、Esc退出；不会消耗行动点或改变预算草案。',
 };
