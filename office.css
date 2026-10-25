@@ -27,6 +27,8 @@ body.office-mode{--bg:#ded3b5;--paper:#efe6cf;--ink:#343e34;--muted:#73715e;--gr
 .office-mode .start-button:hover{background:#35463b;border-color:#e3c994;transform:translateX(3px)}.office-mode .start-primary:hover{background:#f0dfb7}
 .start-button span{font-size:19px;letter-spacing:0;opacity:.7}.start-version{position:absolute;bottom:24px;right:30px;color:#e7dcc2;font-size:11px;letter-spacing:2px;text-shadow:0 1px 3px #111}
 #start-save-label{font-size:12px;color:#c7c5ab;margin:23px 0 0;max-width:280px}
+.start-disclaimer{max-width:420px;font-size:12px;line-height:1.85;color:#d4cbb3;margin:24px 0 12px;text-wrap:pretty}
+.person-honour{padding:10px 12px;border-left:2px solid #aa9664;background:#e5ddc4}.person-honour small{font-size:11px;color:#6e715c}
 .at-title #alert-dock,.at-title #alert-notice{display:none!important}
 
 /* Office and the approved drawn artwork */
