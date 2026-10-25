@@ -83,8 +83,6 @@
  }
  function updateNavigation(){
   $('office-workspace').dataset.section=ui.section;
-  $('office-sections').hidden=ui.section==='files';
-  $all('#office-sections [data-section]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.section===ui.section)));
   $all('#nav [data-nav]').forEach(el=>{el.hidden=groupsForPages[el.dataset.nav]!==ui.section;if(ui.custom)el.classList.remove('active')});
   if(ui.section==='files'){
    $('nav').insertAdjacentHTML('afterbegin',`<button class="nav-item ${ui.custom==='events'?'active':''}" data-office-page="events" onclick="officeUI.events()">待批文件${pstate().current?redDot107('有待回复的季度事件'):''}</button>`);
@@ -159,7 +157,7 @@
   }
   let steps=baseTutorialSteps(scope,page).map(step=>({...step}));
   steps.forEach(step=>{if(step.id==='advance')step.text='进入下一季度会结算经济与施政，并发放行动点。剩余行动点不会结转，系统会先询问是否继续；勾选本局不再提示可关闭本局提醒。待决事件须先回复。';if(step.id==='page-tutorial')step.text='点击桌面物品进入需要了解的板块，再使用纸页右上方的“本页教程”。文件处理政策，电话联系人物，档案查看指标，地图查看地方与选举。';if(step.id==='tour-roadmap')step.text='办公桌上的文件、电话、档案和地图是主要入口。各页右上方都有本页教程；按空格进入下一步，右下角可跳过。';if(step.id==='new-world'){step.selector='button[onclick="officeUI.menu()"]';step.text='返回主菜单后可继续本局，或点击开启新历史重新生成国家。保留旧进度请先在国家档案导出存档。'}});
-  if(scope==='intro')steps.splice(5,0,{page:'overview',id:'office-objects',selector:'#office-sections',title:'从办公桌处理国务',text:'文件：事件、预算、改革、局势与宪制议程。电话：议会、内阁和司法机关。档案：国家数据与存档。地图：地区诉求和选举。收回桌面后也可按数字1至4打开。'});
+  if(scope==='intro')steps.splice(5,0,{page:'overview',id:'office-objects',selector:'.office-close',title:'从办公桌处理国务',text:'文件：事件、预算、改革、局势与宪制议程。电话：议会、内阁和司法机关。档案：国家数据与存档。地图：地区诉求和选举。点击“收回桌面”再选择其他物品，也可按数字1至4打开。'});
   return steps;
  };
  startTutorial=function(scope='intro'){
