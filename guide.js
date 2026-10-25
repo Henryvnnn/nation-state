@@ -157,6 +157,7 @@ function guideCatalog104(){
  add('console','控制台',['管理员模式','管理员模式（不建议）'],'仅在创建新世界时选择管理员模式后开放，按钮位于左侧导航最下方。可直接调整经济、政治、预算、地区、人物、科研与局势数据，生成事件或测试内阁空缺；保留正常模拟，但取消所有失败结局和回合上限。只有开启新历史才能替换本局。此模式与存档一起保存，普通存档不会自动开启。','页面与操作');
  if(typeof constitutionGuideEntries==='function')entries.push(...constitutionGuideEntries());
  if(typeof personnelGuide107==='function')personnelGuide107(entries);
+ if(typeof judicialReportsGuide107==='function')judicialReportsGuide107(entries);
  return entries;
 }
 let guideEntries104=[];
@@ -232,6 +233,10 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('overview','new-world','button[onclick="newDialog()"]','这会重新生成世界并替换当前进度。希望保留这一局时，请先导出存档。');
  target('overview','guide','#guide-open','若对游戏概念不清楚，可查看“治国指南”的详细介绍。输入“稳定”“稳定度”或“政治稳定”，都会找到同一条目；也可搜索改革、职务和局势。','教程完成');
  const introIds=['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment'];
+ target('judiciary','judicial-personnel','#judicial-personnel');
+ target('centralbank','centralbank','#central-bank-reports');
+ target('centralbank','bank-advice','#central-bank-advice');
+ target('archive','centralbank','#central-bank-entry');
  if(scope==='intro')return [...steps.filter(step=>introIds.includes(step.id)),{page:'overview',id:'guide',selector:'#guide-open',text:'治国指南是概念搜索器。输入“稳定”“稳定度”或“政治稳定”可找到同一条解释；不清楚游戏概念时，可在这里查看详细介绍。',title:'随时查阅规则'},{page:'overview',id:'page-tutorial',selector:'#page-tutorial',text:'先点击左栏需要了解的板块，再点击右上方“本页教程”，只学习该页的概念和功能。例如进入“民意与选举”后开启，就不会讲解议会。本段介绍结束后会返回您原来的页面。',title:'按需学习各板块'}];
  return [...steps.filter(step=>step.page===page&&!introIds.includes(step.id)&&step.id!=='guide'),{page,id:'guide',selector:'#guide-open',text:'本页教程到此结束。若仍有不清楚的概念，可在“治国指南”中搜索详细解释。',title:'本页教程完成'}];
 }

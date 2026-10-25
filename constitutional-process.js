@@ -86,17 +86,17 @@ proposeConstitution=function(mode,action,target){
 };
 function reviewRate107(d=amendmentInProgress107()){
  if(!d||d.stage!=='review')return 0;
- return d.route==='court'?courtVoteCount()/constitution().judges.length*100:billPassRate104();
+ return d.route==='court'?courtTally107(d).rate:billPassRate104();
 }
 function amendmentDocketHTML107(){
  let d=amendmentInProgress107();if(!d)return '';
  let first=d.stage==='legislature',rate=first?billPassRate104():reviewRate107(d),body=regime().body;
- return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">宪法修订 · ${first?'第一阶段 / '+esc(body):'第二阶段 / 司法审查'}</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p class="note">${esc(d.costText)}</p><div class="big-number">${fmt(rate,2)}<small>% ${first||d.route==='assembly'?'院内支持率':'法官支持率'}</small></div>${first?`<p>本阶段须达到三分之二院内支持（精确门槛为 66⅔%，不是四舍五入后的 66.67%）。通过后才启动三季度司法审查期限。</p><button class="primary" onclick="voteConstitution()" ${s.ended?'disabled':''}>提交议会表决 · 1 行动点</button> <button onclick="withdrawConstitution()" ${s.ended?'disabled':''}>撤回修宪案</button>`:`<p>${d.route==='court'?`目前 ${courtVoteCount()} / ${constitution().judges.length} 位法官赞成。每位法官意愿达到 60 时投赞成票。`:`现行宪法把最高司法权交给${esc(body)}，由该机关行使审查权。`}本阶段达到半数即可通过，恰好 50% 也通过。</p><p><b>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度</b>；第 ${d.reviewDeadline} 季度开始时先核验票数，仍不足半数即自动失败。达到半数会立即成功，无需再次花行动点表决。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关 →</button>`}<p>本局势没有处置选项；送审后不能撤回。${first?'在本页与党派和议员协商争取支持。':'通过法官互动争取赞成票。'}</p></section>`;
+ return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">宪法修订 · ${first?'第一阶段 / '+esc(body):'第二阶段 / 司法审查'}</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p class="note">${esc(d.costText)}</p><div class="big-number">${fmt(rate,2)}<small>% ${first||d.route==='assembly'?'院内支持率':'法官支持率'}</small></div>${first?`<p>本阶段须达到三分之二院内支持（精确门槛为 66⅔%，不是四舍五入后的 66.67%）。通过后才启动三季度司法审查期限。</p><button class="primary" onclick="voteConstitution()" ${s.ended?'disabled':''}>提交议会表决 · 1 行动点</button> <button onclick="withdrawConstitution()" ${s.ended?'disabled':''}>撤回修宪案</button>`:`<p>${d.route==='court'?courtBallotText107(d):`现行宪法把最高司法权交给${esc(body)}，由该机关行使审查权。`}${d.route==='court'?'计入关键一票后赞成票须过半。空缺不参与表决。':'由议事机关审查时达到半数即可通过，恰好50%也通过，不适用大法官关键一票。'}</p><p><b>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度</b>；第 ${d.reviewDeadline} 季度开始时先核验票数，仍未通过审查即自动失败。满足上述审查规则即立即成功，无需再次花行动点表决。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关 →</button>`}<p>本局势没有处置选项；送审后不能撤回。${first?'在本页与党派和议员协商争取支持。':'通过法官互动争取赞成票。'}</p></section>`;
 }
 const docketBeforeProcedure107=constitutionalDocketHTML;
 constitutionalDocketHTML=function(){
  let d=constitution().docket;if(d?.mode==='amend')return amendmentDocketHTML107();if(d)return docketBeforeProcedure107();
- let court=constitutionalRoute()==='court';return `<section id="constitutional-docket" class="card"><span class="tag">宪制议程</span><h3>暂无待审议案</h3><p>修宪须与${esc(regime().body+memberRole(0))}互动提出，先立法审议、再司法审查。释宪仍由${esc(court?JUDGE_TITLES[pstate().regime][1]:regime().body+memberRole(0))}受理。</p><div class="constitution-actions"><button onclick="meetMember(0)">会见${esc(memberRole(0))} / 修宪 →</button><button onclick="${court?`meetJudge(${constitution().judges.find(j=>j.chief).id})`:'meetMember(0)'}">前往释宪互动 →</button></div></section>`;
+ let court=constitutionalRoute()==='court';return `<section id="constitutional-docket" class="card"><span class="tag">宪制议程</span><h3>暂无待审议案</h3><p>修宪须与${esc(regime().body+memberRole(0))}互动提出，先立法审议、再司法审查。释宪仍由${esc(court?JUDGE_TITLES[pstate().regime][1]:regime().body+memberRole(0))}受理。</p><div class="constitution-actions"><button onclick="meetMember(0)">会见${esc(memberRole(0))} / 修宪 →</button><button onclick="${court?'openChiefJudge107()':'meetMember(0)'}">前往释宪互动 →</button></div></section>`;
 };
 meetMember=function(id){
  if(id===0&&tab!=='assembly'){tab='assembly';render()}memberBeforeConstitution(id);if(id!==0||s.ended)return;
@@ -123,7 +123,7 @@ voteConstitution=function(force=false){
  let penalty=billStabilityPenalty();if(penalty)mod({stability:-penalty});
  d.legislativeRate=rate;d.stage='review';d.reviewStarted=s.q;d.reviewDeadline=s.q+3;d.route=constitution().authority==='assembly'?'assembly':'court';
  pstate().bill=d.route==='assembly'?d:null;
- noteDecision('议事机关通过'+d.title,{law:1});log('修宪案进入司法审查',d.title+'获 '+fmt(rate,2)+'% 院内支持。第 '+d.reviewDeadline+' 季度开始时截止审查，赞成票达到半数即可成功。');
+ noteDecision('议事机关通过'+d.title,{law:1});log('修宪案进入司法审查',d.title+'获 '+fmt(rate,2)+'% 院内支持。第 '+d.reviewDeadline+' 季度开始时截止审查，法院审查计入首席关键一票后须过半；议事机关审查仍以半数为门槛。');
  checkAmendmentReview107();$('modal').close();pSave();
 };
 let checkingAmendment107=false;
@@ -132,13 +132,13 @@ function checkAmendmentReview107(){
  let d=amendmentInProgress107();if(!d||d.stage!=='review')return;
  checkingAmendment107=true;
  try{
-  if(reviewRate107(d)+1e-9>=50)finishAmendment107(true,'最高司法机关赞成票达到半数，修宪成功。');
-  else if(s.q>=d.reviewDeadline)finishAmendment107(false,'三季度审查期限已到，最高司法机关赞成票不足半数，修宪失败。');
+  if(d.route==='court'?courtTally107(d).passed:reviewRate107(d)+1e-9>=50)finishAmendment107(true,'最高司法机关审查通过，修宪成功。'+(d.route==='court'?courtBallotText107(d):''));
+  else if(s.q>=d.reviewDeadline)finishAmendment107(false,'三季度审查期限已到，最高司法机关尚未通过审查，修宪失败。');
  }finally{checkingAmendment107=false}
 }
 function finishAmendment107(success,reason){
  let c=constitution(),d=amendmentInProgress107();if(!d)return;
- let spec=constitutionalSpec('amend',d.action,d.target),rate=d.stage==='review'?reviewRate107(d):billPassRate104();
+ let spec=constitutionalSpec('amend',d.action,d.target),rate=d.stage==='review'?reviewRate107(d):billPassRate104(),ballot=d.stage==='review'&&d.route==='court'?courtTally107(d):null;
  if(success&&!spec){success=false;reason='修宪目标已失效，修宪失败。'}
  // Clear first: transition code and nested saves must never enact this proposal twice.
  c.docket=null;if(pstate().bill?.kind==='constitution')pstate().bill=null;c.judges.forEach(j=>j.boosts=[]);
@@ -152,7 +152,7 @@ function finishAmendment107(success,reason){
   if(d.action==='competitive')enactCompetitiveElections107(d.sourceRegime);
   noteDecision(spec.title,spec.axes);pstate().passed.push({title:spec.title,q:s.q,votes:d.legislativeRate,passRate:d.legislativeRate});
  }
- c.history.push({q:s.q,title:d.title,description:success?spec.description:reason,effects:success?spec.costText:'未生效；不兑现修宪效果。',route:d.route,rate,forced:false,result:success?'passed':'failed',legislativeRate:d.legislativeRate});
+ c.history.push({q:s.q,title:d.title,description:success?spec.description:reason,effects:success?spec.costText:'未生效；不兑现修宪效果。',route:d.route,rate,forced:false,result:success?'passed':'failed',legislativeRate:d.legislativeRate,...(ballot?{ballot}: {})});
  let sit=sits().active.find(x=>x.id===d.situationId&&x.kind==='amendment');if(sit)endSituation(sit,reason);
  log(success?'修宪成功':'修宪失败',d.title+'：'+reason);toast(success?'修宪成功，宪法条款已生效':'修宪失败，原有条款保留');
  checkPoliticalEnd();record();
@@ -215,7 +215,7 @@ const saveBeforeProcedure107=save;
 save=function(){if(s.constitution?.procedureVersion===2)checkAmendmentReview107();return saveBeforeProcedure107()};
 const progressBeforeProcedure107=situationProgress;
 situationProgress=function(x){
- if(x.kind==='amendment'){let d=amendmentInProgress107();if(!d)return '本修宪程序已经结案。';return d.stage==='legislature'?`议会阶段：院内支持率 ${fmt(billPassRate104(),2)}%，目标为三分之二。<br>法案：${esc(d.title)}。立法通过后才开始司法审查计时。`:`司法审查：赞成比例 ${fmt(reviewRate107(d),1)}%，目标为半数。<br>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度；第 ${d.reviewDeadline} 季度开始时截止。<br>无需在局势页操作；到审查机关争取支持。`}
+ if(x.kind==='amendment'){let d=amendmentInProgress107();if(!d)return '本修宪程序已经结案。';return d.stage==='legislature'?`议会阶段：院内支持率 ${fmt(billPassRate104(),2)}%，目标为三分之二。<br>法案：${esc(d.title)}。立法通过后才开始司法审查计时。`:`司法审查：赞成比例 ${fmt(reviewRate107(d),1)}%。${d.route==='court'?courtBallotText107(d)+'计入关键一票后须过半。':'院内支持率达到半数即可通过。'}<br>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度；第 ${d.reviewDeadline} 季度开始时截止。<br>无需在局势页操作；到审查机关争取支持。`}
  if(MINORITY_KINDS107.includes(x.kind)){
   if(x.method)return `<b>${x.method==='forced-migration'?'强制迁徙':'强制同化'}执行中 · 不可取消</b><br>已执行 ${x.elapsed} / ${x.duration} 季度，剩余 ${x.duration-x.elapsed} 季度。<br>${x.method==='forced-migration'?'每季度公众支持 −2、稳定 −2、实际年化增长率 −0.5 个百分点。开始时的信心 −20 已执行，不会重复扣减。':'每季度公众支持 −1、稳定 −2、信心 −0.5。'}<br>执行期间不能改选其他路径。`;
   return `社会多元修正案：${minorityGate107()?'已达到提出条件':'尚未达到提出条件'}。<br>当前加权支持度 ${fmt(electionForecast().total,1)}% / 需要 80%；政治稳定 ${fmt(s.stability,1)} / 需要 60。<br>请与${esc(regime().body+memberRole(0))}互动提出修宪。${regime().democratic?'本政体只能通过修宪解决。':'本政体也可选择下方不可撤销的强制措施。'}<br>未采取强制措施时，本局势本身不扣减季度指标。`;

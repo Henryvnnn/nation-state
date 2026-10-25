@@ -4,7 +4,7 @@
  if(typeof window==='undefined'||!document.getElementById('nation-office'))return;
  const root=$('nation-office'),scene=root.querySelector('.of-scene'),world=root.querySelector('.of-world');
  const overlay=$('office-overlay'),content=$('content');
- const groupsForPages={overview:'archives',archive:'archives',settlement:'archives',budget:'files',reforms:'files',situations:'files',assembly:'phone',cabinet:'phone',judiciary:'phone',politics:'map',console:'archives'};
+ const groupsForPages={overview:'archives',archive:'archives',centralbank:'archives',settlement:'archives',budget:'files',reforms:'files',situations:'files',assembly:'phone',cabinet:'phone',judiciary:'phone',politics:'map',console:'archives'};
  const themes={constitutional:'palace',westminster:'palace',absolute:'palace',aristocratic:'palace',presidential:'republic',semi:'republic',federal:'republic',symbolic:'republic',tyranny:'republic',party:'party',theorepublic:'theocratic',theoabsolute:'theocratic'};
  const ui={open:false,section:'archives',custom:null,lastTab:'overview',initializing:false,focus:null,region:0,tourReturn:null};
  const $all=(selector)=>document.querySelectorAll(selector);
@@ -183,7 +183,7 @@
    if(tutorial104)stopTutorial();if(hasState())save();$('modal').close();$('chart-modal').close();closeWorkspace();root.hidden=true;$('start-screen').hidden=false;document.body.classList.add('at-title');$('alert-notice').hidden=true;$('alert-dock').hidden=true;titleStatus();window.scrollTo(0,0);
   },
   exit(){modal('<span class="tag">国策 / NATION · STATE</span><h2>可以安心离开。</h2><p>已有进度保存在当前浏览器中。你可以关闭此标签页，或返回开始界面。</p><button class="primary" onclick="$(\'modal\').close()">返回开始界面</button>')},
-  constitutionContact(mode){if(mode==='amend'||constitutionalRoute()==='assembly'){changeTab('assembly');meetMember(0)}else{changeTab('judiciary');meetJudge(constitution().judges.find(j=>j.chief).id)}},
+  constitutionContact(mode){if(mode==='amend'||constitutionalRoute()==='assembly'){changeTab('assembly');meetMember(0)}else{changeTab('judiciary');openChiefJudge107()}},
   region(index){ui.region=index;const el=$('office-region-'+index);if(!el)return;content.querySelectorAll('.office-selected-region').forEach(n=>n.classList.remove('office-selected-region'));el.classList.add('office-selected-region');el.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})},
   state(){return {...ui,focus:null,tourReturn:null}}
  };

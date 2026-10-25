@@ -112,7 +112,7 @@ cabinet=function(){return cabinetBeforePersonnel107().replace('财政部长 / �
 const meetBeforePersonnel107=meetMember;
 meetMember=function(id){meetBeforePersonnel107(id);$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2>'+honourDescription107(pstate().members[id]))};
 const meetJudgeBeforePersonnel107=meetJudge;
-meetJudge=function(id){meetJudgeBeforePersonnel107(id);$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2>'+honourDescription107(constitution().judges.find(j=>j.id===id)))};
+meetJudge=function(id){if(!constitution().judges.some(j=>j.id===id&&!j.vacant))return;meetJudgeBeforePersonnel107(id);$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2>'+honourDescription107(constitution().judges.find(j=>j.id===id)))};
 const validBeforePersonnel107=validSave;
 validSave=function(v){
  if(!validBeforePersonnel107(v))return false;

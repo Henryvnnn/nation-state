@@ -29,7 +29,7 @@ function initializeConstitution(){
  try{
   s.rng=hash(s.seed+'|constitution107');
   let count=5+Math.floor(rand()*6),minority=1+Math.floor(rand()*Math.floor((count-1)/2));
-  let views=Array.from({length:count},(_,i)=>i<minority?Math.floor(rand()*2):2+Math.floor(rand()*3));
+  let views=Array.from({length:count},(_,i)=>i<minority?Math.floor(rand()*2):((roll)=>roll<.7?2:roll<.85?3:4)(rand()));
   for(let i=views.length-1;i>0;i--){let j=Math.floor(rand()*(i+1));[views[i],views[j]]=[views[j],views[i]]}
   s.constitution={version:1,judges:[],authority:'court',termLimit:regime().democratic?48:0,
    economicModel:v3().socialist?'socialist':'mixed',rights:'traditional',budgetCaps:{},reformDiscounts:{},
@@ -119,28 +119,41 @@ function proposeConstitution(mode,action,target){
  $('modal').close();tab=docket.route==='court'?'judiciary':'assembly';pSave();
 }
 function judgeWillingness(j,docket=constitution().docket){
- if(!docket)return null;
+ if(!docket||j.vacant)return null;
  let base=docket.mode==='amend'?34:54,stance=docket.stance;
  const affinity=[{social:30,liberal:10,authority:-18,traditional:-30,neutral:2},{liberal:32,authority:-32,social:12,traditional:-12,neutral:5},{neutral:0},{liberal:-30,authority:27,social:-3,traditional:8,neutral:5},{social:-30,traditional:28,liberal:-4,authority:6,neutral:5}];
  let conservative=j.trait===2?(docket.mode==='amend'?-18:-5):0;
  let boost=j.boosts.filter(x=>x.docketId===docket.id&&x.until>=s.q).reduce((n,x)=>n+x.amount,0);
  return clamp(base+(affinity[j.trait][stance]||0)+conservative+(j.relation-50)*.2+boost,0,100);
 }
-function courtVoteCount(){return constitution().judges.filter(j=>judgeWillingness(j)>=60).length}
+function activeJudges107(){return constitution().judges.filter(j=>!j.vacant)}
+function courtVoteCount(){return activeJudges107().filter(j=>judgeWillingness(j)>=60).length}
+function courtTally107(d=constitution().docket){
+ const judges=activeJudges107(),baseYes=d?judges.filter(j=>judgeWillingness(j,d)>=60).length:0,baseNo=judges.length-baseYes;
+ const tied=!!d&&judges.length>0&&baseYes===baseNo,chief=judges.find(j=>j.chief);
+ const casting=tied&&chief?(judgeWillingness(chief,d)>=60?'yes':'no'):null;
+ const yes=baseYes+(casting==='yes'?1:0),no=baseNo+(casting==='no'?1:0),total=yes+no;
+ return {baseYes,baseNo,seated:judges.length,yes,no,total,tied,casting,chiefName:chief?.name||null,rate:total?yes/total*100:0,passed:total>0&&yes>no};
+}
+function courtBallotText107(d=constitution().docket){
+ const t=courtTally107(d);return `在任法官 ${t.seated} 人；普通票 ${t.baseYes} 票赞成、${t.baseNo} 票反对。`+(t.casting?`${esc(t.chiefName)}行使关键一票，投${t.casting==='yes'?'赞成':'反对'}；最终 ${t.yes} 比 ${t.no}。`:t.tied?'当前平票且首席空缺，须完成补缺后产生关键一票。':'每位法官意愿达到 60 时投赞成票，平票时首席依本案意愿额外投一票。');
+}
+function openChiefJudge107(){const chief=activeJudges107().find(j=>j.chief);if(chief)return meetJudge(chief.id);if(typeof judgeNominations107==='function')return judgeNominations107();toast('首席职位空缺，请先完成法官补缺。')}
+
 function judgeSeatChart(){
- let judges=constitution().judges.slice().sort((a,b)=>a.trait-b.trait),n=judges.length;
+ let judges=constitution().judges.slice().sort((a,b)=>(a.vacant?9:a.trait)-(b.vacant?9:b.trait)),n=judges.length;
  let seats=judges.map((j,i)=>{let angle=Math.PI-i*Math.PI/(n-1),x=180+135*Math.cos(angle),y=160-125*Math.sin(angle),yes=constitution().docket&&judgeWillingness(j)>=60;
-  return `<g class="judge-seat" data-judge-seat="${j.id}"><title>${esc(j.name)} · ${judgeTitle(j)} · ${JUDICIAL_VIEWS[j.trait].name}${constitution().docket?' · '+(yes?'赞成':'反对'):''}</title><circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="15" fill="${JUDICIAL_VIEWS[j.trait].color}" stroke="${j.chief?'#f3dfac':'#25352e'}" stroke-width="${j.chief?4:1}"/>${j.chief?`<text x="${x.toFixed(2)}" y="${(y+5).toFixed(2)}" text-anchor="middle" fill="#18231c" font-size="16">★</text>`:''}</g>`}).join('');
- return `<svg class="judge-semicircle" viewBox="0 0 360 190" role="img" aria-label="${n} 个法官席位；星号表示首席，颜色表示倾向">${seats}</svg><div class="judge-legend">${JUDICIAL_VIEWS.map((v,i)=>`<span><i style="background:${v.color}"></i>${v.name} <b>${judges.filter(j=>j.trait===i).length} 席</b></span>`).join('')}</div>`;
+  return `<g class="judge-seat" data-judge-seat="${j.id}"><title>${j.vacant?'空缺 · 原任 '+esc(j.name):esc(j.name)+' · '+judgeTitle(j)+' · '+JUDICIAL_VIEWS[j.trait].name+(constitution().docket?' · '+(yes?'赞成':'反对'):'')}</title><circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="15" fill="${j.vacant?'#cbc6b6':JUDICIAL_VIEWS[j.trait].color}" stroke="${j.chief?'#f3dfac':'#25352e'}" stroke-width="${j.chief?4:1}" ${j.vacant?'stroke-dasharray="3 3"':''}/>${j.chief?`<text x="${x.toFixed(2)}" y="${(y+5).toFixed(2)}" text-anchor="middle" fill="#18231c" font-size="16">★</text>`:''}</g>`}).join('');
+ return `<svg class="judge-semicircle" viewBox="0 0 360 190" role="img" aria-label="${n} 个法官席位；星号表示首席，灰色虚线表示空缺">${seats}</svg><div class="judge-legend">${JUDICIAL_VIEWS.map((v,i)=>`<span><i style="background:${v.color}"></i>${v.name} <b>${judges.filter(j=>!j.vacant&&j.trait===i).length} 席</b></span>`).join('')}${judges.some(j=>j.vacant)?`<span>空缺 <b>${judges.filter(j=>j.vacant).length} 席</b></span>`:''}</div>`;
 }
 function constitutionalDocketHTML(){
  let d=constitution().docket,route=constitutionalRoute();if(d?.mode==='amend'&&typeof amendmentDocketHTML107==='function')return amendmentDocketHTML107();
- if(!d)return `<div id="constitutional-docket" class="card"><span class="tag">宪制议程</span><h3>暂无待审议案</h3><p>${route==='court'?`与${esc(JUDGE_TITLES[pstate().regime][1])}互动，提出修宪或释宪。`:`与${esc(regime().body+memberRole(0))}互动，提出修宪或释宪。`}</p><button onclick="${route==='court'?`meetJudge(${constitution().judges.find(j=>j.chief).id})`:'meetMember(0)'}">前往互动 →</button></div>`;
- let count=d.route==='court'?courtVoteCount():null,rate=d.route==='court'?count/constitution().judges.length*100:billPassRate104();
- return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">${d.mode==='amend'?'修宪案':'释宪案'} · ${d.route==='court'?'法官表决':esc(regime().body)+'审议'}</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p class="note">${esc(d.costText)}</p><div class="big-number">${fmt(rate,1)}<small>% ${d.route==='court'?'法官支持率':'院内支持率'}</small></div><p>${d.route==='court'?`${count} / ${constitution().judges.length} 位法官赞成；每位法官意愿达到 60 时投赞成票。`:'支持比例按各党派席位及议程倾向加权。'}必须超过 50% 才能通过，恰好 50% 不通过。</p><div class="constitution-actions"><button class="primary" onclick="voteConstitution()" ${s.ended?'disabled':''}>提交表决 · 1 行动点</button><button onclick="withdrawConstitution()" ${s.ended?'disabled':''}>撤回议案</button>${regime().body==='枢密院'?'<button class="danger" onclick="forceConstitutionPreview()">强行颁行…</button>':''}</div></section>`;
+ if(!d)return `<div id="constitutional-docket" class="card"><span class="tag">宪制议程</span><h3>暂无待审议案</h3><p>${route==='court'?`与${esc(JUDGE_TITLES[pstate().regime][1])}互动，提出修宪或释宪。`:`与${esc(regime().body+memberRole(0))}互动，提出修宪或释宪。`}</p><button onclick="${route==='court'?'openChiefJudge107()':'meetMember(0)'}">前往互动 →</button></div>`;
+ let count=d.route==='court'?courtVoteCount():null,rate=d.route==='court'?courtTally107(d).rate:billPassRate104();
+ return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">${d.mode==='amend'?'修宪案':'释宪案'} · ${d.route==='court'?'法官表决':esc(regime().body)+'审议'}</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p class="note">${esc(d.costText)}</p><div class="big-number">${fmt(rate,1)}<small>% ${d.route==='court'?'法官支持率':'院内支持率'}</small></div><p>${d.route==='court'?courtBallotText107(d):'支持比例按各党派席位及议程倾向加权。'}${d.route==='court'?'计入关键一票后须赞成票过半。空缺不参与投票；无人任职时不能通过。':'必须超过 50% 才能通过，恰好 50% 不通过。'}</p><div class="constitution-actions"><button class="primary" onclick="voteConstitution()" ${s.ended?'disabled':''}>提交表决 · 1 行动点</button><button onclick="withdrawConstitution()" ${s.ended?'disabled':''}>撤回议案</button>${regime().body==='枢密院'?'<button class="danger" onclick="forceConstitutionPreview()">强行颁行…</button>':''}</div></section>`;
 }
 function meetJudge(id){
- let j=constitution().judges.find(x=>x.id===id);if(!j||s.ended)return;
+ let j=constitution().judges.find(x=>x.id===id);if(!j||j.vacant||s.ended)return;
  let d=constitution().docket?.route==='court'?constitution().docket:null,w=judgeWillingness(j,d),busy=pstate().lastAction['judge:'+id]===s.q;
  modal(`<span class="tag">${esc(constitutionBaseRegime().court)} · ${judgeTitle(j)}</span><h2>${esc(j.name)}</h2><p><b style="color:${JUDICIAL_VIEWS[j.trait].color}">${JUDICIAL_VIEWS[j.trait].name}</b> · 关系 ${fmt(j.relation,0)}</p><p>${JUDICIAL_VIEWS[j.trait].text}</p>${d?`<p>对“${esc(d.title)}”的意愿：<b>${fmt(w,1)} / 100</b>。${w>=60?'预计赞成':'预计反对'}；60 点起投赞成票。游说加成仅用于这份议案，持续至第 ${s.q+3} 季度（当前已有加成各按原到期日计算）。</p>`:'<p>尚无宪制议案。可以先公开会谈，改善关系。</p>'}${j.chief&&constitutionalRoute()==='court'?'<div class="constitution-actions"><button onclick="constitutionalMenu(\'interpret\')">请求释宪</button></div>':''}<div class="choices">${[
   ['hearing','公开法律论证',d?'1 行动点；本案意愿 +12，关系 +3，司法独立 +1。':'1 行动点；关系 +6，司法独立 +1。'],
@@ -151,7 +164,7 @@ function meetJudge(id){
 }
 function influenceJudge(id,method){
  let c=constitution(),j=c.judges.find(x=>x.id===id),d=c.docket?.route==='court'?c.docket:null;
- if(!j||!['hearing','bribe','exchange','pressure'].includes(method)||(!d&&method!=='hearing')||!spendAction('judge:'+id))return;
+ if(!j||j.vacant||!['hearing','bribe','exchange','pressure'].includes(method)||(!d&&method!=='hearing')||!spendAction('judge:'+id))return;
  let amount={hearing:12,bribe:26,exchange:20,pressure:24}[method];
  if(d)j.boosts.push({docketId:d.id,amount,until:s.q+3});
  j.relation=clamp(j.relation+(method==='hearing'?(d?3:6):method==='pressure'?-3:1),0,100);
@@ -178,7 +191,7 @@ function voteConstitution(force=false){
  let spec=constitutionalSpec(d.mode,d.action,d.target);
  if(!spec){toast('议案目标已失效，请撤回后重新提出');return}
  if(!spendAction('constitutional-vote'))return;
- let rate=d.route==='court'?courtVoteCount()/c.judges.length*100:billPassRate104();
+ let ballot=d.route==='court'?courtTally107(d):null,rate=ballot?ballot.rate:billPassRate104();
  if(!force&&rate<=50){log('宪制议案未通过',d.title+'获得 '+fmt(rate,1)+'% 支持，必须超过 50%。议案保留。');toast('未过半数，请继续争取支持');$('modal').close();pSave();return}
  let penalty=d.route==='assembly'&&!force?billStabilityPenalty():0;
  if(force){let amend=d.mode==='amend';mod({approval:amend?-12:-8,stability:amend?-10:-8});noteDecision('强行颁行宪制议案',{authority:4,law:-3,elite:2})}
@@ -191,7 +204,7 @@ function voteConstitution(force=false){
  if(d.action==='economy'){c.economicModel=d.target;v3().socialist=d.target==='socialist'}
  if(d.action==='rights')c.rights=d.target;
  noteDecision(spec.title,spec.axes);
- c.history.push({q:s.q,title:spec.title,description:spec.description,effects:spec.costText,route:d.route,rate,forced:force});
+ c.history.push({q:s.q,title:spec.title,description:spec.description,effects:spec.costText,route:d.route,rate,forced:force,...(ballot?{ballot}: {})});
  pstate().passed.push({title:spec.title,q:s.q,votes:rate,passRate:rate});
  log(force?'宪制法令颁行':'宪制议案通过',spec.title+'。'+spec.description+' '+spec.costText+(penalty?' 反对派影响：稳定 −'+fmt(penalty,1)+'。':''));
  c.docket=null;c.judges.forEach(j=>j.boosts=[]);if(pstate().bill?.kind==='constitution')pstate().bill=null;
@@ -203,7 +216,7 @@ const overviewBeforeConstitution=overview;
 overview=function(){return overviewBeforeConstitution().replace('两届任期共 48 季度',constitutionalTermText())};
 judiciary=function(){
  let c=constitution(),legacy=judiciaryBeforeConstitution(),split=legacy.indexOf('<div class="split"'),route=constitutionalRoute();
- let roster=`<div class="grid constitutional-grid"><section id="constitutional-court" class="card"><span class="tag">${esc(constitutionBaseRegime().court)} · ${c.judges.length} 席</span><h2>法官席位与倾向</h2>${judgeSeatChart()}<p>每人一票，★ 为${JUDGE_TITLES[pstate().regime][1]}，已计入总席位。社会进步与政治自由两类合计少于半数。</p>${route==='assembly'?`<p class="note">宪制事项由${esc(regime().body)}表决，此处法官不参与宪制表决。</p>`:''}</section>${constitutionalDocketHTML()}</div><div class="section-label"><h3>法官名录</h3><span>逐人互动 · 每人每季一次</span></div><div class="member-grid judge-roster">${c.judges.map(j=>`<article class="card person"><span class="tag">${judgeTitle(j)}</span><h3>${esc(j.name)}</h3><p style="color:${JUDICIAL_VIEWS[j.trait].color}">${JUDICIAL_VIEWS[j.trait].name}</p><p>${JUDICIAL_VIEWS[j.trait].text}</p><div class="row"><span>关系</span><b>${fmt(j.relation,0)}</b></div>${c.docket&&c.docket.route==='court'?`<div class="row"><span>本案意愿</span><b>${fmt(judgeWillingness(j),1)} · ${judgeWillingness(j)>=60?'赞成':'反对'}</b></div>`:''}<button onclick="meetJudge(${j.id})" ${s.ended?'disabled':''}>${j.chief&&route==='court'?'会见 / 释宪':'会见法官'}</button></article>`).join('')}</div>`;
+ let roster=`<div class="grid constitutional-grid"><section id="constitutional-court" class="card"><span class="tag">${esc(constitutionBaseRegime().court)} · ${c.judges.length} 席</span><h2>法官席位与倾向</h2>${judgeSeatChart()}<p>普通表决每人一票，★ 为${JUDGE_TITLES[pstate().regime][1]}，平票时另投关键一票。墨守成规在开局更常见；开局自由倾向合计少于半数，之后可随任命改变。</p>${route==='assembly'?`<p class="note">宪制事项由${esc(regime().body)}表决，此处法官不参与宪制表决。</p>`:''}</section>${constitutionalDocketHTML()}</div><div class="section-label"><h3>法官名录</h3><span>逐人互动 · 每人每季一次</span></div><div class="member-grid judge-roster">${c.judges.map(j=>j.vacant?`<article class="card person judge-vacancy" data-vacant-judge="${j.id}"><span class="tag">第 ${j.id+1} 席 · 空缺</span><h3>等待补缺任命</h3><p>${esc(j.name)} · ${esc(j.departureReason||'离任')}</p><button onclick="judgeNominations107(${j.id})" ${s.ended?'disabled':''}>查看法官备选池</button></article>`:`<article class="card person"><span class="tag">${judgeTitle(j)}</span><h3>${esc(j.name)}</h3><p style="color:${JUDICIAL_VIEWS[j.trait].color}">${JUDICIAL_VIEWS[j.trait].name}</p><p>${JUDICIAL_VIEWS[j.trait].text}</p>${Number.isInteger(j.politicalTrait)?`<small>任前政治倾向：${TRAITS[j.politicalTrait].name}</small>`:''}<div class="row"><span>关系</span><b>${fmt(j.relation,0)}</b></div>${c.docket&&c.docket.route==='court'?`<div class="row"><span>本案意愿</span><b>${fmt(judgeWillingness(j),1)} · ${judgeWillingness(j)>=60?'赞成':'反对'}</b></div>`:''}<button onclick="meetJudge(${j.id})" ${s.ended?'disabled':''}>${j.chief&&route==='court'?'会见 / 释宪':'会见法官'}</button></article>`).join('')}</div>`;
  return legacy.slice(0,split)+roster+legacy.slice(split);
 };
 const archiveBeforeConstitution=archive;
@@ -263,7 +276,7 @@ validSave=function(v){
   if(!c)return bill?.kind!=='constitution';
   const finite=(x,min,max)=>Number.isFinite(x)&&x>=min&&x<=max;
   if(c.version!==1||!['court','assembly'].includes(c.authority)||![0,48,72].includes(c.termLimit)||!['mixed','socialist'].includes(c.economicModel)||!['equal','traditional'].includes(c.rights))return false;
-  if(!Array.isArray(c.judges)||c.judges.length<5||c.judges.length>10||c.judges.filter(j=>j.chief===true).length!==1||c.judges.filter(j=>j.trait<2).length*2>=c.judges.length)return false;
+  if(!Array.isArray(c.judges)||c.judges.length<5||c.judges.length>10||(v.judicialStaff?c.judges.filter(j=>!j.vacant&&j.chief===true).length!==(v.judicialStaff.chiefPending?0:1):c.judges.filter(j=>j.chief===true).length!==1||c.judges.filter(j=>j.trait<2).length*2>=c.judges.length))return false;
   if(c.judges.some((j,i)=>j.id!==i||!Number.isInteger(j.trait)||!JUDICIAL_VIEWS[j.trait]||typeof j.name!=='string'||j.name.length>50||typeof j.chief!=='boolean'||!finite(j.relation,0,100)||!Array.isArray(j.boosts)||j.boosts.some(b=>!Number.isInteger(b.docketId)||!finite(b.amount,0,100)||!Number.isInteger(b.until))))return false;
   if(new Set(c.judges.map(j=>j.name)).size!==c.judges.length)return false;
   if(!c.budgetCaps||CONSTITUTION_BUDGETS.some(k=>!Number.isInteger(c.budgetCaps[k])||!finite(c.budgetCaps[k],policyMeta[k][2],100)))return false;
