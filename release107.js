@@ -67,6 +67,7 @@ function normalizeReleaseLog107(){
  let p=pstate();for(let value of [s.logs,p.current,p.queue,p.reports,p.promises,p.bill,p.passed,v3().decisions])visit(value);
 }
 const initBefore107=initPolitics;initPolitics=function(id=selectedRegime){initBefore107(id);migrate107();normalizeReleaseLog107()};
+function factionSeatShare107(f){let factions=pstate().factions;return allocateUnits107(factions.map(x=>x.seats),100)[factions.findIndex(x=>x.id===f.id)]||0}
 function chamberSeatData107(){
  let factions=pstate().factions,total=Math.round(factions.reduce((sum,f)=>sum+f.seats,0)),counts=allocateUnits107(factions.map(f=>f.seats),Math.min(500,total));
  let seats=factions.flatMap((f,i)=>Array.from({length:counts[i]},()=>({faction:f.id,color:factionColor107(f.id)})));

@@ -99,6 +99,21 @@ body.office-mode{--bg:#ded3b5;--paper:#efe6cf;--ink:#343e34;--muted:#73715e;--gr
 #office-workspace .political-banner h2{font-family:'Noto Serif SC','Noto Sans SC',serif;font-weight:500;font-size:23px;letter-spacing:.06em;color:#3f4c39}
 #office-workspace .action-count{background:#c9d0ae;border:1px solid #9fa77d;border-radius:2px;color:#4a5e42;min-width:110px}
 #office-workspace .action-count b{color:#4a5e42}#office-workspace .action-count span{color:#6c7457}
+#office-workspace .political-banner>div:first-child{min-width:0}
+#office-workspace .action-count{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;width:188px;max-width:100%;min-width:0;padding:14px 16px;text-align:center}
+#office-workspace .action-count>*{width:100%;margin:0;text-align:center;overflow-wrap:anywhere}
+#office-workspace .action-count b{line-height:1.2}
+#office-workspace .action-count .action-mode-status{font-size:11px;line-height:1.65;white-space:normal}
+#office-workspace #nav button{justify-content:center;text-align:center}
+#office-workspace #nav button>span{margin-right:0}
+#office-sections button,.of-pocket button{text-align:center}
+.office-object-dot{margin:0!important}
+.workspace-top:has(#office-sections[hidden]){justify-content:flex-end}
+.office-mode .quarter-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:24px}
+.office-mode .quarter-confirm-actions button{margin:0;text-align:center;flex:1 1 190px}
+.office-mode .quarter-confirm-preference{display:flex;align-items:center;justify-content:flex-end;gap:8px;width:max-content;max-width:100%;margin:18px 0 0 auto;font-size:12px;cursor:pointer}
+.office-mode .quarter-confirm-preference input{flex:0 0 16px;width:16px;height:16px;margin:0;padding:0;accent-color:#617a54}
+@media(max-width:760px){#office-workspace .political-banner:has(.action-count){flex-wrap:wrap}#office-workspace .action-count{margin-left:auto;margin-right:auto}}
 #office-workspace .section-label{margin:25px 0 13px;color:#766f55}#office-workspace .section-label h3{font-size:14px;color:#515d44;letter-spacing:.08em}
 #office-workspace .grid{gap:21px}#office-workspace .member-grid{gap:19px}#office-workspace .split{gap:21px}
 #office-workspace .metric-label{color:#687154}#office-workspace .metric-value{font-size:30px;color:#3f5540}#office-workspace .sub{font-size:11px}
