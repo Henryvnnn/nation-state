@@ -265,7 +265,7 @@ function showTutorialStep104(direction=1){
  let t=tutorial104;if(!t)return;t.opened.forEach(el=>el.open=false);t.opened=[];
  for(let tries=0;tries<t.steps.length;tries++){
   let step=t.steps[t.index];if(!step){stopTutorial();return}if(tab!==step.page){tab=step.page;render()}
-  let el=tourFind104(step.selector);if(el){let details=el.closest('details');if(details&&!details.open&&el.tagName!=='SUMMARY'){details.open=true;t.opened.push(details)}
+  let el=tourFind104(step.selector);if(el){let details=el.closest('details');if(details&&!details.open)el=details.querySelector('summary')||el;
    if(el.getClientRects().length){t.target=el;let entry=guideCatalog104().find(e=>e.id===step.id),brief=entry?.text.match(/[^。！？]+[。！？]?/g)?.slice(0,2).join(''),body=typeof step.text==='function'?step.text():step.text||brief||'查看此处的信息，了解国家当前状态。';
     $('tutorial-controls').innerHTML=`<span class="tour-count">${t.scope==='page'?'本页教程':'入门教程'} · ${t.index+1} / ${t.steps.length} · 可随时跳过</span><h2 id="tour-title">${esc(step.title||entry?.title||(step.id==='regime'?'国家政体':'玩家职务'))}</h2><p>${esc(body)}</p><div class="tour-buttons"><button onclick="tutorialMove(-1)" ${t.index===0?'disabled':''}>上一步</button><button class="primary" onclick="tutorialMove(1)">${t.index===t.steps.length-1?'空格完成教程':'空格进入下一步'}</button></div>`;
     el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});positionTutorial104();$('tutorial-controls').querySelector('.primary').focus({preventScroll:true});return;
