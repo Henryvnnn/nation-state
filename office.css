@@ -206,3 +206,16 @@ body.office-mode{--bg:#ded3b5;--paper:#efe6cf;--ink:#343e34;--muted:#73715e;--gr
 .spring-resolution p{font-size:12px;line-height:1.9;margin:10px 0 0}
 .spring-guidance b,.spring-guidance strong{overflow-wrap:anywhere}
 @media(max-width:650px){.spring-guidance{padding:12px}.spring-metric-heading{grid-template-columns:10px minmax(0,1fr) 52px;gap:5px 8px}.spring-state{grid-column:2;grid-row:2}.spring-detail-hint{grid-column:3;grid-row:2}.spring-metric p{margin-left:18px}}
+
+.regional-decay-panel,.party-route-panel{margin-bottom:18px}
+.regional-decay-panel .row{gap:16px;align-items:start}
+.regional-decay-panel .row>b{text-align:right;max-width:60%;overflow-wrap:anywhere}
+@media(max-width:650px){.regional-decay-panel .section-label{display:block}.regional-decay-panel .row{display:block}.regional-decay-panel .row>b{display:block;text-align:left;max-width:100%;margin-top:5px}}
+
+.situation-grid>.card:has(.election-season-progress){grid-column:1/-1}
+.election-season-progress{padding:12px 16px}
+.election-season-progress p{margin:0 0 8px}
+.election-season-progress p:last-child{margin-bottom:0}
+.situation-grid>.card:has(.election-season-progress) .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.situation-grid>.card:has(.election-season-progress) .choices>button{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;margin:0;min-width:0;text-align:left}
+@media(max-width:900px){.situation-grid>.card:has(.election-season-progress) .choices{grid-template-columns:1fr}}

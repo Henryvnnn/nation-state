@@ -114,6 +114,7 @@ function guideCatalog104(){
  for(const [key,definition]of Object.entries(SPRING_METRIC_RULES107))add('spring-'+key,definition.name,definition.aliases,definition.rule,'局势与处置');
  add('spring-reform','有限改革',['推行有限改革','改革承诺','改革兑现期'],'民主化运动中的四季度承诺：承诺后的四次季度评议均须司法独立＞40且社会保障预算＞8% GDP，到期可信度至少30才能和平结束。任一季度条件失守不能在之后补回；到期未兑现使规模＋20、激进度＋25。可信度达到30本身不会直接结束运动。','局势与处置');
  add('qe','量化宽松应急安排',['量化宽松','应急债务回表','债务回表','待回表债务'],'本游戏的特殊危机机制：暂移现有公债5%，同时增加通胀等代价。经济危机结束或任期结算时必须全部计回，因此不等于永久偿债。','局势与处置');
+ if(typeof seasonsGuide107==='function')seasonsGuide107(add);
  add('sports','体育基础',['国家体育','体育事业'],'体育设施与组织能力，范围0至10。相关改革和事件可提高它，从而增加尚未使用奥运机会时收到申办邀请的概率。','经济与财政');
  add('culture','文化基础',['国家文化','文化事业'],'公共文化设施与文化事业的积累。文化投入和改革能改善民生与就业，并影响地区需求和历史评估。','经济与财政');
  add('archive','国家档案',['档案','国家基本档案','执政纪事'],'查看科研、行动额度、国家结构、债务历史和执政记录，并导入或导出存档。','页面与操作');
@@ -212,6 +213,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('judiciary','judicial','.political-banner .action-count');target('judiciary','judicial-pressure','[data-guide="judicial-pressure"]');target('judiciary','court-actions','.choices','此区域提供司法互动。具体代价和收益会写在各按钮里，可按国家状况选择。');
  target('judiciary','judges','#constitutional-court');target('judiciary','constitutional-docket','#constitutional-docket');target('judiciary','judge-interaction','button[onclick^="meetJudge("]');
  nav('politics','elections','这里查看全国民意、地方诉求、选举预测与历次结果。');
+ if(typeof seasons107==='function')target('politics','quarterly-regional-decay','.regional-decay-panel');
  target('politics','approval','[data-guide="approval"]');
  target('politics','forecast','[data-guide="forecast"]');target('politics','capital-region','.region-grid article:last-child .tag');target('politics','regions','.region-grid article .tag','各地区有不同产业和社会基础，名称中的省、州、领等称谓随政体变化。');
  for(let id of ['population','base','development','local-demands'])target('politics',id,`[data-guide="${id}"]`);
