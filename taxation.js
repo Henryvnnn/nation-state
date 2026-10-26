@@ -17,6 +17,20 @@ const TAX_NAMES107={
 };
 const TAX_BASES107={income:.48,corporate:.19,vat:.62,property:.2,tariff:.2,tithe:.4};
 const TAX_VOTE_STEPS107={income:1,corporate:2,vat:1.5,property:1,tariff:2,tithe:1};
+// Net change in the full-support threshold per tax-specific step; negative means support.
+const FACTION_TAX_PREFERENCES107={
+ conservative:{property:1.5,tariff:-.5,tithe:-.75},
+ market:{property:1.5,tariff:1.5,tithe:1},
+ social:{property:-1.5,tariff:.25,tithe:1},
+ local:{property:1,tariff:-.25,tithe:.5},
+ green:{property:-.75,tariff:.5,tithe:1},
+ law:{property:.25,tariff:.5,tithe:1.5},
+ state:{property:-.75,tariff:-1,tithe:.25},
+ reform:{property:-.5,tariff:1,tithe:.5},
+ religious:{property:.25,tariff:-.25,tithe:-2}
+};
+function factionTaxPreferences107(f){const profile=factionProfile(f),key=Object.keys(FACTION_PROFILES103).find(k=>FACTION_PROFILES103[k]===profile);return FACTION_TAX_PREFERENCES107[key]||FACTION_TAX_PREFERENCES107.conservative}
+function taxPreferenceText107(f){const preferences=factionTaxPreferences107(f);return taxKeys107().filter(k=>preferences[k]!==undefined).map(k=>`${policyInfo107(k)[0]}每提高${TAX_VOTE_STEPS107[k]}个百分点，门槛${preferences[k]>0?'＋':'−'}${Math.abs(preferences[k])}`).join('；')+'；降税时反向计算。'}
 Object.assign(policyMeta,{
  property:['财产税',0,20,'向土地与不动产征税。提高税率增加收入，也会抑制投资并损害支持。'],
  tariff:['进口关税',0,30,'对进口商品征税。提高税率增加收入，但推高进口成本、拖累增长与民意；开放程度越高，增长代价越大。'],
@@ -60,12 +74,14 @@ function taxEconomicEffects107(p){
 }
 function budgetMarketShift107(before,after){return (before.income-after.income)+(before.corporate-after.corporate)*.5+(before.vat-after.vat)*.3+(taxRate107(before,'property')-taxRate107(after,'property'))*.5+(taxRate107(before,'tariff')-taxRate107(after,'tariff'))*.5+(taxRate107(before,'tithe')-taxRate107(after,'tithe'))*.3}
 function assessmentTaxLoad107(){return s.policies.income+s.policies.corporate+s.policies.vat+(taxRate107(s.policies,'property')-5)*.5+(taxRate107(s.policies,'tariff')-5)*.5+taxRate107(s.policies,'tithe')*.5}
-function taxVotingText107(){return taxKeys107().map(k=>`${policyInfo107(k)[0]}每提高${TAX_VOTE_STEPS107[k]}个百分点`).join('、')+'，全票门槛各＋1；降税相反。'}
+function taxVotingText107(){return TAX_KEYS107.slice(0,3).map(k=>`${policyInfo107(k)[0]}每提高${TAX_VOTE_STEPS107[k]}个百分点`).join('、')+'，全票门槛各＋1，降税相反。财产／土地税、关税和可征收的宗教税按各派系偏好增减门槛；详见各派系的“查看细则”。'}
 const requirementBeforeTaxation107=budgetRequirement;
-budgetRequirement=function(f){const base=requirementBeforeTaxation107(f),b=pstate().bill;if(b?.kind!=='budget')return base;return base+['property','tariff','tithe'].reduce((sum,k)=>sum+(taxRate107(b.policies,k)-taxRate107(s.policies,k))/TAX_VOTE_STEPS107[k],0)};
+budgetRequirement=function(f){const base=requirementBeforeTaxation107(f),b=pstate().bill;if(b?.kind!=='budget')return base;const pref=factionTaxPreferences107(f);return base+['property','tariff','tithe'].reduce((sum,k)=>sum+(taxRate107(b.policies,k)-taxRate107(s.policies,k))/TAX_VOTE_STEPS107[k]*pref[k],0)};
+const preferenceBeforeTaxation107=preferenceText103;
+preferenceText103=function(f){return preferenceBeforeTaxation107(f)+'；'+taxPreferenceText107(f)};
 function taxRevenueText107(){return taxKeys107().map(k=>`${policyInfo107(k)[0]}税率×${TAX_BASES107[k]}`).join('＋')+'＋其他收入1%。'}
 budgetSummary=function(p){
- return `<div class="row"><span data-guide="revenue">预计财政收入</span><b>${fmt(revenue(p))}% GDP</b></div><div class="row"><span data-guide="spending">公共支出（含固定行政 3%）</span><b>${fmt(spend(p))}% GDP</b></div><div class="row"><span data-guide="interest">利息支出</span><b>${fmt(interest())}% GDP</b></div><div class="row"><span data-guide="balance">预计${balance(p)>=0?'盈余':'赤字'}</span><b class="${balance(p)>=0?'good':'bad'}">${fmt(balance(p))}% GDP</b></div><details class="tax-breakdown"><summary>查看税收细则</summary><p>各税率针对各自税基，不能直接相加作为收入占GDP比例。按当前GDP年化估算：</p>${taxKeys107().map(k=>`<div class="row"><span>${esc(policyInfo107(k)[0])}</span><b>${fmt(taxRate107(p,k)*TAX_BASES107[k],2)}% GDP</b></div>`).join('')}<div class="row"><span>其他收入</span><b>1.00% GDP</b></div><p>${esc(taxRevenueText107())}</p><p>${esc(taxVotingText107())}所有派系均适用，公共预算偏好另计。</p><p>预算通过后改变财政收支；投资、价格与民意影响每季度传导约35%。财产税与关税以5%为中性基准；财产税每高1个百分点，增长目标−0.015、民意目标−0.12。关税每高1个百分点，增长目标−0.04×经济开放系数、当季通胀压力＋0.02、民意目标−0.1；低于基准时相反。${hasReligiousTax107()?'宗教税每提高1个百分点，财政收入＋0.4% GDP、民意目标−0.25。三种宗教税名称效果相同；税率上限固定10%，不随公共预算释宪扩展。':''}</p></details>`;
+ return `<div class="row"><span data-guide="revenue">预计财政收入</span><b>${fmt(revenue(p))}% GDP</b></div><div class="row"><span data-guide="spending">公共支出（含固定行政 3%）</span><b>${fmt(spend(p))}% GDP</b></div><div class="row"><span data-guide="interest">利息支出</span><b>${fmt(interest())}% GDP</b></div><div class="row"><span data-guide="balance">预计${balance(p)>=0?'盈余':'赤字'}</span><b class="${balance(p)>=0?'good':'bad'}">${fmt(balance(p))}% GDP</b></div><details class="tax-breakdown"><summary>查看税收细则</summary><p>各税率针对各自税基，不能直接相加作为收入占GDP比例。按当前GDP年化估算：</p>${taxKeys107().map(k=>`<div class="row"><span>${esc(policyInfo107(k)[0])}</span><b>${fmt(taxRate107(p,k)*TAX_BASES107[k],2)}% GDP</b></div>`).join('')}<div class="row"><span>其他收入</span><b>1.00% GDP</b></div><p>${esc(taxRevenueText107())}</p><p>${esc(taxVotingText107())}执政党同样按自身偏好计算，公共预算偏好另计。</p><p>预算通过后改变财政收支；投资、价格与民意影响每季度传导约35%。财产税与关税以5%为中性基准；财产税每高1个百分点，增长目标−0.015、民意目标−0.12。关税每高1个百分点，增长目标−0.04×经济开放系数、当季通胀压力＋0.02、民意目标−0.1；低于基准时相反。${hasReligiousTax107()?'宗教税每提高1个百分点，财政收入＋0.4% GDP、民意目标−0.25。三种宗教税名称效果相同；税率上限固定10%，不随公共预算释宪扩展。':''}</p></details>`;
 };
 const changeBeforeTaxation107=changePolicy;
 changePolicy=function(k,v){if(!activePolicyKeys107().includes(k)||!Number.isFinite(+v))return;return changeBeforeTaxation107(k,v)};

@@ -191,10 +191,10 @@ programmePanel=function(k){
 };
 advanceProgramme=function(k,index){
  initializeProgrammes107();const pr=rules103().proposals[k],q=programmeQuote(k,index);if(!pr||pr.completed||!q||!spendAction('programme:'+k+':'+index))return;
- const def=q.def,extra=q.a[5];mod({cost:q.cost});pr.spent+=s.gdp*q.cost/100;pr.progress=Math.min(100,pr.progress+q.progress);q.c.loyalty=clamp(q.c.loyalty+q.a[3],0,100);
+ const def=q.def,extra=q.a[5],previousProgress=pr.progress;mod({cost:q.cost});pr.spent+=s.gdp*q.cost/100;pr.progress=Math.min(100,pr.progress+q.progress);q.c.loyalty=clamp(q.c.loyalty+q.a[3],0,100);
  if(extra){mod(extra.values);const f=pstate().factions[extra.faction];f.relation=clamp(f.relation+extra.relation,0,100);if(extra.risk)programmeState107().risks.push({due:s.q+1,chance:extra.risk,slot:k,candidate:q.c.id,faction:extra.faction,title:def.name,action:q.a[0]})}
  pr.actions.push({q:s.q,index,minister:q.c.id,cost:q.cost,progress:q.progress,...(extra?{effects:{...extra.values},relation:extra.relation,faction:extra.faction,scandalRisk:extra.risk}:{})});
- noteDecision(`${office(k)}提案：${q.a[0]}`,def.axes,def.tags,null,.2);
+ noteDecision(`${office(k)}提案：${q.a[0]}`,def.axes,def.tags,null,.2,null,{kind:'programme',weight:6*(pr.progress-previousProgress)/100,identity:'programme:'+k,progress:pr.progress-previousProgress,values:{...(extra?.values||{})}});
  if(pr.progress>=100){pr.completed=true;pr.completedAt=s.q;pr.rewardApplied={...def.reward};q.c.achievements+=5;mod(pr.rewardApplied);if(k==='education')rules103().research.educationModernized=true;log('部长提案完成',def.name+'已完成。'+impactText(def.reward));pstate().reports.unshift({q:s.q,title:office(k)+'：'+def.name+'完成',text:'停止提案忠诚损耗；部门进度和成果在更换主管后保留。'+impactText(def.reward)})}
  checkPoliticalEnd();if(s.ended)beginSettlement(s.ended);record();save();render();
 };

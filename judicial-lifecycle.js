@@ -91,7 +91,7 @@ function appointJudge107(seat,key){
  const staff=judicialStaff107();staff.history.push({type:'appointment',q:s.q,seat,person:JSON.parse(JSON.stringify(judge))});
  log('法官任命',judge.name+'就任'+JUDGE_TITLES[pstate().regime][0]+'，原倾向为'+TRAITS[c.trait].name+'，司法倾向为'+JUDICIAL_VIEWS[view].name+'。');
  if(staff.chiefPending){const active=activeJudges107(),chief=active[Math.floor(rand()*active.length)];active.forEach(j=>j.chief=j===chief);staff.chiefPending=false;staff.history.push({type:'chief',q:s.q,seat:chief.id,person:JSON.parse(JSON.stringify(chief))});log('司法首席产生',chief.name+'从全体现任法官中被随机选为'+JUDGE_TITLES[pstate().regime][1]+'。')}
- replenishJudicialNominees107();noteDecision('任命法官'+judge.name,TRAIT_AXES[c.trait]);$('modal').close();pSave();
+ replenishJudicialNominees107();noteDecision('任命法官'+judge.name,TRAIT_AXES[c.trait],[],null,1,null,{kind:'judicial'});$('modal').close();pSave();
 }
 const alertsBeforeJudicialStaff107=activeAlerts107;
 activeAlerts107=function(){const alerts=alertsBeforeJudicialStaff107();if(!s.ended&&s.judicialStaff){const count=constitution().judges.filter(j=>j.vacant).length;if(count)alerts.push({id:'judicial-vacancy',title:'最高司法机关有 '+count+' 席空缺',text:'请在最高司法机关的法官备选池任命接替者。'+(judicialStaff107().chiefPending?'首席空缺，完成补缺后随机产生新首席。':''),tabs:['judiciary'],metric:null,slot:null})}return alerts};

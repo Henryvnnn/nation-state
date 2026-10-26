@@ -64,7 +64,7 @@ function taskExplanation105(k){
  let task=departmentTask105(k,item,c);if(!task)return '';
  return `<div class="task-brief"><b>${item.task==='balanced'?'自主判断 · 当前倾向：':''}${task.name}</b><p>${task.text}</p><p>按当前能力与忠诚，任务成功时的额外效果：${departmentImpact105(departmentValues105(task,c))}。</p><small>方向持续至再次更改，每次推进季度执行一次。另计官员倾向与部门基础效果；执行受阻时效果与财政节约降至30%，投入仍全额支出。${task.values.growth?'增长影响持续1季度。':''}${k==='education'?'此处的人力资本不同于科研等级；科研进度仍由教育预算与教育现代化提案计算。':''}</small></div>`;
 }
-function recordDepartmentTask105(k,task,success){noteDecision(`${office(k)}执行：${task.name}`,Object.fromEntries(Object.entries(task.axes).map(([axis,v])=>[axis,v*(success?1:.3)])),success?task.tags||[]:[],null,.12)}
+function recordDepartmentTask105(k,task,success){noteDecision(`${office(k)}执行：${task.name}`,Object.fromEntries(Object.entries(task.axes).map(([axis,v])=>[axis,v*(success?1:.3)])),success?task.tags||[]:[],null,.12,null,{kind:'automatic'})}
 const LEGACY_DEPARTMENT_TASKS105={
  foreign:{social:'foreign_populist',order:'foreign_prudent',law:'foreign_prudent',industry:'foreign_trade',agriculture:'foreign_trade',technology:'foreign_trade',green:'foreign_prudent'},
  defence:{social:'defence_civil',order:'defence_readiness',law:'defence_professional',industry:'defence_civil',agriculture:'defence_civil',technology:'defence_professional',green:'defence_civil'},
@@ -86,7 +86,7 @@ const initBefore105=initPolitics;initPolitics=function(id=selectedRegime){initBe
 const setTaskBefore105=setTask;
 setTask=function(k,value){
  let item=pstate().cabinet[k];if(s.ended||!item||!cabinetTaskOptions105(k).some(([id])=>id===value))return;
- if(!DEPARTMENT_TASKS105[k])setTaskBefore105(k,value);else{item.task=value;save();toast('任务方向已更新，下季度执行；实际施政计入任期评估')}
+ if(!DEPARTMENT_TASKS105[k])setTaskBefore105(k,value);else{const changed=item.task!==value;item.task=value;if(changed){const c=pstate().candidates[item.candidate],task=departmentTask105(k,item,c);noteDecision(`${office(k)}任务：${TASKS[value]}`,task?.axes||{},[],null,1,null,{kind:'task'})}save();toast('任务方向已更新，下季度执行')}
  render();document.querySelector?.('#task')?.focus?.({preventScroll:true});
 };
 const validBefore105=validSave;

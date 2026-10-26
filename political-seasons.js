@@ -111,7 +111,7 @@ function supportPartyRoute107(x,id){
  const label=(moved?'转向':'继续支持')+next.name;
  x.actions.push({q:s.q,key:'back-faction-'+id,label});x.used['back-faction-'+id]=true;
  seasons107().switches.push({q:s.q,deadline:x.deadline,from:old,to:id,allocation});
- noteDecision(label,id===0?{authority:3,elite:2}:id===1?{market:2,nation:2}:{law:3,authority:-2});
+ noteDecision(label,id===0?{authority:3,elite:2}:id===1?{market:2,nation:2}:{law:3,authority:-2},[],null,1,null,{kind:'faction',identity:'party-season:'+x.deadline});
  log('党内路线确认',label+'。'+(moved?'流失的席位占比分配：'+Object.entries(allocation).map(([i,n])=>p.factions[i].name+' +'+n+' 个百分点').join('、')+'；民主党派席位不变。':'未调整席位。'));
  record();save();render();
 }

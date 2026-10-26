@@ -81,7 +81,7 @@ proposeConstitution=function(mode,action,target){
  let d={...spec,id:c.nextDocket++,kind:'constitution',mode:'amend',route:'assembly',stage:'legislature',created:s.q,sourceRegime:pstate().regime,reviewStarted:null,reviewDeadline:null,legislativeRate:null};
  if(action==='pluralism')d.admission={weighted:electionForecast().total,stability:s.stability};
  c.docket=d;pstate().bill=d;let situation=startSituation('amendment');d.situationId=situation.id;
- noteDecision('提出'+d.title,{law:1});log('修宪提案',d.title+'已交'+regime().body+'，须取得三分之二院内支持。');
+ noteDecision('提出'+d.title,{law:1},[],null,1,null,{kind:'procedure'});log('修宪提案',d.title+'已交'+regime().body+'，须取得三分之二院内支持。');
  $('modal').close();tab='assembly';pSave();
 };
 function reviewRate107(d=amendmentInProgress107()){
@@ -123,7 +123,7 @@ voteConstitution=function(force=false){
  let penalty=billStabilityPenalty();if(penalty)mod({stability:-penalty});
  d.legislativeRate=rate;d.stage='review';d.reviewStarted=s.q;d.reviewDeadline=s.q+3;d.route=constitution().authority==='assembly'?'assembly':'court';
  pstate().bill=d.route==='assembly'?d:null;
- noteDecision('议事机关通过'+d.title,{law:1});log('修宪案进入司法审查',d.title+'获 '+fmt(rate,2)+'% 院内支持。第 '+d.reviewDeadline+' 季度开始时截止审查，法院审查计入首席关键一票后须过半；议事机关审查仍以半数为门槛。');
+ noteDecision('议事机关通过'+d.title,{law:1},[],null,1,null,{kind:'procedure'});log('修宪案进入司法审查',d.title+'获 '+fmt(rate,2)+'% 院内支持。第 '+d.reviewDeadline+' 季度开始时截止审查，法院审查计入首席关键一票后须过半；议事机关审查仍以半数为门槛。');
  checkAmendmentReview107();$('modal').close();pSave();
 };
 let checkingAmendment107=false;
@@ -150,7 +150,7 @@ function finishAmendment107(success,reason){
   if(d.action==='rights')c.rights=d.target;
   if(d.action==='pluralism'){c.rights='equal';resolveMinority107('amendment','社会多元修正案正式生效，长期诉求获得宪法保障。')}
   if(d.action==='competitive')enactCompetitiveElections107(d.sourceRegime);
-  noteDecision(spec.title,spec.axes);pstate().passed.push({title:spec.title,q:s.q,votes:d.legislativeRate,passRate:d.legislativeRate});
+  noteDecision(spec.title,spec.axes,[],null,1,null,{kind:'amendment',identity:'amendment:'+d.id});pstate().passed.push({title:spec.title,q:s.q,votes:d.legislativeRate,passRate:d.legislativeRate});
  }
  c.history.push({q:s.q,title:d.title,description:success?spec.description:reason,effects:success?spec.costText:'未生效；不兑现修宪效果。',route:d.route,rate,forced:false,result:success?'passed':'failed',legislativeRate:d.legislativeRate,...(ballot?{ballot}: {})});
  let sit=sits().active.find(x=>x.id===d.situationId&&x.kind==='amendment');if(sit)endSituation(sit,reason);
@@ -193,7 +193,7 @@ function startMinorityPolicy107(id,key){
  x.method=key;x.elapsed=0;x.selectedQ=s.q;x.lastTick=s.q;x.duration=key==='forced-migration'?20:25;
  x.used[key]=true;x.actions.push({q:s.q,key,label:key==='forced-migration'?'强制迁徙':'强制同化'});
  if(key==='forced-migration')mod({confidence:-20});
- noteDecision(situationTitle(x)+'：'+(key==='forced-migration'?'强制迁徙':'强制同化'),{authority:4,law:-4,nation:3});
+ noteDecision(situationTitle(x)+'：'+(key==='forced-migration'?'强制迁徙':'强制同化'),{authority:4,law:-4,nation:3},[],null,1,null,{kind:'coercion',identity:'minority:'+x.id});
  if(amendmentInProgress107()?.action==='pluralism')finishAmendment107(false,'政府选择不可撤销的强制措施，社会多元修正案终止。');
  log('长期处置开始',situationTitle(x)+'进入'+x.duration+'季度执行期；从下一季度起计入每季损耗。');$('modal').close();pSave();
 }

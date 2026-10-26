@@ -115,7 +115,7 @@ function proposeConstitution(mode,action,target){
  c.docket=docket;
  if(action==='reform')v3().offers.find(x=>x.uid===Number(target)).kept=true;
  if(docket.route==='assembly')pstate().bill=docket;
- noteDecision('提出'+spec.title,{law:0});log('宪制议案提出',spec.title+'；由'+(docket.route==='court'?regime().court:regime().body)+'审议。');
+ noteDecision('提出'+spec.title,{law:0},[],null,1,null,{kind:'procedure'});log('宪制议案提出',spec.title+'；由'+(docket.route==='court'?regime().court:regime().body)+'审议。');
  $('modal').close();tab=docket.route==='court'?'judiciary':'assembly';pSave();
 }
 function judgeWillingness(j,docket=constitution().docket){
@@ -194,7 +194,7 @@ function voteConstitution(force=false){
  let ballot=d.route==='court'?courtTally107(d):null,rate=ballot?ballot.rate:billPassRate104();
  if(!force&&rate<=50){log('宪制议案未通过',d.title+'获得 '+fmt(rate,1)+'% 支持，必须超过 50%。议案保留。');toast('未过半数，请继续争取支持');$('modal').close();pSave();return}
  let penalty=d.route==='assembly'&&!force?billStabilityPenalty():0;
- if(force){let amend=d.mode==='amend';mod({approval:amend?-12:-8,stability:amend?-10:-8});noteDecision('强行颁行宪制议案',{authority:4,law:-3,elite:2})}
+ if(force){let amend=d.mode==='amend';mod({approval:amend?-12:-8,stability:amend?-10:-8});noteDecision('强行颁行宪制议案',{authority:4,law:-3,elite:2},[],null,1,null,{kind:'coercion'})}
  mod(spec.values);if(penalty)mod({stability:-penalty});
  if(d.action==='budget')c.budgetCaps[d.target]++;
  if(d.action==='reform')c.reformDiscounts[d.target]=spec.discount;
@@ -203,7 +203,7 @@ function voteConstitution(force=false){
  if(d.action==='term'){c.termLimit=Number(d.target);v3().settlementDue=false}
  if(d.action==='economy'){c.economicModel=d.target;v3().socialist=d.target==='socialist'}
  if(d.action==='rights')c.rights=d.target;
- noteDecision(spec.title,spec.axes);
+ noteDecision(spec.title,spec.axes,[],null,1,null,{kind:d.mode==='amend'?'amendment':'interpretation',identity:'constitution:'+d.id});
  c.history.push({q:s.q,title:spec.title,description:spec.description,effects:spec.costText,route:d.route,rate,forced:force,...(ballot?{ballot}: {})});
  pstate().passed.push({title:spec.title,q:s.q,votes:rate,passRate:rate});
  log(force?'宪制法令颁行':'宪制议案通过',spec.title+'。'+spec.description+' '+spec.costText+(penalty?' 反对派影响：稳定 −'+fmt(penalty,1)+'。':''));
