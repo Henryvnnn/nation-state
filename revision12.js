@@ -11,7 +11,7 @@ capital:['改善首都通勤与公共住房','提升政务服务和青年就业'
 function countryStem(){let suffixes=REGIMES.map(r=>r.suffix).sort((a,b)=>b.length-a.length);let x=s.name;for(let a of suffixes)if(x.endsWith(a))return x.slice(0,-a.length);return x}
 function factionNames12(){let r=regime(),n=countryStem(),g=v3(),p=pstate();
  if(r.id==='party'){
-  p.rulingParty=pick(g.socialist?['共产党',n+'共产党','人民劳动党',n+'劳动党','社会主义工人党']:['国民建设党',n+'国民党','民族复兴党','人民发展党']);
+  p.rulingParty=pick(['共产党',n+'共产党','人民劳动党',n+'劳动党','社会主义工人党']);
   return [p.rulingParty+'主流派',p.rulingParty+'新锐派',p.rulingParty+'改革派','民主党派','无党籍团体'];
  }
  const pools={
