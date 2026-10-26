@@ -20,8 +20,8 @@ for(let r of REGIMES){fresh107(r.id);let p=pstate(),regions=v3().regions,diagram
  assert(diagram.layout===(r.id==='westminster'||r.body==='枢密院'?'benches':'semicircle'),'correct chamber '+r.id);
  for(let f of p.factions)assert(diagram.seats.filter(z=>z.faction===f.id).length===f.seats,'faction colour counts');
  assert(!chamberSeats107().includes('<text')&&!chamberSeats107().includes('<span'),'no visible diagram labels');
- for(let z of regions)z.demandProgress=1;regions[7].demandProgress=0;let e=regionalEvent();assert(e.region===7&&p.members[e.member].regionId===7,'capital request');p.current=e;resolvePolitical(0);assert(regions[7].demandProgress===1,'capital request completable');assert(regionalEvent().type==='maintenance','no completed capital repeat');
- regions[7].termProgress=0;regions[7].development=50;let before=electionForecast().total;noteDecision('首都公共服务',{},['welfare'],7,1);near(electionForecast().total-before,s.approval*(.2+.8/500)*.12,'capital contributes independently');
+ for(let z of regions)z.demandProgress=1;regions[7].demandProgress=0;let e=regionalEvent();assert(e.region===7&&p.members[e.member].regionId===7,'capital request');p.current=e;resolvePolitical(0);near(regions[7].demandProgress,.7,'capital first batch');p.current=regionalEvent();resolvePolitical(0);assert(regions[7].demandProgress===1,'capital request completable in batches');assert(regionalEvent().type==='maintenance','no completed capital repeat');
+ regions[7].termProgress=0;regions[7].development=50;let before=electionForecast().total;noteDecision('首都公共服务',{},['welfare'],7,1);near(electionForecast().total-before,s.approval*(.2*.7+.8/500)*.12,'capital contributes independently');
  s.approval=85;for(let z of regions)z.termProgress=1;holdElection();assert(v3().elections.at(-1).rows.length===8&&regions[7].lastResult!==null,'capital election results');
  assert(p.factions[playerFactionId107()].seats===Math.round(clamp(v3().elections.at(-1).total,10,85)),'election assigns player seats');
 }
