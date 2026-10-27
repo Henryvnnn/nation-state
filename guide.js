@@ -4,7 +4,7 @@ const REGIME_GUIDE104={
  presidential:'你所扮演的是总统制民主共和国。总统领导政府、提出预算，与议会协商；本游戏另设总理协调内阁。',
  semi:'你所扮演的是半总统制国家。总统与总理分享行政职责，重大议程仍须获得议会支持。',
  westminster:'你所扮演的是西敏议会制国家。首相直接组阁，对议会负责，失去信任可能提前下台。',
- federal:'你所扮演的是联邦委员会制国家。玩家担任协调总理，重大院内支持率须达到 60%。',
+ federal:'你所扮演的是联邦委员会制国家。你担任名义领袖联邦总理，协调各委员共同施政；立法须同时获得院内与公民支持。',
  theorepublic:'按本游戏设定，你所扮演的是神权君主立宪体制的国家。宗教权威与民选机构并立，最高领袖领导国家。',
  symbolic:'你所扮演的是象征性民主制国家。保留选举和议会，行政权集中；民意主要通过政治稳定影响统治。',
  party:'你所扮演的是一党独大制国家。最高人民会议包含执政党内部派系、民主党派和无党籍团体。',
@@ -13,7 +13,7 @@ const REGIME_GUIDE104={
  tyranny:'你所扮演的是僭主制国家。最高执政官依赖精英、地方和安全系统的配合维持统治。',
  theoabsolute:'你所扮演的是神权专制国家。最高教长统治国家，教团组成枢密院，宰相负责行政执行。'
 };
-function playerGuide104(){let r=regime();if(s.adminMode)return `你担任${r.player}并兼管财政。本存档已启用管理员模式，控制台可修改数据，选举失败与其他结束条件均不会终止本局。`; if(r.id==='theorepublic')return '最高领袖掌握重大国务决策权，没有任期。本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩；仍须维持政治稳定。';if(r.democratic)return `你担任${r.player}，决定预算、人事与重大政策，并兼管财政。选举决定是否留任，最多执政两届、48 个季度。`;return `你担任${r.player}，决定重大国务并兼管财政，没有民主选举的强制任期限制。低稳定仍会导致统治结束，第 48 季度起可选择结算。`}
+function playerGuide104(){let r=regime();if(r.id==='federal')return '你担任联邦总理，是名义领袖并兼管财政；委员自主施政，不可强制撤换。忠诚达到70后可协调任务、协助提案。普通任期仍为48季度，管理员模式不受失败和任期限制。';if(s.adminMode)return `你担任${r.player}并兼管财政。本存档已启用管理员模式，控制台可修改数据，选举失败与其他结束条件均不会终止本局。`; if(r.id==='theorepublic')return '最高领袖掌握重大国务决策权，没有任期。本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩；仍须维持政治稳定。';if(r.democratic)return `你担任${r.player}，决定预算、人事与重大政策，并兼管财政。选举决定是否留任，最多执政两届、48 个季度。`;return `你担任${r.player}，决定重大国务并兼管财政，没有民主选举的强制任期限制。低稳定仍会导致统治结束，第 48 季度起可选择结算。`}
 function legislativeGroups104(){return regime().id==='party'?'这些是你的立法机关中的政党和你所在政党的派系，也包括无党籍团体。':regime().body==='枢密院'?'这些是枢密院中的派系与政治团体。':'这些是你立法机关中的政党／派系。'}
 function guideNormalize104(text){return String(text).normalize('NFKC').replace(/\s+/g,'').replace(/^[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+|[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+$/g,'').toLowerCase()}
 function guideCatalog104(){
@@ -57,7 +57,7 @@ function guideCatalog104(){
  add('full-support','全票支持门槛',['预算门槛','支持门槛'],'基准60。相对现行预算，税率变化会提高或降低门槛，公共支出按各派系偏好另行修正，执政党也适用。议程倾向达到该门槛时，该派系全体议席支持。','立法与政治');
  add('effective-agenda','折算倾向',[],'折算倾向＝议程倾向−（本案全票支持门槛−60）。50对应0%支持、51对应10%、60对应100%，中间按比例计算。','立法与政治');
  add('faction-support','党团支持比例',['支持比例','支持席位权重','院内支持率贡献'],'该派系支持议案的议席比例，范围0%至100%。将各派系的支持比例按席位加权，即得到院内支持率。','立法与政治');
- add('pass-rate','院内支持率',['通过率','议案通过率','议会通过率','表决支持率','通过门槛','政府议程支持','当前基础院内支持率','所需院内支持率'],'按各党席位加权的总体支持百分比。一般预算／改革达到51%即通过，联邦委员会制需60%；释宪须严格超过50%；修宪须先取得三分之二院内支持，司法审查达到半数即可。达到相应门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
+ add('pass-rate','院内支持率',['通过率','议案通过率','议会通过率','表决支持率','通过门槛','政府议程支持','当前基础院内支持率','所需院内支持率'],'按各党席位加权的总体支持百分比。一般预算／改革达到51%即通过；联邦委员会制须院内超过50%且全国支持率达到50%；释宪须严格超过50%；修宪须先取得三分之二院内支持，司法审查达到半数即可。达到相应门槛必定通过。低折算倾向派系另产生通过后的稳定损失，不是一次随机抽签。','立法与政治');
  add('opposition-cost','反对压力',['额外稳定损失','稳定损失'],'各派系折算倾向低于50的每一点，在议案通过后扣除0.1稳定度，多个派系累加。原有通过收益另计；表决失败不额外扣这部分损失。','立法与政治');
  add('negotiate','协商',['派系协商'],'打开该党派或派系的谈判选项，以资源、监督或承诺争取支持。执行选项通常消耗1点行动点；查看窗口不消耗。临时支持有期限，承诺会接受核查。','页面与操作');
  add('faction-details','查看细则',['细则','查看表决计算规则'],'展开或收起门槛、折算倾向、席位权重及公共预算偏好。不消耗行动点，也不改变政策。','页面与操作');
@@ -136,7 +136,7 @@ function guideCatalog104(){
  add('page-tutorial','本页教程',['页面教程','板块教程'],'先在左栏选择需要了解的板块，再点击主窗口右上方“本页教程”。按空格进入下一步。只高亮和讲解当前板块中的概念与功能按钮，不跳转到其他板块，不执行政策或消耗行动点。','页面与操作');
  for(let r of REGIMES)add('regime-'+r.id,r.name,r.id==='presidential'?['总统制','民主共和制']:r.id==='theorepublic'?['神权君主立宪体制']:[],REGIME_GUIDE104[r.id]+' '+r.note,'政体与职务');
  add('player','玩家职务',[],playerGuide104(),'政体与职务');
- for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',政府协调总理:'联邦委员会制中的玩家职务，直接安排内阁，重大议案须达到60%院内支持率。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
+ for(let [role,text]of Object.entries({最高领袖:'神权共和制中的玩家职务。最高领袖掌握重大国务决策权，没有任期；本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩。',国家主席:'一党独大制中的玩家职务，决定重大政策与人事，任命总理协调内阁。',最高执政官:'僭主制中的玩家职务，依赖安全系统与政治精英维持统治，任命宰相执行日常行政。',执政公爵:'贵族制中的玩家职务，需要协调枢密院内的贵族与地方利益。',君主:'君主专制中的玩家职务，任命宰相处理日常行政；君主立宪制中君主为礼仪元首，玩家改任总理。',最高教长:'神权专制中的玩家职务，领导宗教与国家事务，任命宰相协调行政。',联邦总理:'联邦委员会制的名义领袖，协调委员共同施政，不得强制撤换在任委员。',总统:'总统制、半总统制或象征性民主制中的玩家职务，负责重大国务并兼管财政，任命总理协调施政。',首相:'西敏议会制中的玩家职务，直接组建内阁，对议会和选举负责。'}))add('role-'+role,role,[],text,'政体与职务');
  add('premier','总理',['政府首脑'],'在总统制等政体中由玩家任命，协调内阁并自主执行任务；在君主立宪、西敏与联邦委员会制中由玩家直接承担相应政府首脑职责。','政体与职务');
  add('chancellor','宰相',[],'专制和贵族政体中的政府首脑，拥有比普通总理更强的行政裁量。能力、倾向和忠诚决定施政；撤换也可能带来更大稳定冲击。','政体与职务');
  add('finance-minister','财政部长',['财政大臣','玩家兼任'],'由玩家直接操控税收、预算与债务安排，因此不进入普通内阁候选人的任命列表。','政体与职务');
@@ -162,6 +162,7 @@ function guideCatalog104(){
  if(typeof constitutionGuideEntries==='function')entries.push(...constitutionGuideEntries());
  if(typeof personnelGuide107==='function')personnelGuide107(entries);
  if(typeof judicialReportsGuide107==='function')judicialReportsGuide107(entries);
+ if(typeof federalGuide108==='function')federalGuide108(entries);
  return entries;
 }
 let guideEntries104=[];
@@ -196,7 +197,7 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  target('assembly','ap','.political-banner .action-count',actionTutorialText);
  target('assembly','groups','.seat-strip',legislativeGroups104);
  for(let id of ['seats','faction-relation','agenda','faction-profile','faction-support','negotiate','faction-details','full-support','effective-agenda'])target('assembly',id,`[data-guide="${id}"]`);
- target('assembly','pass-rate','[data-guide="pass-rate"]',()=>`这是院内支持率，按席位加权。${pstate().bill?.mode==='amend'?'修宪案必须达到三分之二院内支持':pstate().bill?.kind==='constitution'?'释宪案必须严格超过50%':'普通议案达到'+threshold()+'%即可通过'}；先提出预算、改革或宪制议案。`);
+ target('assembly','pass-rate','[data-guide="pass-rate"]',()=>(regime().id==='federal')?'院内支持率按席位加权。预算和改革须超过50%，同时全国支持率须达到50%；修宪另看最高司法机关与地区加权支持。':`这是院内支持率，按席位加权。${pstate().bill?.mode==='amend'?'修宪案必须达到三分之二院内支持':pstate().bill?.kind==='constitution'?'释宪案必须严格超过50%':'普通议案达到'+threshold()+'%即可通过'}；先提出预算、改革或宪制议案。`);
  target('assembly','vote','button[onclick="voteBill()"]');target('assembly','withdraw','button[onclick="withdrawBill()"]');
  target('assembly','meet','button[onclick^="meetMember("]','点击这里会见主要成员并回应诉求，每人每季一次。党团总召也负责符合条件时的联合政府邀请。');
  target('assembly','promise','[data-guide="promise"]');
@@ -205,9 +206,10 @@ function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,sele
  if(regime().head)target('cabinet',regime().head==='宰相'?'chancellor':'premier','.office[onclick*="head"]');
  for(let [key]of PORTFOLIOS)target('cabinet','office-'+key,`.office[onclick*="${key}"]`);
  for(let id of ['skill','loyalty','achievements','tenure','traits'])target('cabinet',id,`[data-guide="${id}"]`);
- target('cabinet','task','#task','此处安排本季任务方向，不耗行动点；官员会结合自身倾向决定执行方法，并提交季度报告。');
+ target('cabinet','task','#task',()=>(regime().id==='federal')?'委员忠诚达到70后才可调整任务方向；灰色选项表示尚未获得合作。调整方向不耗行动点。':'此处安排本季任务方向，不耗行动点；官员会结合自身倾向决定执行方法，并提交季度报告。');
+ if((regime().id==='federal'))target('cabinet','commissioner-cooperation','[data-commissioner-talk]','与委员协商可提高忠诚，达到70即可解锁提案协助与任务协调。每位委员每季度可协商一次。','与委员协商');
  target('cabinet','dismiss','button[onclick^="dismissPreview("]');target('cabinet','replace','button[onclick^="replacementDialog("]');
- target('cabinet','programme','.minister-programme h3','这是主管官员按自身倾向和国家政体提出的方案。下方措施会推进进度，也可能影响派系关系、民意或带来丑闻；未完成每季忠诚−0.5。');
+ target('cabinet','programme','.minister-programme h3',()=>(regime().id==='federal')?'委员提案没有季度忠诚衰减。每季随机一位委员自主推进一个选项，照常支付费用；忠诚达到70后，你也可以协助。':'这是主管官员按自身倾向和国家政体提出的方案。下方措施会推进进度，也可能影响派系关系、民意或带来丑闻；未完成每季忠诚−0.5。');
  target('cabinet','programme-cost','.minister-programme summary','展开后可查看投资如何降低各项措施的费用；进度还会受到能力和倾向契合度加权。');
  target('cabinet','appoint','button[onclick^="appointPreview("]');target('cabinet','reports','[data-guide="reports"]');
  nav('judiciary','judiciary','这里与最高司法机关互动，观察司法独立和行政干预的影响。');

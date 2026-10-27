@@ -29,7 +29,7 @@ function initializeConstitution(){
  try{
   s.rng=hash(s.seed+'|constitution107');
   let count=5+Math.floor(rand()*6),minority=1+Math.floor(rand()*Math.floor((count-1)/2));
-  let views=Array.from({length:count},(_,i)=>i<minority?Math.floor(rand()*2):((roll)=>roll<.7?2:roll<.85?3:4)(rand()));
+  let views=Array.from({length:count},(_,i)=>i<minority?Math.floor(rand()*2):((roll)=>roll<(regime().id==='federal'?.8:.7)?2:roll<.85?3:4)(rand()));
   for(let i=views.length-1;i>0;i--){let j=Math.floor(rand()*(i+1));[views[i],views[j]]=[views[j],views[i]]}
   s.constitution={version:1,judges:[],authority:'court',termLimit:regime().democratic?48:0,
    economicModel:v3().socialist?'socialist':'mixed',rights:'traditional',budgetCaps:{},reformDiscounts:{},

@@ -144,6 +144,7 @@ function finishAmendment107(success,reason){
  c.docket=null;if(pstate().bill?.kind==='constitution')pstate().bill=null;c.judges.forEach(j=>j.boosts=[]);
  if(success){
   mod(spec.values);
+  if(d.action==='centralize')enactFederalCentralization108();
   if(d.action==='court')c.authority=d.target;
   if(d.action==='term'){c.termLimit=Number(d.target);v3().settlementDue=false}
   if(d.action==='economy'){c.economicModel=d.target;v3().socialist=d.target==='socialist'}
@@ -261,7 +262,9 @@ validSave=function(v){
  if(!d)return situations.length===0;
  if(situations.length!==1||situations[0].id!==d.situationId||!['legislature','review'].includes(d.stage)||!REGIMES.some(r=>r.id===d.sourceRegime))return false;
  if(d.stage==='legislature'){if(d.route!=='assembly'||d.reviewStarted!==null||d.reviewDeadline!==null||d.legislativeRate!==null)return false}
- else if(!Number.isInteger(d.reviewStarted)||d.reviewStarted>v.q||d.reviewDeadline!==d.reviewStarted+3||!Number.isFinite(d.legislativeRate)||d.legislativeRate+1e-9<100*2/3||d.legislativeRate>100)return false;
+ else if(!Number.isInteger(d.reviewStarted)||d.reviewStarted>v.q||d.reviewDeadline!==d.reviewStarted+3)return false;
+ else if(d.procedure==='federal108'){if(d.sourceRegime!=='federal'||v.political.regime!=='federal'||d.legislativeRate!==null)return false}
+ else if(!Number.isFinite(d.legislativeRate)||d.legislativeRate+1e-9<100*2/3||d.legislativeRate>100)return false;
  if(d.action==='pluralism'&&(!d.admission||!Number.isFinite(d.admission.weighted)||d.admission.weighted<80||d.admission.weighted>100||!Number.isFinite(d.admission.stability)||d.admission.stability<60||d.admission.stability>100||m.status!=='active'||problems[0].method))return false;
  return true;
 };

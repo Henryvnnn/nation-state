@@ -189,15 +189,17 @@ programmePanel=function(k){
  const design=pr.design,origin=design&&pstate().candidates[design.candidate];
  return `<section class="minister-programme"><span class="tag">${office(k)}提案${pr.completed?' · 已完成':' · 待推进'}</span><h3>${esc(def.name)}</h3>${design&&!design.legacy?`<p>${esc(REGIMES.find(r=>r.id===design.regime).name)} · ${esc(TRAITS[design.trait].name)} · 提案人 ${esc(origin.name)}${design.candidate!==pstate().cabinet[k].candidate?' · 由现任主管继续执行':''}</p>`:''}<div class="bar"><i style="width:${pr.progress}%"></i></div><p>进度 ${fmt(pr.progress,1)}% / 100% · 累计支出 ${fmt(pr.spent,2)} 十亿元。</p>${pr.completed?'<p>提案已完成，停止每季忠诚损失。</p>':`<p>未完成期间，现任主管每季度忠诚 −0.5。每项措施每季度一次，各消耗 1 行动点。</p><div class="choices">${def.options.map((a,i)=>{const q=programmeQuote(k,i);return `<button onclick="advanceProgramme('${k}',${i})" ${s.ended||pstate().ap<1||pstate().lastAction['programme:'+k+':'+i]===s.q?'disabled':''}>${esc(a[0])}<small>支出 ${fmt(q.cost,3)}% GDP（基础 ${a[1]}，投资优惠 ${fmt(q.discount*100,1)}%）；进度 +${fmt(q.progress,1)}；忠诚 +${a[3]}。</small>${a[5]?`<small>${esc(programmeEffects107(a[5]))}。</small>`:''}<small>基础进度 ${a[2]} × 能力 ${fmt(q.skill,3)} × 倾向契合 ${q.fit}。</small></button>`}).join('')}</div>`}<p>${pr.completed?'已获效果':'完成效果'}：${impactText(programmeReward103(k))}。${k==='education'?'完成教育部门提案后，科研增长系数永久从 2 提高至 3。':''}</p><details><summary>投资如何降低费用</summary><p>实际费用 = 基础费用 ×（1 − 投资折扣），折扣上限 55%；采用已通过预算。已经推进的提案由继任者接续执行，进度与已获成果保留。</p>${def.options.map(a=>`<p>${esc(a[0])}：${Object.entries(a[4]).map(([key,w])=>`${policyMeta[key][0]}每投入 1% GDP，费用降低 ${fmt(w*100,1)}%`).join('；')}。</p>`).join('')}</details></section>`;
 };
-advanceProgramme=function(k,index){
- initializeProgrammes107();const pr=rules103().proposals[k],q=programmeQuote(k,index);if(!pr||pr.completed||!q||!spendAction('programme:'+k+':'+index))return;
+advanceProgramme=function(k,index){if(typeof federalCanDirect108==='function'&&isFederal108()&&!federalCanDirect108(k))return toast('委员忠诚达到70后，才会接受总理协助推进议程');return executeProgramme107(k,index,false)};
+function executeProgramme107(k,index,automatic=false){
+ initializeProgrammes107();const pr=rules103().proposals[k],q=programmeQuote(k,index),key='programme:'+k+':'+index;if(s.ended||!pr||pr.completed||!q||pstate().lastAction[key]===s.q)return;
+ if(automatic)pstate().lastAction[key]=s.q;else if(!spendAction(key))return;
  const def=q.def,extra=q.a[5],previousProgress=pr.progress;mod({cost:q.cost});pr.spent+=s.gdp*q.cost/100;pr.progress=Math.min(100,pr.progress+q.progress);q.c.loyalty=clamp(q.c.loyalty+q.a[3],0,100);
  if(extra){mod(extra.values);const f=pstate().factions[extra.faction];f.relation=clamp(f.relation+extra.relation,0,100);if(extra.risk)programmeState107().risks.push({due:s.q+1,chance:extra.risk,slot:k,candidate:q.c.id,faction:extra.faction,title:def.name,action:q.a[0]})}
  pr.actions.push({q:s.q,index,minister:q.c.id,cost:q.cost,progress:q.progress,...(extra?{effects:{...extra.values},relation:extra.relation,faction:extra.faction,scandalRisk:extra.risk}:{})});
- noteDecision(`${office(k)}提案：${q.a[0]}`,def.axes,def.tags,null,.2,null,{kind:'programme',weight:6*(pr.progress-previousProgress)/100,identity:'programme:'+k,progress:pr.progress-previousProgress,values:{...(extra?.values||{})}});
+ noteDecision(`${office(k)}提案：${q.a[0]}`,def.axes,def.tags,null,.2,null,{kind:automatic?'automatic':'programme',weight:6*(pr.progress-previousProgress)/100,identity:'programme:'+k,progress:pr.progress-previousProgress,values:{...(extra?.values||{})}});
  if(pr.progress>=100){pr.completed=true;pr.completedAt=s.q;pr.rewardApplied={...def.reward};q.c.achievements+=5;mod(pr.rewardApplied);if(k==='education')rules103().research.educationModernized=true;log('部长提案完成',def.name+'已完成。'+impactText(def.reward));pstate().reports.unshift({q:s.q,title:office(k)+'：'+def.name+'完成',text:'停止提案忠诚损耗；部门进度和成果在更换主管后保留。'+impactText(def.reward)})}
- checkPoliticalEnd();if(s.ended)beginSettlement(s.ended);record();save();render();
-};
+ checkPoliticalEnd();if(s.ended)beginSettlement(s.ended);if(!automatic){record();save();render()}return {title:def.name,option:q.a[0],cost:q.cost,progress:pr.progress-previousProgress,completed:pr.completed};
+}
 function programmeRiskQuarter107(){
  const state=programmeState107();if(!state||state.lastRiskQ===s.q||s.ended)return;state.lastRiskQ=s.q;
  const due=state.risks.filter(x=>x.due<=s.q);state.risks=state.risks.filter(x=>x.due>s.q);

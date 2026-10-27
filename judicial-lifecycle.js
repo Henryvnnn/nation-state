@@ -10,6 +10,7 @@ const JUDGE_TRAIT_PATHS107={
  7:[[0,.5],[1,.5]],  // market socialism
  8:[[1,.65],[2,.35]] // free trade
 };
+function judgeTraitPaths107(trait){const paths=JUDGE_TRAIT_PATHS107[trait]||JUDGE_TRAIT_PATHS107[0];if(regime().id!=='federal')return paths;const weights=new Map();for(const [view,chance]of paths){weights.set(view,(weights.get(view)||0)+chance*(view===3?.35:1));if(view===3)weights.set(2,(weights.get(2)||0)+chance*.65)}return [...weights.entries()]}
 const JUDGE_DEPARTURES107=['任上病故','因病辞职','主动退休'];
 function judicialStaff107(){return s.judicialStaff}
 function initializeJudicialStaff107(){
@@ -44,7 +45,7 @@ function replenishJudicialNominees107(){
   }
  }finally{s.rng=oldRng}
 }
-function judgeTraitText107(trait){return (JUDGE_TRAIT_PATHS107[trait]||JUDGE_TRAIT_PATHS107[0]).map(([view,probability])=>Math.round(probability*100)+'% '+JUDICIAL_VIEWS[view].name).join(' / ')}
+function judgeTraitText107(trait){return judgeTraitPaths107(trait).map(([view,probability])=>Math.round(probability*100)+'% '+JUDICIAL_VIEWS[view].name).join(' / ')}
 function departJudge107(id,reason){
  const j=constitution().judges.find(j=>j.id===id);if(!j||j.vacant||!JUDGE_DEPARTURES107.includes(reason)||s.ended)return false;
  const staff=judicialStaff107(),person=JSON.parse(JSON.stringify(j)),wasChief=j.chief;
@@ -83,7 +84,7 @@ function judgeAppointmentPreview107(seat,key){
 function appointJudge107(seat,key){
  const c=judicialNomineeSource107(key),old=constitution().judges[seat];if(s.ended||!old?.vacant||!eligibleForCourt107(c))return;
  if(!spendAction())return;
- let roll=rand(),paths=JUDGE_TRAIT_PATHS107[c.trait]||JUDGE_TRAIT_PATHS107[0],view=paths.at(-1)[0];
+ let roll=rand(),paths=judgeTraitPaths107(c.trait),view=paths.at(-1)[0];
  for(const [value,probability]of paths){if(roll<probability){view=value;break}roll-=probability}
  c.judicialCareer=true;
  const judge={id:seat,name:c.name,baseName:c.baseName||c.name,honour:c.honour??null,trait:view,politicalTrait:c.trait,faction:c.faction,sourceKey:key,chief:false,vacant:false,relation:clamp(c.loyalty,0,100),boosts:[],appointedQ:s.q};

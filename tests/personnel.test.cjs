@@ -12,7 +12,7 @@ function fresh(reg,seed='personnel'){selectedRegime=reg;pendingDifficulty=true;p
 let seen=new Set(),rareTotal=0,rareHonours=0,openingScandals=0;
 for(const r of REGIMES)for(let n=0;n<20;n++){
  fresh(r.id,'roster-'+n);let p=pstate(),people=personnelRoster107();
- for(const key of OFFICE_KEYS107){const title=office(key);check(key==='head'&&!r.head?title===null:typeof title==='string'&&title.length>0,'complete offices '+r.id+' '+key)}
+ for(const key of OFFICE_KEYS107){const title=office(key);check((key==='head'&&!r.head||key==='deputy'&&r.id==='federal')?title===null:typeof title==='string'&&title.length>0,'complete offices '+r.id+' '+key)}
  check(validSave(JSON.parse(JSON.stringify(s))),'valid save '+r.id);
  check(new Set(people.map(x=>x.name)).size===people.length,'unique display names');
  check(new Set(people.map(x=>x.baseName)).size===people.length,'unique identities');
@@ -38,7 +38,7 @@ for(const r of REGIMES)for(let n=0;n<20;n++){
  check(constitution().judges.filter(j=>j.trait<2).length*2<constitution().judges.length,'judicial minorities preserved');
  for(const sit of sits().active)if(sit.kind==='scandal'&&sit.opening){openingScandals++;check(sit.candidate===p.cabinet[sit.slot].candidate,'scandal actual incumbent');check(sit.faction===p.candidates[sit.candidate].faction,'scandal actual faction')}
  const before=JSON.stringify(s);cabinet();assembly();judiciary();guideCatalog104();initPolitics();check(JSON.stringify(s)===before,'render and init idempotent');
- const catalog=guideCatalog104();check(catalog.every(e=>typeof e.title==='string'&&e.aliases.every(a=>typeof a==='string')),'guide titles and aliases are strings');for(const key of OFFICE_KEYS107.filter(k=>k!=='head'))check(guideMatches104(office(key),catalog).length,'all official titles searchable');
+ const catalog=guideCatalog104();check(catalog.every(e=>typeof e.title==='string'&&e.aliases.every(a=>typeof a==='string')),'guide titles and aliases are strings');for(const key of OFFICE_KEYS107.filter(k=>k!=='head'&&office(k)))check(guideMatches104(office(key),catalog).length,'all official titles searchable');
 }
 check(rareTotal>500&&rareHonours>0&&rareHonours/rareTotal<.05,'rare faction frequency');
 check(openingScandals>20,'opening scandal coverage');

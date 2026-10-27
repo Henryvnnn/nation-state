@@ -29,7 +29,7 @@ function factionProfile(f){
  return FACTION_PROFILES103[key];
 }
 function cabinetEligible(c){return !!c&&(!coalitionRegime()||(rules103()?.coalition||[playerFactionId107()]).includes(c.faction))}
-function cabinetSlots103(){return [...(regime().head?['head']:[]),...PORTFOLIOS.map(x=>x[0])]}
+function cabinetSlots103(r=regime()){return [...(r.head?['head']:[]),...PORTFOLIOS.filter(x=>r.id!=='federal'||x[0]!=='deputy').map(x=>x[0])]}
 function ensureCandidates103(){let p=pstate();while(p.candidates.length<75){let id=p.candidates.length;p.candidates.push({id,name:personName(),faction:id%5,trait:pick(factionProfile(p.factions[id%5]).traits),skill:45+Math.floor(rand()*46),loyalty:45+Math.floor(rand()*41),achievements:0,tenure:0})}}
 function alignPeople103(){
  let p=pstate();
@@ -147,7 +147,7 @@ validSave=function(v){
  if(g.version!==1||!r||!Number.isInteger(r.level)||r.level<0||!Number.isFinite(r.progress)||r.progress<0||r.progress>=100||typeof r.educationModernized!=='boolean'||!Number.isInteger(r.lastQ)||!Number.isInteger(g.lastAgendaQ)||!Number.isInteger(g.lastProposalQ))return false;
  if(!Array.isArray(g.coalition)||!g.coalition.includes(playerFactionId107(v.political))||new Set(g.coalition).size!==g.coalition.length||g.coalition.some(id=>!Number.isInteger(id)||!v.political.factions[id]))return false;
  if(!g.proposals||typeof g.proposals!=='object'||v.political.factions.some(f=>!Number.isFinite(f.agendaDecay)||f.agendaDecay<0||f.agendaDecay>100))return false;
- let slots=[...(REGIMES.find(r=>r.id===v.political.regime).head?['head']:[]),...PORTFOLIOS.map(x=>x[0])];
+ let slots=cabinetSlots103(REGIMES.find(r=>r.id===v.political.regime));
  if(slots.some(k=>!g.proposals[k]&&(k!=='labour'||v.release107)))return false;
  return Object.entries(g.proposals).every(([k,p])=>MINISTER_PROGRAMMES103[k]&&p&&Number.isFinite(p.progress)&&p.progress>=0&&p.progress<=100&&typeof p.completed==='boolean'&&p.completed===(p.progress===100)&&Number.isFinite(p.spent)&&p.spent>=0&&Array.isArray(p.actions));
 };
