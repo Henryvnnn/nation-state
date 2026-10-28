@@ -163,6 +163,7 @@ function guideCatalog104(){
  if(typeof personnelGuide107==='function')personnelGuide107(entries);
  if(typeof judicialReportsGuide107==='function')judicialReportsGuide107(entries);
  if(typeof federalGuide108==='function')federalGuide108(entries);
+ if(typeof bicameralGuide108==='function')bicameralGuide108(entries);
  return entries;
 }
 let guideEntries104=[];
@@ -177,7 +178,7 @@ const TUTORIAL_HOST105={
 function tutorialWelcome105(){let [address,host]=TUTORIAL_HOST105[regime().id];return `欢迎您，${address}。受${host}委托，我将为您介绍本游戏的基本游玩方式。`}
 // Every tour target is an existing UI element. Missing optional controls are skipped.
 let tutorial104=null;
-function tutorialSteps104(scope='intro',page=tab){let steps=[],add=(page,id,selector,text,title)=>steps.push({page,id,selector,text,title});
+function tutorialStepsBase104(scope='intro',page=tab){let steps=[],add=(page,id,selector,text,title)=>steps.push({page,id,selector,text,title});
  const nav=(page,id,text)=>add(page,id,`#nav button[onclick="changeTab('${page}')"]`,text);
  const target=(page,id,selector,text,title)=>add(page,id,selector,text,title);
  add('overview','welcome','[data-guide="country"]',tutorialWelcome105,'欢迎执政');
@@ -291,3 +292,5 @@ function stopTutorial(){let t=tutorial104;if(!t)return;tutorial104=null;t.opened
 // The office entry screen loads an existing game only after the player chooses Continue.
 // Keep the original bootstrap for non-browser rule tests and legacy hosts.
 if(typeof window==='undefined'||!document.documentElement.hasAttribute('data-office-ui'))bootGame();
+
+function tutorialSteps104(scope='intro',page=tab){const steps=tutorialStepsBase104(scope,page);return typeof bicameralTutorial108==='function'?bicameralTutorial108(steps,scope,page):steps}

@@ -4,7 +4,7 @@ const REGIMES=[
 {id:'presidential',name:'民主共和制 · 总统制',body:'议会',court:'最高法院',player:'总统',head:'总理',democratic:true,election:true,ind:73,suffix:'共和国',note:'总统掌握行政授权，议会审议法案。按本游戏设定任命总理协调内阁。'},
 {id:'semi',name:'半总统制',body:'议会',court:'宪法委员会',player:'总统',head:'总理',democratic:true,election:true,ind:70,suffix:'共和国',note:'总统与总理分享行政职责；失去议会支持会削弱施政。'},
 {id:'westminster',name:'西敏议会制',body:'议会',court:'最高法院',player:'首相',head:null,democratic:true,election:true,parliamentary:true,ind:80,suffix:'联合王国',note:'首相领导内阁，对议会多数负责；信任投票可能提前终止任期。'},
-{id:'federal',name:'联邦委员会制',body:'联邦国民院',court:'联邦最高法院',player:'联邦总理',head:null,democratic:true,election:true,parliamentary:false,ind:82,suffix:'联邦',note:'联邦总理为名义领袖，协调各委员共同施政；联邦国民院与公民复决共同制约立法。'},
+{id:'federal',name:'联邦委员会制',body:'国民院',court:'联邦最高法院',player:'联邦总理',head:null,democratic:true,election:true,parliamentary:false,ind:82,suffix:'联邦',note:'联邦总理为名义领袖，协调各委员共同施政；国民院与公民复决共同制约立法。'},
 {id:'theorepublic',name:'神权共和制',body:'议会',court:'最高宗教宪法法院',player:'最高领袖',head:'总理',democratic:false,election:true,ind:52,suffix:'神圣共和国',note:'民选机构与宗教权威并立；选举改变议会，最高领袖的存续取决于稳定。'},
 {id:'symbolic',name:'象征性民主制',body:'议会',court:'最高法院',player:'总统',head:'总理',democratic:false,election:true,ind:38,suffix:'共和国',note:'保留选举和议会，但权力集中；支持度流失主要通过稳定危机威胁统治。'},
 {id:'party',name:'一党独大制',body:'最高人民会议',court:'最高人民法院',player:'国家主席',head:'总理',democratic:false,election:false,ind:44,suffix:'人民共和国',note:'依照本游戏设定，最高人民会议代表各地区与党内路线，协商和组织支持决定政策执行。'},

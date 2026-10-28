@@ -17,7 +17,7 @@ for(let r of REGIMES){fresh107(r.id);let p=pstate(),regions=v3().regions,diagram
  assert(office('labour')===(r.body==='枢密院'||['constitutional','westminster'].includes(r.id)?'劳动大臣':'劳动部长'),'regime title');
  assert(validSave(JSON.parse(JSON.stringify(s))),'new save valid '+r.id);
  assert(diagram.seats.length===100,'100 visual seats');
- assert(diagram.layout===(r.id==='westminster'||r.body==='枢密院'?'benches':'semicircle'),'correct chamber '+r.id);
+ assert(diagram.layout===(['constitutional','westminster'].includes(r.id)||r.body==='枢密院'?'benches':'semicircle'),'correct chamber '+r.id);
  for(let f of p.factions)assert(diagram.seats.filter(z=>z.faction===f.id).length===f.seats,'faction colour counts');
  assert(!chamberSeats107().includes('<text')&&!chamberSeats107().includes('<span'),'no visible diagram labels');
  for(let z of regions)z.demandProgress=1;regions[7].demandProgress=0;let e=regionalEvent();assert(e.region===7&&p.members[e.member].regionId===7,'capital request');p.current=e;resolvePolitical(0);near(regions[7].demandProgress,.7,'capital first batch');p.current=regionalEvent();resolvePolitical(0);assert(regions[7].demandProgress===1,'capital request completable in batches');assert(regionalEvent().type==='maintenance','no completed capital repeat');

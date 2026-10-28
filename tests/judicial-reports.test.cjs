@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),files=[...fs.readFileSync(path.join(root,'index.html'),'utf8').matchAll(/<script src="([^?]+)\?/g)].map(x=>x[1]);
-function boot(storage={},directory=root){const nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(const f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});return c}
+function boot(storage={},directory=root){const nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(const f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});require('./helpers/complete-upper.cjs')(c);return c}
 const storage={},ctx=boot(storage);
 vm.runInContext(`
 function check(x,m){if(!x)throw Error(m)}function near(a,b,m){check(Math.abs(a-b)<1e-9,m+' '+a+' / '+b)}

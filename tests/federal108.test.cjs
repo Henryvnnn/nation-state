@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
-function boot(dir=root,storage={}){const nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',textContent:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(const [,file]of fs.readFileSync(path.join(dir,'index.html'),'utf8').matchAll(/<script src="([^?]+)\?/g))vm.runInContext(fs.readFileSync(path.join(dir,file),'utf8'),c,{filename:file});return c}
+function boot(dir=root,storage={}){const nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',textContent:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};vm.createContext(c);for(const [,file]of fs.readFileSync(path.join(dir,'index.html'),'utf8').matchAll(/<script src="([^?]+)\?/g))vm.runInContext(fs.readFileSync(path.join(dir,file),'utf8'),c,{filename:file});require('./helpers/complete-upper.cjs')(c);return c}
 const fixture=`
 function check(v,m){if(!v)throw Error(m)}function near(a,b,m){check(Math.abs(a-b)<1e-7,m+': '+a+' / '+b)}
 function fresh(id='federal',seed='federal-108'){selectedRegime=id;pendingAdmin107=true;pendingDifficulty=false;create(seed);sits().active=[];sits().notices=[];Object.assign(constitution().minority,{status:'resolved',resolution:'amendment',resolvedQ:s.q});pstate().current=null;pstate().queue=[];features107().notices=[];pstate().ap=100;s.approval=80;s.stability=90;s.confidence=80;s.inflation=3;s.unemployment=6;s.debt=s.gdp*.4;pstate().judicial=70;}
@@ -11,7 +11,7 @@ const storage={},ctx=boot(root,storage);
 vm.runInContext(fixture+`
 let political=0,other=0,seats=0;
 for(let i=0;i<100;i++){
- fresh('federal','federal-'+i);check(regime().player==='联邦总理'&&regime().body==='联邦国民院','federal identity');check(!regime().parliamentary,'no old parliamentary no-confidence failure');check(!Object.hasOwn(pstate().cabinet,'deputy')&&cabinetSlots103().length===9,'no deputy seat');check(!coalitionRegime(),'collective appointments');
+ fresh('federal','federal-'+i);check(regime().player==='联邦总理'&&regime().body==='国民院','federal identity');check(!regime().parliamentary,'no old parliamentary no-confidence failure');check(!Object.hasOwn(pstate().cabinet,'deputy')&&cabinetSlots103().length===9,'no deputy seat');check(!coalitionRegime(),'collective appointments');
  check(!cabinet().includes('联邦委员会副主席'),'no deputy UI');check(validSave(s),'federal valid save');const snapshot=JSON.stringify(s);cabinet();guideCatalog104();judiciary();assembly();initPolitics();check(JSON.stringify(s)===snapshot,'render and init do not mutate');political+=constitution().judges.filter(j=>j.trait===3).length;seats+=constitution().judges.length;
  fresh('presidential','federal-'+i);other+=constitution().judges.filter(j=>j.trait===3).length;
 }

@@ -2,7 +2,7 @@
 const FEDERAL_LOYALTY108=70,FEDERAL_INITIATIVE_CHANCE108=.35;
 function isFederal108(){return s?.political?.regime==='federal'}
 function federalCanDirect108(k){const item=pstate().cabinet[k];return !!item&&pstate().candidates[item.candidate].loyalty>=FEDERAL_LOYALTY108}
-function federalAmendmentText108(){return '联邦修宪由联邦国民院议长受理后直接送审，不需三分之二院内支持。三季度内，最高司法机关赞成达到半数（计入首席关键一票），且当前地区加权支持率超过50%，两项同时满足才会生效。释宪规则不变。'}
+function federalAmendmentText108(){return '联邦修宪由国民院议长受理后直接送审，不需三分之二院内支持。三季度内，最高司法机关赞成达到半数（计入首席关键一票），且当前地区加权支持率超过50%，两项同时满足才会生效。释宪规则不变。'}
 function initializeFederal108(){
  if(!isFederal108()||s.federal108)return;
  if(!creatingWorld)try{localStorage.setItem(KEY+'-pre-108-federal',JSON.stringify(s))}catch(_){}
@@ -88,10 +88,10 @@ voteBill=function(){
  if(!['budget','reform','federal-confidence'].includes(b.kind)||s.ended)return;
  if(b.kind==='federal-confidence')return voteFederalConfidence108();
  const rate=billPassRate104();
- if(rate<=50){if(!spendAction('vote'))return;mod({approval:-2,stability:-1});p.confidenceLoss++;log('议程受阻',b.title+'院内支持率 '+fmt(rate,2)+'%，必须超过50%。');toast('尚未取得联邦国民院过半支持，提案保留');pSave();return}
+ if(rate<=50){if(!spendAction('vote'))return;mod({approval:-2,stability:-1});p.confidenceLoss++;log('议程受阻',b.title+'院内支持率 '+fmt(rate,2)+'%，必须超过50%。');toast('尚未取得国民院过半支持，提案保留');pSave();return}
  if(s.approval<50){
   if(!spendAction('vote'))return;
-  const text=`${b.title}虽获联邦国民院 ${fmt(rate,2)}% 支持，但全国支持率仅为 ${fmt(s.approval,1)}%，未达到50%。公民复决否决法案，原预算与改革状态保持不变；草案保留，可在争取民意后重新表决。`;
+  const text=`${b.title}虽获国民院 ${fmt(rate,2)}% 支持，但全国支持率仅为 ${fmt(s.approval,1)}%，未达到50%。公民复决否决法案，原预算与改革状态保持不变；草案保留，可在争取民意后重新表决。`;
   log('公民复决公投否决新法案',text);pushEvent(eventFrom('公民复决公投否决新法案',text,[option('接受复决结果','草案保留，继续争取公民支持。')],'federal-referendum'));pSave();showPoliticalEvent();return;
  }
  return voteBillBeforeFederal108();
@@ -101,7 +101,7 @@ assembly=function(){
  let html=assemblyBeforeFederal108();if(!isFederal108())return html;
  html=html.replace('所需院内支持率 50%；按各党席位加权计算支持比例，达到门槛即可通过。',`院内支持率须超过50%，全国支持率须达到50%。当前全国支持率 ${fmt(s.approval,1)}%。两项均满足，预算或改革才会生效。`);
  const b=pstate().bill;if(b?.kind==='federal-confidence')html=html.replace(/<section class="card"><h3>政府议程<\/h3>[\s\S]*?<\/section>/,`<section class="card" id="federal-confidence-bill"><span class="tag">公民信任程序</span><h2>政府信任案</h2><div class="big-number">${fmt(billPassRate104(),2)}<small>% 院内支持率</small></div><p>院内支持率超过50%即可通过，全国支持率＋5个百分点；本次危机仅可求助一次。未通过时可在期限内继续协商并再次表决。</p><button class="primary" onclick="voteBill()" ${s.ended?'disabled':''}>提交表决 · 1 行动点</button> <button onclick="withdrawBill()">撤回</button></section>`);
- return `<section class="card"><h3>公民与联邦国民院共同授权</h3><p>预算、结构性改革：院内支持率超过50%，且全国支持率达到50%。</p><details><summary>查看联邦施政细则</summary><p>${federalAmendmentText108()}</p><p>全国支持率连续两季低于30%后，每个仍低于30%的季度有35%概率触发公民倡议公投；公众信任危机须在四季度内恢复至40%。</p></details></section>`+html;
+ return `<section class="card"><h3>公民与国民院共同授权</h3><p>预算、结构性改革：院内支持率超过50%，且全国支持率达到50%。</p><details><summary>查看联邦施政细则</summary><p>${federalAmendmentText108()}</p><p>全国支持率连续两季低于30%后，每个仍低于30%的季度有35%概率触发公民倡议公投；公众信任危机须在四季度内恢复至40%。</p></details></section>`+html;
 };
 
 SIT_NAMES['public-trust']='公众信任危机';
@@ -117,7 +117,7 @@ function startFederalTrust108(){
  if(!isFederal108()||s.ended||activeSit('public-trust'))return null;
  const x=startSituation('public-trust',true);if(!x)return null;
  Object.assign(x,{opening:false,deadline:s.q+4,appealUsed:false});
- notice('公民倡议公投解散委员会',`全国支持率连续两季度低于30%，公民倡议已经启动。公众信任危机持续四季度：须在第 ${x.deadline} 季度开始时核验前将全国支持率恢复至40%。可在局势页一次性求助联邦国民院，政府信任案获过半支持后增加5个百分点全国支持率。`,{federalSpecial:true});return x;
+ notice('公民倡议公投解散委员会',`全国支持率连续两季度低于30%，公民倡议已经启动。公众信任危机持续四季度：须在第 ${x.deadline} 季度开始时核验前将全国支持率恢复至40%。可在局势页一次性求助国民院，政府信任案获过半支持后增加5个百分点全国支持率。`,{federalSpecial:true});return x;
 }
 function finishFederalTrust108(x,success,reason){
  if(pstate().bill?.kind==='federal-confidence'&&pstate().bill.crisisId===x.id)pstate().bill=null;
@@ -136,16 +136,16 @@ function federalTrustQuarter108(){
  if(state.lowSupportStreak>=2&&s.q>=state.nextInitiativeQ&&rand()<FEDERAL_INITIATIVE_CHANCE108)startFederalTrust108();
 }
 const actionsBeforeFederal108=situationActions;
-situationActions=function(x){if(isFederal108()&&x.kind==='scandal')return actionsBeforeFederal108(x).filter(a=>a.key!=='dismiss');return x.kind==='public-trust'?[{key:'appeal',label:'求助联邦国民院',detail:'本次危机限一次，消耗1行动点。提交政府信任案，院内支持率超过50%后，全国支持率＋5个百分点。需先处理其他待审议案。',once:true}]:actionsBeforeFederal108(x)};
+situationActions=function(x){if(isFederal108()&&x.kind==='scandal')return actionsBeforeFederal108(x).filter(a=>a.key!=='dismiss');return x.kind==='public-trust'?[{key:'appeal',label:'求助国民院',detail:'本次危机限一次，消耗1行动点。提交政府信任案，院内支持率超过50%后，全国支持率＋5个百分点。需先处理其他待审议案。',once:true}]:actionsBeforeFederal108(x)};
 const situationActBeforeFederal108=situationAct;
 situationAct=function(id,key){
  const x=activeSit('public-trust');if(!x||x.id!==id)return situationActBeforeFederal108(id,key);
  if(!isFederal108()||s.ended||key!=='appeal'||x.appealUsed)return;
  if(pstate().bill||constitution().docket)return toast('请先完成或撤回当前议案，再提交政府信任案');
  if(!spendAction('federal-appeal:'+id))return;
- x.appealUsed=true;x.used.appeal=true;x.actions.push({q:s.q,key,label:'求助联邦国民院'});
- pstate().bill={kind:'federal-confidence',title:'政府信任案',description:'请求联邦国民院公开确认委员会的施政授权。',crisisId:id};
- log('政府信任案提交','联邦国民院将审议政府信任案，取得过半支持后全国支持率＋5个百分点。');tab='assembly';pSave();
+ x.appealUsed=true;x.used.appeal=true;x.actions.push({q:s.q,key,label:'求助国民院'});
+ pstate().bill={kind:'federal-confidence',title:'政府信任案',description:'请求国民院公开确认委员会的施政授权。',crisisId:id};
+ log('政府信任案提交','国民院将审议政府信任案，取得过半支持后全国支持率＋5个百分点。');tab='assembly';pSave();
 };
 function voteFederalConfidence108(){
  const b=pstate().bill,x=activeSit('public-trust');if(!isFederal108()||b?.kind!=='federal-confidence'||!x||x.id!==b.crisisId||!spendAction('federal-confidence-vote'))return;
@@ -155,7 +155,7 @@ function voteFederalConfidence108(){
 }
 const situationProgressBeforeFederal108=situationProgress;
 situationProgress=function(x){
- if(x.kind==='public-trust')return `全国支持率 ${fmt(s.approval,1)}% / 目标40%。<br>剩余 ${Math.max(0,x.deadline-s.q)} 季度，第 ${x.deadline} 季度开始时核验。<br>${x.appealUsed?'已经求助联邦国民院，不能再次求助。':'可一次性求助联邦国民院。'}`;
+ if(x.kind==='public-trust')return `全国支持率 ${fmt(s.approval,1)}% / 目标40%。<br>剩余 ${Math.max(0,x.deadline-s.q)} 季度，第 ${x.deadline} 季度开始时核验。<br>${x.appealUsed?'已经求助国民院，不能再次求助。':'可一次性求助国民院。'}`;
  if(x.kind==='amendment'&&amendmentInProgress107()?.procedure==='federal108')return federalAmendmentProgress108();
  return situationProgressBeforeFederal108(x);
 };
@@ -169,7 +169,7 @@ situationsPage=function(){let html=situationsBeforeFederal108();if(isFederal108(
 
 function federalGuide108(entries){
  const add=(id,title,aliases,text)=>entries.push({id,title,aliases:[title,...aliases],text,category:'联邦委员会制'});
- add('public-trust','公众信任危机',['公民倡议','解散委员会','政府信任案','求助联邦国民院'],'仅联邦委员会制：全国支持率连续两季度低于30%后，每个仍低于30%的季度有35%概率触发。四季度内恢复至40%即解除，到期仍不足则游戏结束；本局势不额外扣指标。可以一次性求助联邦国民院（1行动点），再表决政府信任案（1行动点）；院内支持率超过50%则全国支持率增加5个百分点。失败可继续协商，成功不能重复领取，撤回后也不能再次求助。管理员模式保留后果但不结束游戏。');
+ add('public-trust','公众信任危机',['公民倡议','解散委员会','政府信任案','求助国民院'],'仅联邦委员会制：全国支持率连续两季度低于30%后，每个仍低于30%的季度有35%概率触发。四季度内恢复至40%即解除，到期仍不足则游戏结束；本局势不额外扣指标。可以一次性求助国民院（1行动点），再表决政府信任案（1行动点）；院内支持率超过50%则全国支持率增加5个百分点。失败可继续协商，成功不能重复领取，撤回后也不能再次求助。管理员模式保留后果但不结束游戏。');
  add('federal-referendum','公民复决',['公民复决公投','公民复决公投否决新法案'],'仅联邦委员会制：预算、结构性改革须同时取得严格超过50%的院内支持率和达到50%的全国支持率。院内通过而全国支持不足时，公投否决；预算与改革不生效、不支付改革成本，已消耗的表决行动点不退，草案保留。政府信任案与释宪不受此民意门槛限制。');
  add('centralize-amendment','政府集权化',[],'联邦委员会制专属修宪案。司法审查达到半数、公民加权支持率超过50%后转为半总统制；没有三分之二院内门槛。保留季度、经济、人物和项目成果，新增总理与副总理职位，失去新组阁资格者按原有离任规则离任。');
  add('commissioner-cooperation','委员协作',['与委员协商','联邦委员','委员忠诚','委员提案'],'联邦总理无权要求在任委员辞职。未完成的委员提案没有季度忠诚衰减，每季随机一名委员自主执行一项未完成提案选项，成本、进度、收益和风险照常结算，不消耗总理行动点，也不计为玩家主动意识形态决策。忠诚达到70后解锁手动推进与调整任务方向。每位委员每季协商一次：普通协调忠诚＋6；投入0.15% GDP协作资源忠诚＋10；各耗1行动点。');
@@ -185,7 +185,7 @@ function federalGuide108(entries){
   replace:'联邦总理不得撤换在任委员。职位因事件出现空缺时，才可从合资格候选人中补缺。',
   appoint:'只可补缺任命，不能借任命撤换在任委员；候选人可来自各党派，但不得兼任司法或其他政府职位。消耗1行动点。',
   'constitutional-docket':federalAmendmentText108(),constitution:'国家档案记载现行政体、任期、经济模式、司法机关等根本条款。'+federalAmendmentText108(),
-  'constitutional-transfer':'移交最高司法权仍须依联邦修宪程序，生效时司法独立−20、稳定−10、支持＋10。移交后由联邦国民院承担司法审查，半数审查门槛与加权支持率条件保留。',
+  'constitutional-transfer':'移交最高司法权仍须依联邦修宪程序，生效时司法独立−20、稳定−10、支持＋10。移交后由国民院承担司法审查，半数审查门槛与加权支持率条件保留。',
   'pluralism-amendment':'长期少数群体问题仍存在且未选强制措施时，加权支持达到80%、稳定达到60可提出社会多元修正案。联邦制直接进入司法审查，三季度内司法赞成达到半数且加权支持超过50%才生效，成功后解决长期问题。'
  };
  for(let i=entries.length-1;i>=0;i--){const e=entries[i];if(e.id==='office-deputy'||e.id.startsWith('programme-deputy')){entries.splice(i,1);continue}if(descriptions[e.id])e.text=descriptions[e.id];
@@ -231,7 +231,7 @@ checkAmendmentReview107=function(){
 function federalAmendmentProgress108(){const d=amendmentInProgress107();if(!d)return '';return `最高司法机关支持率 ${fmt(reviewRate107(d),2)}% / 需要达到50%；公民加权支持率 ${fmt(electionForecast().total,2)}% / 需要超过50%。<br>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度；第 ${d.reviewDeadline} 季度开始时核验。两项须同时满足；全国支持率不能替代地区加权支持率。`}
 const docketBeforeFederal108=constitutionalDocketHTML;
 constitutionalDocketHTML=function(){
- const d=amendmentInProgress107();if(d?.procedure==='federal108')return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">联邦宪法修订 · 司法与公民复决</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p>${esc(d.costText)}</p><div class="note">${federalAmendmentProgress108()}</div><p>${d.route==='court'?courtBallotText107(d):'最高司法权现由联邦国民院行使；审查须达到半数，不需三分之二。'}</p><p>本局势没有处置选项，送审后不能撤回；满足两项门槛即自动生效。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关</button></section>`;
+ const d=amendmentInProgress107();if(d?.procedure==='federal108')return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">联邦宪法修订 · 司法与公民复决</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p>${esc(d.costText)}</p><div class="note">${federalAmendmentProgress108()}</div><p>${d.route==='court'?courtBallotText107(d):'最高司法权现由国民院行使；审查须达到半数，不需三分之二。'}</p><p>本局势没有处置选项，送审后不能撤回；满足两项门槛即自动生效。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关</button></section>`;
  let html=docketBeforeFederal108();if(isFederal108())html=html.replace('先立法审议、再司法审查。','直接进行司法审查，并核验公民加权支持。');return html;
 };
 const amendmentHTMLBeforeFederal108=amendmentDocketHTML107;

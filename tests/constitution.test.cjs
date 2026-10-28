@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..');
 const files=[...fs.readFileSync(path.join(root,'index.html'),'utf8').matchAll(/<script src="([^?]+)\?/g)].map(x=>x[1]);
 function boot(storage={},directory=root){
  let nodes={},c={console,setTimeout:()=>{},localStorage:{getItem:k=>storage[k]||null,setItem:(k,v)=>storage[k]=v},document:{getElementById:id=>nodes[id]||(nodes[id]={innerHTML:'',style:{},showModal(){this.open=true},close(){this.open=false},addEventListener(){}})}};
- vm.createContext(c);for(let f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});return c;
+ vm.createContext(c);for(let f of files)if(fs.existsSync(path.join(directory,f)))vm.runInContext(fs.readFileSync(path.join(directory,f),'utf8'),c,{filename:f});require('./helpers/complete-upper.cjs')(c);return c;
 }
 const storage={},c=boot(storage);
 vm.runInContext(`

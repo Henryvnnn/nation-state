@@ -219,3 +219,20 @@ body.office-mode{--bg:#ded3b5;--paper:#efe6cf;--ink:#343e34;--muted:#73715e;--gr
 .situation-grid>.card:has(.election-season-progress) .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .situation-grid>.card:has(.election-season-progress) .choices>button{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;margin:0;min-width:0;text-align:left}
 @media(max-width:900px){.situation-grid>.card:has(.election-season-progress) .choices{grid-template-columns:1fr}}
+
+/* Two chambers share the telephone workspace; only the chamber selector is local. */
+.chamber-switch108{display:flex;gap:10px;margin:0 0 18px;flex-wrap:wrap}
+.chamber-switch108 button{width:auto;position:relative;min-width:120px;min-height:42px;text-align:center}
+.upper-seat-chart{max-width:410px;margin:auto}
+.upper-seat-chart svg{width:100%;height:auto;display:block}
+.upper-faction108{grid-template-columns:minmax(0,1fr) auto}
+.upper-faction108>div{min-width:0}.upper-faction108 small{white-space:normal}
+.upper-composition108{display:grid;gap:16px;margin:18px 0}
+.upper-composition108 label{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.upper-composition108 label>div{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+.upper-composition108 input{width:70px;min-width:0;text-align:center;padding:9px 4px}
+.upper-composition108 button{min-width:36px;padding:6px;min-height:36px}
+#upper-composition-result{padding:16px;background:#e4dcc4;border:1px solid #b0a383}
+.upper-rules108{margin-top:18px}.upper-rules108 p{font-size:13px}
+#upper-docket108 .big-number{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
+@media(max-width:600px){.chamber-switch108 button{flex:1;min-width:110px}.upper-faction108{grid-template-columns:minmax(0,1fr)}.upper-faction108 .badge{justify-self:start}.upper-composition108 label{display:grid;gap:6px}}

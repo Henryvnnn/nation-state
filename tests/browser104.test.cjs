@@ -36,8 +36,8 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
     await page.locator('#tutorial-controls .primary').click();if(++limit>150)throw Error('tutorial did not finish');
    }
    assert.equal(await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot})),original,'walkthrough must not mutate game or draft');
-   assert.equal(visited.length,7,'short intro');assert(visited.every(step=>step.page==='overview'),'intro only');
-   for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','guide','page-tutorial'])assert(visited.some(s=>s.id===required),'intro concept '+required);
+   assert.equal(visited.length,8,'short intro including office desk');assert(visited.every(step=>step.page==='overview'),'intro only');
+   for(let required of ['welcome','tour-roadmap','tour-duration','tour-mission','tour-assessment','office-objects','guide','page-tutorial'])assert(visited.some(s=>s.id===required),'intro concept '+required);
    for(let section of ['overview','assembly','cabinet','judiciary','politics','budget','reforms','situations','archive']){
     await page.evaluate(section=>changeTab(section),section);const initial=await page.evaluate(()=>JSON.stringify({s,draft,tab,cabinetSlot}));await page.locator('#page-tutorial').click();let count=0,ids=[];
     while(await page.evaluate(()=>!!tutorial104)){
@@ -63,20 +63,20 @@ const root=path.resolve(__dirname,'..'),fontRoot=process.env.NATION_TEST_FONT_RO
    if(viewport.width===390){await page.locator('#task').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation105-task-390.png'})}
    await page.locator('.office[onclick*="education"]').click();assert.equal(await page.locator('#task option').count(),5);assert((await page.locator('#task option').allTextContents()).includes('发展职业教育'));
    await page.locator('.office[onclick*="head"]').click();assert.equal(await page.locator('#task option').count(),9);assert((await page.locator('#task option').allTextContents()).includes('稳健财政'));
-   await page.reload({waitUntil:'domcontentloaded'});assert.equal(await page.evaluate(()=>pstate().cabinet.foreign.task),'foreign_trade','saved instruction survives reload');
+   await page.reload({waitUntil:'domcontentloaded'});await page.locator('#continue-game').click();assert.equal(await page.evaluate(()=>pstate().cabinet.foreign.task),'foreign_trade','saved instruction survives reload');
    await page.evaluate(()=>{$('modal').close();selectedRegime='absolute';create('welcome105');startTutorial()});assert.match(await page.locator('#tutorial-controls').textContent(),/欢迎您，陛下。受枢密院委托/);await page.keyboard.press('Escape');
    if(fontRoot){let css=fs.readFileSync(path.join(fontRoot,'400.css'),'utf8').replaceAll('./files/','http://127.0.0.1:'+server.address().port+'/__qa_fonts__/files/');await page.addStyleTag({content:css});await page.evaluate(()=>document.fonts.ready)}
    // 1.0.7: inspect both diagrams, the independent capital and the new ministry in the live UI.
    for(let id of ['presidential','westminster','absolute','party']){
     await page.evaluate(id=>{selectedRegime=id;create('visual107-'+id);pstate().current=null;pstate().queue=[];$('modal').close();changeTab('assembly')},id);
-    assert.equal(await page.locator('.seat-chamber circle').count(),100);assert.equal(await page.locator('.seat-chamber text').count(),0);
+    assert.equal(await page.locator('.seat-chamber circle,.seat-chamber rect').count(),100);assert.equal(await page.locator('.seat-chamber text').count(),0);
     const layout=await page.locator('.seat-chamber').getAttribute('data-layout');assert.equal(layout,['westminster','absolute'].includes(id)?'benches':'semicircle');
     const bounds=await page.locator('.seat-chamber').boundingBox();assert(bounds.x>=0&&bounds.x+bounds.width<=viewport.width+1,'seat graph fits screen');
     await page.locator('.seat-chamber').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation107-'+id+'-'+viewport.width+'.png'});
    }
    await page.evaluate(()=>changeTab('politics'));assert.equal(await page.locator('.region-grid article').count(),8);
    assert.match(await page.locator('.region-grid article').last().textContent(),/首都地区/);await page.locator('.region-grid article').last().scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/nation107-capital-'+viewport.width+'.png'});
-   await page.evaluate(()=>{changeTab('cabinet');cabinetSlot='labour';render()});assert.equal(await page.locator('#task option').count(),5);assert.match(await page.locator('.minister-programme h3').textContent(),/就业与劳动保障计划/);await page.selectOption('#task','labour_employment');assert.match(await page.locator('[data-office-task="labour"]').textContent(),/就业促进/);
+   await page.evaluate(()=>{changeTab('cabinet');cabinetSlot='labour';render()});assert.equal(await page.locator('#task option').count(),5);assert.equal(await page.locator('.minister-programme h3').textContent(),await page.evaluate(()=>programmeDefinition107('labour').name));await page.selectOption('#task','labour_employment');assert.match(await page.locator('[data-office-task="labour"]').textContent(),/就业促进/);
    await page.evaluate(()=>changeTab('archive'));await page.getByRole('button',{name:'解释政策利率',exact:true}).click();assert.match(await page.locator('#guide-results').textContent(),/玩家不能直接设定/);await page.fill('#guide-query','政策利率、');assert.match(await page.locator('#guide-results').textContent(),/国债收益率/);await page.screenshot({path:'/tmp/nation107-rate-'+viewport.width+'.png'});await page.locator('.guide-close').click();
    assert.deepEqual(errors,[]);console.log('PASS browser '+viewport.width+'px: '+visited.length+' tutorial steps, regime preface, live search, overlays, unchanged state, portfolio options, live task status and saved directions; no page errors.');await page.close();await browser.close();
   }
