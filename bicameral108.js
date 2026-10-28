@@ -9,7 +9,7 @@ const UPPER_VIEWS108={
 };
 let chamberView108='lower';
 function bicameral108(){return s?.bicameral108}
-function hasUpper108(){return !!CHAMBERS108[pstate()?.regime]}
+function hasUpper108(){const id=pstate()?.regime,config=s?.institutions;return !!CHAMBERS108[id]&&(!['presidential','semi'].includes(id)||config?.regime!==id||config.twoChambers)}
 function upperName108(){return CHAMBERS108[pstate().regime]?.[1]||'上院'}
 function upperViewName108(key){return key==='conservative'&&regime().id==='constitutional'?'贵族保守':UPPER_VIEWS108[key].name}
 function upperOfficerTitle108(speaker=false){return regime().id==='theorepublic'?(speaker?'监护委员会主席':'监护团体首席代表'):regime().id==='constitutional'?(speaker?'上议院议长':'派系领袖'):regime().id==='federal'?(speaker?'联邦院议长':'联邦院党团代表'):(speaker?'参议院议长':'参议院党鞭')}
@@ -33,6 +33,7 @@ function independentUpperName108(view,used){
 // Preserve source shares as metadata; they never create extra blocs or representatives.
 function consolidateUpperBlocs108(u,migrate=false){
  if(!u.formed)return;
+ if(typeof twoPartyPresidency==='function'&&twoPartyPresidency()){buildTwoPartySenate(u);return}
  const oldGroups=u.groups,oldMembers=u.members,player=playerFactionId107(),used=new Set(pstate().factions.map(f=>f.name)),idMap=new Map();
  u.groups=Object.keys(UPPER_VIEWS108).flatMap((view,id)=>{
   const parts=oldGroups.filter(g=>g.view===view&&g.share>0),share=parts.reduce((n,g)=>n+g.share,0);if(!share)return [];
@@ -65,7 +66,7 @@ function consolidateUpperBlocs108(u,migrate=false){
 }
 function migrateUpperBlocs108(){
  const state=bicameral108();if(state.version===1){consolidateUpperBlocs108(state.upper,true);state.version=2}
- const used=new Set(pstate().factions.map(f=>f.name));for(const g of state.upper.groups){if(used.has(g.name))g.name=independentUpperName108(g.view,used);else used.add(g.name)}
+ const used=new Set(pstate().factions.map(f=>f.name));for(const g of state.upper.groups){if(used.has(g.name)&&!(typeof twoPartyPresidency==='function'&&twoPartyPresidency()))g.name=independentUpperName108(g.view,used);else used.add(g.name)}
  // JSON reload duplicates these references. Keep later negotiations on the same docket.
  const d=constitution().docket,b=pstate().bill;if(d?.mode==='amend'&&['upper','returned'].includes(d.stage)&&b?.chamber108?.id===d.chamber108?.id)pstate().bill=d;
 }
@@ -90,6 +91,7 @@ function populateUpperMembers108(u){
  add(chair,true);for(const g of u.groups)if(g.share>0)add(g,false);
 }
 function initializeBicameral108(){
+ if(typeof ensureInstitutions==='function')ensureInstitutions();
  if(!hasUpper108())return;
  const previous=bicameral108();if(previous?.regime===regime().id){migrateUpperBlocs108();return}
  const priorRng=s.rng;
@@ -151,8 +153,11 @@ function upperReview108(){
  if(s.ended||!hasUpper108())return;const u=bicameral108().upper,b=upperBill108();if(!b)return;if(!u.formed)return toast('请先组建参议院');
  const rate=upperSupport108(b);b.chamber108.upperRate=rate;
  if(rate>50){
+  if(typeof clergyBillPassed==='function')clergyBillPassed(b,'upper');
   b.chamber108.stage='approved';archiveChamberVote108(b,'upper-approved');log(upperName108()+'复审通过',`${b.title}院内支持率 ${fmt(rate,2)}%。`);
   if(b.mode==='amend')beginJudicialAfterUpper108(b);else finalizeOrdinary108(b);
+ }else if(typeof twoPartyPresidency==='function'&&twoPartyPresidency()&&b.kind==='budget'){
+  archiveChamberVote108(b,'vetoed');pstate().bill=null;log('预算案流案',b.title+'未获参议院过半支持，参议院否决本案。');notice('参议院否决预算案','新预算案流案，现行预算继续执行；可调整方案后重新提出。已付协商成本不退还。');
  }else if(regime().id==='theorepublic'&&b.kind!=='budget'){
   archiveChamberVote108(b,'vetoed');if(b.mode==='amend')finishAmendment107(false,'宪法监护委员会驳回修宪案，议案流案。');else{pstate().bill=null;log('改革案流案',b.title+'被宪法监护委员会驳回，原改革草案保留。');notice('宪法监护委员会驳回议案',b.title+'未能获得过半支持，议案流案；已付协商成本不退还。')}
  }else{
@@ -198,6 +203,7 @@ voteBill=function(){
  if(s.ended)return;if(b.chamber108?.stage==='upper')return toast('请前往'+upperName108()+'手动复审');if(b.chamber108?.stage==='referendum')return retryReferendum108();
  if(!spendAction('vote'))return;
  const rate=billPassRate104();if(rate<=50){mod({approval:-2,stability:-1});pstate().confidenceLoss++;noteDecision('议程表决失败',{authority:0});log('议程受阻',b.title+'院内支持率 '+fmt(rate,2)+'%，未超过50%。');pSave();return}
+ if(typeof clergyBillPassed==='function')clergyBillPassed(b,'lower');
  if(b.chamber108?.stage==='returned'){b.chamber108.lowerRate=rate;b.chamber108.penalty=billStabilityPenalty();finalizeOrdinary108(b,true)}
  else{b.chamber108=chamberTicket108(b,rate,billStabilityPenalty());chamberView108='upper';log('议案送交复审',b.title+'获'+regime().body+' '+fmt(rate,2)+'%支持，送交'+upperName108()+'。');}
  pSave();
@@ -239,6 +245,7 @@ voteConstitution=function(force=false){
  if(!constitutionalSpec('amend',d.action,d.target))return toast('此修宪目标已失效，请撤回');
  if(!spendAction('amendment-legislative-vote'))return;const rate=billPassRate104(),passes=isFederal108()?rate>50:rate+1e-9>=100*2/3;
  if(!passes){toast('未达到修宪表决门槛，议案保留');pSave();return}
+ if(typeof clergyBillPassed==='function')clergyBillPassed(d,'lower');
  const penalty=billStabilityPenalty();if(penalty)mod({stability:-penalty});d.bicameralVersion108=1;if(!isFederal108())d.legislativeRate=rate;
  if(d.stage==='returned'){d.chamber108.lowerRate=rate;if(regime().id==='presidential')d.executionDelay108=2;beginJudicialAfterUpper108(d)}
  else{d.stage='upper';d.chamber108=chamberTicket108(d,rate);pstate().bill=d;chamberView108='upper';log('修宪案送交复审',d.title+'已获三分之二支持，送交'+upperName108()+'；司法审查尚未开始计时。')}
@@ -375,7 +382,7 @@ validSave=function(v){
    if(!u.groups.length||u.groups.reduce((n,g)=>n+g.share,0)!==100||new Set(u.groups.map(g=>g.id)).size!==u.groups.length||u.groups.some(g=>!integer(g.id,0,20)||!UPPER_VIEWS108[g.view]||!integer(g.share)||!finite(g.relation)||!finite(g.agenda)||!finite(g.decay)||typeof g.name!=='string'||!g.name.length||g.name.length>60))return false;
    if(state.version===2){
     const lowerIds=new Set(v.political.factions.map(f=>f.id)),lowerNames=new Set(v.political.factions.map(f=>f.name));
-    if(new Set(u.groups.map(g=>g.view)).size!==u.groups.length||new Set(u.groups.map(g=>g.name)).size!==u.groups.length||!u.groups.some(g=>g.id===u.playerGroup)||u.groups.some(g=>lowerNames.has(g.name)||state.regime!=='theorepublic'&&g.view==='clerical'||g.lowerId!==null||!integer(g.share,1)||!Array.isArray(g.lowerShares)||new Set(g.lowerShares.map(x=>x.id)).size!==g.lowerShares.length||g.lowerShares.some(x=>!lowerIds.has(x.id)||!integer(x.share,1))||g.lowerShares.reduce((n,x)=>n+x.share,0)!==g.share||!integer(g.playerShare)||g.playerShare>g.share))return false;
+    if(new Set(u.groups.map(g=>g.view)).size!==u.groups.length||new Set(u.groups.map(g=>g.name)).size!==u.groups.length||!u.groups.some(g=>g.id===u.playerGroup)||u.groups.some(g=>(lowerNames.has(g.name)&&!(v.institutions?.regime==='presidential'&&v.institutions.partySystem==='two'))||state.regime!=='theorepublic'&&g.view==='clerical'||g.lowerId!==null||!integer(g.share,1)||!Array.isArray(g.lowerShares)||new Set(g.lowerShares.map(x=>x.id)).size!==g.lowerShares.length||g.lowerShares.some(x=>!lowerIds.has(x.id)||!integer(x.share,1))||g.lowerShares.reduce((n,x)=>n+x.share,0)!==g.share||!integer(g.playerShare)||g.playerShare>g.share))return false;
    }
    if(u.members.length!==u.groups.filter(g=>g.share>0).length+1||u.members.filter(m=>m.speaker).length!==1||u.members.some((m,i)=>m.id!==i||typeof m.speaker!=='boolean'||!u.groups.some(g=>g.id===m.group&&g.share>0)||!finite(m.relation)||!Number.isInteger(m.last)||typeof m.baseName!=='string'||m.name!==m.baseName+(m.honour?.title||'')))return false;
    const names=[...v.political.members,...v.political.candidates,...v.constitution.judges,...(v.judicialStaff?.reserve||[])].map(p=>p.baseName||p.name);

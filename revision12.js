@@ -36,7 +36,7 @@ function unfinishedRegions(){return v3().regions.filter(z=>z.demandProgress<1&&!
 function migrate12(){let g=v3();if(g.release==='1.2')return;let p=pstate(),oldNames=p.factions.map(f=>f.name),names=factionNames12();
  p.factions.forEach((f,i)=>{f.name=names[i];if(regime().id==='party')f.seats=[35,22,25,16,2][i];else if(regime().id==='symbolic'&&s.q===0)f.seats=[60,15,12,8,5][i]});
  initializeDemocraticParty107();
- p.members.forEach(m=>{if(m.id>=4)m.role=names[m.faction]+(regime().body==='议会'?'党团总召':'首席代表')});
+ p.members.forEach(m=>{if(m.id>=4)m.role=p.factions[m.faction].name+(regime().body==='枢密院'?'首席代表':'党团总召')});
  for(let e of [p.current,...p.queue].filter(Boolean))for(let key of ['title','text'])if(typeof e[key]==='string')oldNames.forEach((name,i)=>{e[key]=e[key].split(name).join(names[i])});
  g.release='1.2';g.localCycle=Math.floor(s.q/12);g.localRefreshAt=s.q-s.q%12;g.localHistory=[];g.pressure=null;
  for(let z of g.regions){z.demandProgress=clamp(z.termProgress,0,1);z.demandVariant=Math.floor(rand()*3)}
@@ -48,7 +48,7 @@ function localReviewEvent(){return eventFrom('地方履约后的资源分配','�
  option('承担设施维护费用','支出 0.25% GDP；稳定 +1。',{cost:.25,stability:1},{welfare:1}),
  option('实行使用者付费','支持 -1；信心 +1。',{approval:-1,confidence:1},{market:2}),
  option('推迟维护，保留财政空间','稳定 -2；发展项目可能受损。',{stability:-2,capitalStock:-.3},{market:1,welfare:-1})],'maintenance')}
-regionalEvent=function(){let available=unfinishedRegions();if(!available.length)return localReviewEvent();let z=pick(available),members=pstate().members.filter(m=>m.regionId===z.id),m=pick(members);let remaining=1-z.demandProgress,advance=Math.min(.7,remaining),phased=Math.min(.28,remaining);return {type:'regional',region:z.id,member:m.id,faction:m.faction,title:z.name+'的新一轮地方诉求',text:`${m.role}${m.name}（${TRAITS[m.trait].name}）要求“${demandText(z)}”。当前完成 ${fmt(z.demandProgress*100,0)}%。完成后，本轮不再提出同一诉求。`,options:[
+regionalEvent=function(){let available=unfinishedRegions();if(!available.length)return localReviewEvent();let z=pick(available),members=pstate().members.filter(m=>m.regionId===z.id),m=pick(members.length?members:pstate().members);let remaining=1-z.demandProgress,advance=Math.min(.7,remaining),phased=Math.min(.28,remaining);return {type:'regional',region:z.id,member:m.id,faction:m.faction,title:z.name+'的新一轮地方诉求',text:`${m.role}${m.name}（${TRAITS[m.trait].name}）要求“${demandText(z)}”。当前完成 ${fmt(z.demandProgress*100,0)}%。完成后，本轮不再提出同一诉求。`,options:[
  {...option('分批落实重点项目','支出 '+fmt(.8*advance,2)+'% GDP；支持 +1；个人关系 +8；派系关系 +5；本轮诉求进度 +'+fmt(advance*100,1)+' 个百分点。',{cost:.8*advance,approval:1},{welfare:2,nation:1},[z.sector]),member:8,faction:5,progress:advance},
  {...option('分期实施并公开审查','支出 0.25% GDP；司法独立 +1；个人关系 +3；本轮诉求进度 +'+fmt(phased*100,1)+' 个百分点。',{cost:.25,judicial:1},{law:2},[z.sector]),member:3,progress:phased},
  {...option('拒绝追加资源','支持 -2；稳定 -1；个人关系 -8；派系关系 -5。',{approval:-2,stability:-1},{market:2,welfare:-1}),member:-8,faction:-5}

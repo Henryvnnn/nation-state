@@ -193,6 +193,7 @@ function voteConstitution(force=false){
  if(!spendAction('constitutional-vote'))return;
  let ballot=d.route==='court'?courtTally107(d):null,rate=ballot?ballot.rate:billPassRate104();
  if(!force&&rate<=50){log('宪制议案未通过',d.title+'获得 '+fmt(rate,1)+'% 支持，必须超过 50%。议案保留。');toast('未过半数，请继续争取支持');$('modal').close();pSave();return}
+ if(d.route==='assembly'&&typeof clergyBillPassed==='function')clergyBillPassed(d,'lower');
  let penalty=d.route==='assembly'&&!force?billStabilityPenalty():0;
  if(force){let amend=d.mode==='amend';mod({approval:amend?-12:-8,stability:amend?-10:-8});noteDecision('强行颁行宪制议案',{authority:4,law:-3,elite:2},[],null,1,null,{kind:'coercion'})}
  mod(spec.values);if(penalty)mod({stability:-penalty});

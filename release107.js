@@ -12,8 +12,13 @@ function initializeDemocraticParty107(){
 function distributeElectionSeats107(governmentSeats){
  let p=pstate(),own=playerFactionId107(),opposition=p.factions.filter(f=>f.id!==own),rest=100-governmentSeats;
  p.factions[own].seats=governmentSeats;
- opposition.forEach((f,i)=>f.seats=Math.floor(rest*[.35,.27,.23,.15][i]));
- opposition.at(-1).seats+=100-p.factions.reduce((sum,f)=>sum+f.seats,0);
+ if(opposition.length===4){
+  opposition.forEach((f,i)=>f.seats=Math.floor(rest*[.35,.27,.23,.15][i]));
+  opposition.at(-1).seats+=100-p.factions.reduce((sum,f)=>sum+f.seats,0);
+ }else{
+  const shares=allocateUnits107(opposition.map(f=>Math.max(1,f.seats)),rest);
+  opposition.forEach((f,i)=>f.seats=shares[i]);
+ }
 }
 const PLACE_START107=['阿','艾','伊','奥','乌','欧','埃','贝','博','布','达','德','多','杜','恩','法','菲','弗','格','戈','哈','赫','霍','卡','科','克','库','莱','雷','里','鲁','罗','梅','米','穆','纳','尼','诺','佩','普','萨','塞','瑟','索','塔','特','托','瓦','维','沃','耶','泽'];
 const PLACE_MIDDLE107=['巴','柏','达','丹','德','迪','多','芬','加','格','吉','卡','科','拉','兰','雷','里','林','罗','伦','曼','蒙','纳','宁','诺','帕','普','萨','森','塔','提','托','瓦','文','维','泽','兹'];

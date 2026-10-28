@@ -2,6 +2,7 @@
 const PARTY_COLORS107={conservative:'#396bc1',market:'#c5a126',social:'#c33874',local:'#3c9990',green:'#488c50',law:'#63a3d1',state:'#be4948',reform:'#8771ba',religious:'#b18b55'};
 function factionColorKey107(f){
  if(!f)return 'local';
+ if(f.profileKey)return f.profileKey;
  if(regime().id==='party')return Object.entries(FACTION_PROFILES103).find(([,profile])=>profile===factionProfile(f))?.[0]||'state';
  if(/社会民主|劳动|工党|社会公正|社会进步/.test(f.name))return 'social';
  if(/自由民主|自由改革|自由进步|自由中间|自由联邦/.test(f.name))return 'market';
@@ -120,6 +121,7 @@ voteConstitution=function(force=false){
  if(!spendAction('amendment-legislative-vote'))return;
  let rate=billPassRate104();
  if(rate+1e-9<100*2/3){log('修宪议案受阻',d.title+'院内支持率 '+fmt(rate,2)+'%，不足三分之二，议案保留。');toast('尚未取得三分之二院内支持');pSave();return}
+ if(typeof clergyBillPassed==='function')clergyBillPassed(d,'lower');
  let penalty=billStabilityPenalty();if(penalty)mod({stability:-penalty});
  d.legislativeRate=rate;d.stage='review';d.reviewStarted=s.q;d.reviewDeadline=s.q+3;d.route=constitution().authority==='assembly'?'assembly':'court';
  pstate().bill=d.route==='assembly'?d:null;

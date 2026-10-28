@@ -15,6 +15,7 @@ const FACTION_PROFILES103={
 function rules103(){return s.rules103}
 function coalitionRegime(){return regime().democratic||regime().id==='symbolic'}
 function factionProfile(f){
+ if(f.profileKey&&FACTION_PROFILES103[f.profileKey])return FACTION_PROFILES103[f.profileKey];
  let key;
  if(regime().id==='party')key=['state','reform','social','law','local'][f.id];
  else if(/教法|保守教|传统|最高教|圣地|宗教长老|教会/.test(f.name))key='religious';
@@ -30,7 +31,7 @@ function factionProfile(f){
 }
 function cabinetEligible(c){return !!c&&(!coalitionRegime()||(rules103()?.coalition||[playerFactionId107()]).includes(c.faction))}
 function cabinetSlots103(r=regime()){return [...(r.head?['head']:[]),...PORTFOLIOS.filter(x=>r.id!=='federal'||x[0]!=='deputy').map(x=>x[0])]}
-function ensureCandidates103(){let p=pstate();while(p.candidates.length<75){let id=p.candidates.length;p.candidates.push({id,name:personName(),faction:id%5,trait:pick(factionProfile(p.factions[id%5]).traits),skill:45+Math.floor(rand()*46),loyalty:45+Math.floor(rand()*41),achievements:0,tenure:0})}}
+function ensureCandidates103(){let p=pstate();while(p.candidates.length<Math.max(75,p.factions.length*12)){let id=p.candidates.length;p.candidates.push({id,name:personName(),faction:id%p.factions.length,trait:pick(factionProfile(p.factions[id%p.factions.length]).traits),skill:45+Math.floor(rand()*46),loyalty:45+Math.floor(rand()*41),achievements:0,tenure:0})}}
 function alignPeople103(){
  let p=pstate();
  // Fifteen candidates per faction cover the expanded cabinet and replacement pool.
