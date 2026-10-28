@@ -68,7 +68,7 @@ function researchQuarter103(){
  let levels=Math.floor((r.progress+1e-9)/100);if(levels){r.level+=levels;r.progress=Math.max(0,r.progress-levels*100);log('科研水平提升',`科研等级 ${r.level}；${actionResearchStatus()}`)}
 }
 const archiveBefore103=archive;
-archive=function(){let r=rules103().research,m=2+(r.educationModernized?1:0);return `<div class="card research-card"><span class="tag">科研与行政能力 / 1.0.3</span><h2>科研等级 ${r.level}</h2><div class="bar"><i style="width:${r.progress}%"></i></div><p>下一级进度 ${fmt(r.progress,2)}% / 100% · 每季增加 ${fmt(s.policies.education*m,2)} 个百分点。</p><p>教育与科研 ${fmt(s.policies.education)}% × ${m}；教育现代化${r.educationModernized?'已完成，永久加速 +1':'尚未完成'}。</p><div class="row"><span>本季政治行动点总数</span><b>${politicalCapacity()}${actionMode()==='planned'?'':' / 6'}</b></div><div class="row"><span>本季度剩余行动点</span><b>${pstate().ap}</b></div><p>本局采用${ACTION_POINT_MODES[actionMode()]}。${actionModeDescription()}每积累100%科研提升一级，保留溢出进度；科研在新季度发放行动点前结算。升级前的季度不追溯计算。</p></div>`+archiveBefore103()};
+archive=function(){let r=rules103().research,m=2+(r.educationModernized?1:0);return `<div class="card research-card"><span class="tag">科研与行政能力</span><h2>科研等级 ${r.level}</h2><div class="bar"><i style="width:${r.progress}%"></i></div><p>下一级进度 ${fmt(r.progress,2)}% / 100% · 每季增加 ${fmt(s.policies.education*m,2)} 个百分点。</p><p>教育与科研 ${fmt(s.policies.education)}% × ${m}；教育现代化${r.educationModernized?'已完成，永久加速 +1':'尚未完成'}。</p><div class="row"><span>本季政治行动点总数</span><b>${politicalCapacity()}${actionMode()==='planned'?'':' / 6'}</b></div><div class="row"><span>本季度剩余行动点</span><b>${pstate().ap}</b></div><p>本局采用${ACTION_POINT_MODES[actionMode()]}。${actionModeDescription()}每积累100%科研提升一级，保留溢出进度；科研在新季度发放行动点前结算。升级前的季度不追溯计算。</p></div>`+archiveBefore103()};
 
 // Budget preference coefficients: +1 budget point lowers the full-support requirement by this value.
 function budgetRequirement(f){
@@ -140,7 +140,7 @@ politicalMaintenance=function(){researchQuarter103();programmeQuarter103();maint
 const transitionBefore103=transitionDemocracy;
 transitionDemocracy=function(x){transitionBefore103(x);rules103().coalition=[playerFactionId107()];alignPeople103();for(let k of cabinetSlots103())if(!rules103().proposals[k])rules103().proposals[k]={progress:0,completed:false,spent:0,actions:[]};log('新宪法下的组阁规则','内阁改为执政党组成；其他党派须经联合政府协商方可入阁。')};
 const helpBefore103=showHelp;
-showHelp=function(){helpBefore103();$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2><p><b>1.0.3：</b>部长提案每季忠诚 −0.5，完成后停止；投资减少提案费用，能力和倾向提高进度。国家档案可查看科研进度与每季行动额度。民主及象征性民主政体仅执政党可入阁，其他党团关系达到 70 后可由总召加入联合政府。表决采用比例席位，并显示预算门槛、折算倾向与通过后的额外稳定损失。</p>')};
+showHelp=function(){helpBefore103();$('modal').innerHTML=$('modal').innerHTML.replace('</h2>','</h2><p><b>内阁、科研与立法：</b>部长提案每季忠诚 −0.5，完成后停止；投资减少提案费用，能力和倾向提高进度。国家档案可查看科研进度与每季行动额度。民主及象征性民主政体仅执政党可入阁，其他党团关系达到 70 后可由总召加入联合政府。表决采用比例席位，并显示预算门槛、折算倾向与通过后的额外稳定损失。</p>')};
 const validBefore103=validSave;
 validSave=function(v){
  if(!validBefore103(v))return false;let g=v.rules103;if(!g)return true;let r=g.research;
