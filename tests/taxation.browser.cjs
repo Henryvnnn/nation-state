@@ -25,35 +25,35 @@ const server=http.createServer((req,res)=>{
 
  try{
   await page.goto(url);await fonts();
-  for(const width of [1365,768,390,320])for(const id of ['presidential','party','absolute','theoabsolute']){
+  for(const width of [1365,768,390,320])for(const id of ['presidential','party','absolute','theorepublic','theoabsolute']){
    await page.setViewportSize({width,height:900});
    await page.evaluate(id=>{selectedRegime=id;pendingAdmin107=true;create('tax-ui-'+id);pstate().ap=100;pstate().current=null;pstate().queue=[];sits().notices=[];features107().notices=[];changeTab('budget')},id);await clearNotices();
    const taxKeys=await page.evaluate(()=>taxKeys107());
    assert.equal(await page.locator('.policy input[type="range"]').count(),taxKeys.length+5);
-   assert.equal(await page.locator('#p-tithe').count(),id==='theoabsolute'?1:0);
+   assert.equal(await page.locator('#p-tithe').count(),['theorepublic','theoabsolute'].includes(id)?1:0);
    assert.equal(await page.locator('#content details[open]').count(),0);
    const state=await page.evaluate(()=>JSON.stringify(s));
    await page.locator('#p-property').focus();await page.locator('#p-property').press('ArrowRight');
    assert.equal(await page.evaluate(()=>draft.property),5.5);assert.equal(await page.evaluate(()=>JSON.stringify(s)),state,'draft action does not enact');
    await page.locator('#p-tariff').press('End');assert.equal(await page.evaluate(()=>draft.tariff),30);
-   if(id==='theoabsolute'){
+   if(['theorepublic','theoabsolute'].includes(id)){
     await page.locator('#p-tithe').press('End');assert.equal(await page.evaluate(()=>draft.tithe),10);await page.locator('#p-tithe').press('Home');assert.equal(await page.evaluate(()=>draft.tithe),0);
-    const text=await page.locator('label[for="p-tithe"]').innerText();assert(/什一税|教会税|贡税/.test(text));
+    const text=await page.locator('label[for="p-tithe"]').innerText();assert(/什一税|教会税|寺院捐/.test(text));
    }
    await page.locator('#p-property').scrollIntoViewIfNeeded();await fit('tax sliders '+id+' '+width);await capture('taxes-'+id+'-'+width);
    const overlaps=await page.locator('.policy label').evaluateAll(labels=>labels.map(el=>{const value=el.querySelector('b').getBoundingClientRect(),box=el.getBoundingClientRect();const range=document.createRange();range.selectNodeContents(el.firstChild);const label=range.getBoundingClientRect();return {bad:label.right>value.left+1||value.right>box.right+1,text:el.textContent}}).filter(x=>x.bad));assert.deepEqual(overlaps,[],'labels avoid values '+id+' '+width);
    await page.locator('.tax-breakdown summary').click();assert(await page.locator('.tax-breakdown .row').first().isVisible());await fit('tax details '+id+' '+width);
    await page.locator('button[onclick="applyPolicy()"]').click();assert.equal(await page.evaluate(()=>pstate().bill.kind),'budget');assert.equal(await page.evaluate(()=>s.policies.property),5);
-   await page.evaluate(()=>{for(const f of pstate().factions){f.relation=100;f.agendaDecay=0;f.agendaOffset107=200}for(const m of pstate().members)m.relation=100;render()});await clearNotices();await page.locator('button[onclick="voteBill()"]').click();assert.equal(await page.evaluate(()=>s.policies.property),5.5);assert.equal(await page.evaluate(()=>s.policies.tariff),30);assert.equal(await page.evaluate(()=>pstate().bill),null);
+   await page.evaluate(()=>{for(const f of pstate().factions){f.relation=100;f.agendaDecay=0;f.agendaOffset107=200}for(const m of pstate().members)m.relation=100;render()});await clearNotices();await page.locator('button[onclick="voteBill()"]').click();if(await page.evaluate(()=>!!upperBill108())){await page.evaluate(()=>{for(const g of bicameral108().upper.groups){g.agenda=100;g.decay=0;g.relation=100}render()});await page.locator('button[onclick="upperReview108()"]').click()}assert.equal(await page.evaluate(()=>s.policies.property),5.5);assert.equal(await page.evaluate(()=>s.policies.tariff),30);assert.equal(await page.evaluate(()=>pstate().bill),null);
    const saved=await page.evaluate(()=>JSON.stringify(s));await page.reload();await fonts();await page.locator('#continue-game').click();assert.equal(await page.evaluate(()=>JSON.stringify(s)),saved,'exact reload');
    await page.evaluate(()=>changeTab('budget'));await clearNotices();assert.equal(await page.locator('#content details[open]').count(),0);await page.locator('#page-tutorial').click();
    let iterations=0,seenProperty=false,seenTariff=false,seenReligion=false;
    while(await page.locator('#tutorial-controls').count()){
-    const title=await page.locator('#tour-title').innerText();seenProperty ||= /财产税|田产税|土地税|土地使用税/.test(title);seenTariff ||= /关税/.test(title);seenReligion ||= /什一税|教会税|贡税/.test(title);
+    const title=await page.locator('#tour-title').innerText();seenProperty ||= /财产税|田产税|土地税|土地使用税/.test(title);seenTariff ||= /关税/.test(title);seenReligion ||= /什一税|教会税|寺院捐/.test(title);
     await page.keyboard.press('Space');assert(++iterations<40,'tutorial bounded');
    }
-   assert(seenProperty&&seenTariff,'new taxes taught');assert.equal(seenReligion,id==='theoabsolute','regime-specific tutorial');
-   await page.evaluate(()=>showHelp());await page.locator('#guide-query').fill(id==='theoabsolute'?'什一税':'土地使用税');assert(!(await page.locator('#guide-results').innerText()).includes('该概念不存在'));await page.getByRole('button',{name:'关闭治国指南',exact:true}).click();
+   assert(seenProperty&&seenTariff,'new taxes taught');assert.equal(seenReligion,['theorepublic','theoabsolute'].includes(id),'regime-specific tutorial');
+   await page.evaluate(()=>showHelp());await page.locator('#guide-query').fill(['theorepublic','theoabsolute'].includes(id)?'什一税':'土地使用税');assert(!(await page.locator('#guide-results').innerText()).includes('该概念不存在'));await page.getByRole('button',{name:'关闭治国指南',exact:true}).click();
   }
   assert.deepEqual(errors,[]);console.log('PASS tax browser: actual range controls, no premature policy enactment, submit/vote/reload, collapsed details, guide aliases, Space-key tutorials, exclusive religious levy and label/overflow checks at 1365/768/390/320px.');
  }finally{await browser.close();server.closeAllConnections();await new Promise(r=>server.close(r))}

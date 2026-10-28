@@ -1,6 +1,6 @@
-/* Five ordinary tax bases, with a flat religious levy in theocratic autocracies. */
+/* Five ordinary tax bases, with a flat religious levy in both theocratic regimes. */
 const TAX_KEYS107=['income','corporate','vat','property','tariff'];
-const RELIGIOUS_TAX_NAMES107=['什一税','教会税','贡税'];
+const RELIGIOUS_TAX_NAMES107=['什一税','教会税','寺院捐'];
 const TAX_NAMES107={
  constitutional:['国民所得税','公司利得税','消费税','地产税','进口关税'],
  presidential:['个人所得税','企业所得税','消费税','财产税','进口关税'],
@@ -37,7 +37,7 @@ Object.assign(policyMeta,{
  tithe:['宗教税',0,10,'按固定比例征收，税率可在0%至10%之间调整；0%即停止征收。提高税率增加财政收入，也会加重民众负担。']
 });
 function religiousTaxName107(seed=s.seed){return RELIGIOUS_TAX_NAMES107[Math.floor(hash(seed+'|religious-tax107')/4294967296*3)]}
-function hasReligiousTax107(){return s?.political?.regime==='theoabsolute'}
+function hasReligiousTax107(){return ['theorepublic','theoabsolute'].includes(s?.political?.regime)}
 function taxKeys107(){return hasReligiousTax107()?[...TAX_KEYS107,'tithe']:TAX_KEYS107.slice()}
 function activePolicyKeys107(){return [...taxKeys107(),...CONSTITUTION_BUDGETS]}
 function policyInfo107(key){
@@ -48,6 +48,7 @@ function policyInfo107(key){
 function fillTaxFields107(p,tithe=0){if(!p)return;for(const [key,value]of Object.entries({property:5,tariff:5,tithe}))if(p[key]===undefined)p[key]=value;return p}
 function initializeTaxation107(){
  if(!s?.political)return;
+ if(s.taxation107?.religiousName==='贡税')s.taxation107.religiousName='寺院捐';
  if(!s.taxation107){
   const tithe=creatingWorld&&hasReligiousTax107()?5:0;
   s.taxation107={version:1,religiousName:religiousTaxName107(),regime:pstate().regime};
@@ -95,7 +96,7 @@ const validBeforeTaxation107=validSave;
 validSave=function(v){
  if(!v?.policies||!v.effective)return false;
  const meta=v.taxation107;
- if(meta&&(meta.version!==1||!RELIGIOUS_TAX_NAMES107.includes(meta.religiousName)||!REGIMES.some(r=>r.id===meta.regime)))return false;
+ if(meta&&(meta.version!==1||(!RELIGIOUS_TAX_NAMES107.includes(meta.religiousName)&&meta.religiousName!=='贡税')||!REGIMES.some(r=>r.id===meta.regime)))return false;
  const sets=[v.policies,v.effective,...(v.political?.bill?.kind==='budget'?[v.political.bill.policies]:[])];
  for(const p of sets){if(!p)return false;for(const k of ['property','tariff','tithe']){if(p[k]===undefined){if(meta)return false}else if(!Number.isFinite(p[k])||p[k]<0||p[k]>policyMeta[k][2])return false}}
  // Validate a copy so opening/importing a legacy save never modifies the input.
