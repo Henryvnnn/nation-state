@@ -22,7 +22,52 @@ function linkedUpperView108(f){
 }
 function upperGroupNames108(view){
  const religious=regime().id==='theorepublic';
- return ({establishment:religious?['教务协调会','宗教建制团','经学秩序会','教区协调团','稳健教务会']:['宪制守护团','稳健联合','秩序协调会','公共事务会','建制协商团'],progressive:religious?['民生教士会','社会关怀团','开明教士联合','公义教务会','慈善教区联合']:['进步联合','社会协进会','公共福祉团','劳工协进会','平等议事团'],conservative:regime().id==='constitutional'?['世袭贵族联合','领地贵族团','传统贵族会','贵族守宪团','领主协商会']:['共和守成会','传统共和团','自由经济联合','财产保障会','稳健共和团'],clerical:['虔教徒委员会','教法守护团','传统经学会','圣典监护团','正统教士会']})[view];
+ return ({establishment:religious?['教务协调会','宗教建制团','经学秩序会','教区协调团','稳健教务会']:['国家复兴阵线','宪制守护团','稳健联合','秩序协调会','建制协商团'],progressive:religious?['民生教士会','社会关怀团','开明教士联合','公义教务会','慈善教区联合']:['劳工联盟','进步联合','社会协进会','公共福祉团','平等议事团'],conservative:regime().id==='constitutional'?['世袭贵族联合','领地贵族团','传统贵族会','贵族守宪团','领主协商会']:['共和守成会','传统共和团','自由经济联合','财产保障会','稳健共和团'],clerical:['虔教徒委员会','教法守护团','传统经学会','圣典监护团','正统教士会']})[view];
+}
+function independentUpperName108(view,used){
+ const pool=upperGroupNames108(view),start=hash(s.seed+'|upper-bloc|'+regime().id+'|'+view)%pool.length;
+ for(let i=0;i<pool.length;i++){const name=pool[(start+i)%pool.length];if(!used.has(name)){used.add(name);return name}}
+ const base=upperName108()+upperViewName108(view)+'党团';let name=base,n=2;while(used.has(name))name=base+'第'+n+++'组';used.add(name);return name;
+}
+// A chamber has one bloc per ideology, not one bloc per lower-party/ideology pair.
+// Preserve source shares as metadata; they never create extra blocs or representatives.
+function consolidateUpperBlocs108(u,migrate=false){
+ if(!u.formed)return;
+ const oldGroups=u.groups,oldMembers=u.members,player=playerFactionId107(),used=new Set(pstate().factions.map(f=>f.name)),idMap=new Map();
+ u.groups=Object.keys(UPPER_VIEWS108).flatMap((view,id)=>{
+  const parts=oldGroups.filter(g=>g.view===view&&g.share>0),share=parts.reduce((n,g)=>n+g.share,0);if(!share)return [];
+  const mean=fn=>parts.reduce((n,g)=>n+g.share*fn(g),0)/share,lower=new Map();
+  for(const g of parts){idMap.set(g.id,id);for(const x of g.lowerShares||[{id:g.lowerId,share:g.share}])lower.set(x.id,(lower.get(x.id)||0)+x.share)}
+  return [{id,lowerId:null,lowerShares:[...lower].map(([id,share])=>({id,share})),name:independentUpperName108(view,used),view,share,playerShare:lower.get(player)||0,relation:mean(g=>g.relation),agenda:mean(g=>g.agenda),decay:mean(g=>g.decay)}];
+ });
+ u.playerGroup=regime().id==='symbolic'?u.groups.reduce((a,b)=>a.playerShare>=b.playerShare?a:b).id:idMap.get(u.playerGroup)??u.groups.reduce((a,b)=>a.playerShare>=b.playerShare?a:b).id;
+ if(!oldMembers.length){populateUpperMembers108(u);return}
+ const memberMap=new Map(),chair=oldMembers.find(m=>m.speaker);
+ u.members=[{...chair,id:0,group:idMap.get(chair.group)}];memberMap.set(chair.id,0);
+ for(const g of u.groups){
+  const reps=oldMembers.filter(m=>!m.speaker&&idMap.get(m.group)===g.id).sort((a,b)=>oldGroups.find(g=>g.id===b.group).share-oldGroups.find(g=>g.id===a.group).share);
+  const id=u.members.length;u.members.push({...reps[0],id,group:g.id});for(const m of reps)memberMap.set(m.id,id);
+ }
+ if(!migrate)return;
+ // Pending bills may be shared in memory or separate copies after a save reload.
+ const tickets=new Set([pstate().bill,constitution().docket,...bicameral108().delayed].map(b=>b?.chamber108).filter(Boolean));
+ for(const t of tickets){
+  if(t.sourceRegime!==regime().id)continue;
+  const temp={},agreements=[],seen=new Set();
+  for(const g of u.groups){const bonus=oldGroups.filter(x=>x.view===g.view).reduce((n,x)=>n+x.share*(t.temp[x.id]||0),0)/g.share;if(bonus)temp[g.id]=bonus}
+  for(const a of t.agreements){const member=memberMap.get(a.member);if(member===undefined)continue;const key=member===0?'speaker':member+':'+a.q;if(!seen.has(key)){agreements.push({...a,member});seen.add(key)}}
+  t.temp=temp;t.agreements=agreements;
+ }
+ // Retain the per-quarter personnel replacement limit after office IDs change.
+ const last=pstate().lastAction,limits=new Map();
+ for(const [oldId,id]of memberMap){const q=last['upper-personnel:'+oldId];if(q!==undefined)limits.set(id,Math.max(q,limits.get(id)??-1))}
+ for(const key of Object.keys(last))if(key.startsWith('upper-personnel:'))delete last[key];for(const [id,q]of limits)last['upper-personnel:'+id]=q;
+}
+function migrateUpperBlocs108(){
+ const state=bicameral108();if(state.version===1){consolidateUpperBlocs108(state.upper,true);state.version=2}
+ const used=new Set(pstate().factions.map(f=>f.name));for(const g of state.upper.groups){if(used.has(g.name))g.name=independentUpperName108(g.view,used);else used.add(g.name)}
+ // JSON reload duplicates these references. Keep later negotiations on the same docket.
+ const d=constitution().docket,b=pstate().bill;if(d?.mode==='amend'&&['upper','returned'].includes(d.stage)&&b?.chamber108?.id===d.chamber108?.id)pstate().bill=d;
 }
 // Preserve the player's mirrored share wherever compatible with mandated composition.
 function constrainedShares108(groups,ids,target,player){
@@ -46,15 +91,15 @@ function populateUpperMembers108(u){
 }
 function initializeBicameral108(){
  if(!hasUpper108())return;
- const previous=bicameral108();if(previous?.regime===regime().id)return;
+ const previous=bicameral108();if(previous?.regime===regime().id){migrateUpperBlocs108();return}
  const priorRng=s.rng;
  try{
   if(!previous&&!creatingWorld)try{localStorage.setItem(KEY+'-pre-bicameral108',JSON.stringify(s))}catch(_){}
   s.rng=hash(s.seed+'|bicameral108|'+regime().id);
   const p=pstate(),symbolic=regime().id==='symbolic';
-  s.bicameral108={version:1,regime:regime().id,nextBill:previous?.nextBill||1,history:previous?.history||[],delayed:previous?.delayed||[],upper:{formed:!symbolic,groups:[],members:[],playerGroup:playerFactionId107(),lastAgendaQ:s.q,term:0,nobleShare:0,clergyShare:0}};
-  const u=bicameral108().upper,used=new Set();
-  u.groups=p.factions.map(f=>{const view=linkedUpperView108(f),special=['constitutional','theorepublic'].includes(regime().id),name=special?upperGroupNames108(view).find(n=>!used.has(n)):f.name;used.add(name);return {id:f.id,lowerId:f.id,name,view,share:factionSeatShare107(f),relation:50+Math.floor(rand()*21),agenda:54+Math.floor(rand()*9),decay:0}});
+  s.bicameral108={version:2,regime:regime().id,nextBill:previous?.nextBill||1,history:previous?.history||[],delayed:previous?.delayed||[],upper:{formed:!symbolic,groups:[],members:[],playerGroup:playerFactionId107(),lastAgendaQ:s.q,term:0,nobleShare:0,clergyShare:0}};
+  const u=bicameral108().upper;
+  u.groups=p.factions.map(f=>({id:f.id,lowerId:f.id,view:linkedUpperView108(f),share:factionSeatShare107(f),relation:50+Math.floor(rand()*21),agenda:54+Math.floor(rand()*9),decay:0}));
   if(regime().id==='constitutional'){
    let g=u.groups.find(g=>g.view==='conservative');if(!g){g=u.groups.find(g=>g.id!==u.playerGroup);g.view='conservative';g.name='世袭贵族联合'}
    if(g.share<40)constrainedShares108(u.groups,[g.id],40,u.playerGroup);
@@ -67,7 +112,7 @@ function initializeBicameral108(){
    const sum=u.groups.filter(g=>ids.includes(g.id)).reduce((n,g)=>n+g.share,0),target=sum>=60&&sum<=80?sum:60+Math.floor(rand()*21);
    constrainedShares108(u.groups,ids,target,u.playerGroup);u.clergyShare=100;
   }
-  if(symbolic){u.groups=[];u.playerGroup=null;u.draft={establishment:0,progressive:0,conservative:0}}else populateUpperMembers108(u);
+  if(symbolic){u.groups=[];u.playerGroup=null;u.draft={establishment:0,progressive:0,conservative:0}}else consolidateUpperBlocs108(u);
   // Ongoing judicial reviews are grandfathered; no repeat legislative vote or clock reset.
   if(!creatingWorld&&!previous)addNotice107('bicameral108','两院议事安排',`${regime().body}与${upperName108()}分别议事。预算、改革及新修宪案增加另一院复审；已进入司法审查的旧案继续按原期限办理。`,'assembly');
   chamberView108='lower';
@@ -247,14 +292,14 @@ function formSenate108(){
  const u=bicameral108()?.upper;if(regime().id!=='symbolic'||!u||u.formed||s.ended||Object.values(u.draft).reduce((a,b)=>a+b,0)!==100)return;
  const prior=s.rng;s.rng=hash(s.seed+'|symbolic-senate108');
  try{
-  const player=playerFactionId107(),share=factionSeatShare107(pstate().factions[player]),views=Object.keys(u.draft),playerDistribution=allocateUnits107(views.map(k=>u.draft[k]),share),others=pstate().factions.filter(f=>f.id!==player),otherWeights=others.map(()=>1+rand()*4),otherShares=allocateUnits107(otherWeights,100-share);
+  const player=playerFactionId107(),share=factionSeatShare107(pstate().factions[player]),views=Object.keys(u.draft),others=pstate().factions.filter(f=>f.id!==player),otherWeights=others.map(()=>1+rand()*4),otherShares=allocateUnits107(otherWeights,100-share);
   u.partyShares=pstate().factions.map(f=>({id:f.id,share:f.id===player?share:otherShares[others.findIndex(x=>x.id===f.id)]}));
   u.groups=[];const rows=views.map(k=>u.draft[k]);
-  // Each party is assigned across ideological blocks without changing row or column totals.
+  // Preserve party correlations internally, then combine each ideology into one bloc.
   const parties=[u.partyShares.find(x=>x.id===player),...u.partyShares.filter(x=>x.id!==player)];
-  for(const party of parties){const alloc=allocateUnits107(rows,party.share);for(let i=0;i<views.length;i++)if(alloc[i]){const view=views[i];u.groups.push({id:u.groups.length,lowerId:party.id,name:pstate().factions[party.id].name+' · '+upperViewName108(view),view,share:alloc[i],playerShare:party.id===player?alloc[i]:0,relation:60,agenda:60,decay:0});rows[i]-=alloc[i]}}
+  for(const party of parties){const alloc=allocateUnits107(rows,party.share);for(let i=0;i<views.length;i++)if(alloc[i]){const view=views[i];u.groups.push({id:u.groups.length,lowerId:party.id,view,share:alloc[i],relation:60,agenda:60,decay:0});rows[i]-=alloc[i]}}
 
-  u.formed=true;u.term=1;u.playerGroup=null;populateUpperMembers108(u);mod(symbolicEffects108(u.draft));
+  u.formed=true;u.term=1;u.playerGroup=null;consolidateUpperBlocs108(u);mod(symbolicEffects108(u.draft));
   noteDecision('组建参议院',{authority:(u.draft.establishment-u.draft.progressive)/25,welfare:(u.draft.progressive-u.draft.conservative)/25,market:u.draft.conservative/25},[],null,1,null,{kind:'coalition'});
   log('参议院组建',`50席依三类倾向组成；玩家党籍占比${share}%，与众议院对应。`);record();
  }finally{s.rng=prior}
@@ -262,7 +307,7 @@ function formSenate108(){
 }
 const maintenanceBeforeBicameral108=politicalMaintenance;
 politicalMaintenance=function(){
- const state=bicameral108();if(state&&state.upper.lastAgendaQ<s.q){const u=state.upper;u.lastAgendaQ=s.q;for(const g of u.groups)if(g.id!==u.playerGroup&&!(regime().id==='symbolic'&&g.lowerId===playerFactionId107()))g.decay=Math.min(100,g.decay+2)}
+ const state=bicameral108();if(state&&state.upper.lastAgendaQ<s.q){const u=state.upper;u.lastAgendaQ=s.q;for(const g of u.groups)if(g.id!==u.playerGroup)g.decay=Math.min(100,g.decay+2)}
  maintenanceBeforeBicameral108();
 };
 
@@ -290,7 +335,7 @@ function upperDocket108(){const b=upperBill108();return `<section class="card" i
 function upperPage108(){
  const u=bicameral108().upper;
  const composition=regime().id==='constitutional'?`贵族组成 ${u.nobleShare}% · 贵族保守派至少40%`:regime().id==='theorepublic'?'全部席位由教士组成 · 教法保守派占60%—80%':regime().id==='symbolic'?'任命制参议院 · 按政治倾向配置':'本院独立议事 · 与下院分开协商';
- return `<div class="political-banner"><div><span class="tag">${regime().name}</span><h2>${upperName108()}</h2><p>${composition}</p></div><div class="action-count"><b>50</b><span>本院席位${u.formed?'':' · 全部空缺'}</span></div></div><div class="grid"><section class="card">${upperDiagram108()}${u.formed?u.groups.filter(g=>g.share>0).map(g=>`<div class="faction-row upper-faction108"><div><b style="color:${UPPER_VIEWS108[g.view].color}">${esc(g.name)}</b>${g.id===u.playerGroup||regime().id==='symbolic'&&g.lowerId===playerFactionId107()?'<span class="player-party-badge">玩家所属</span>':''}<small>席位占比${g.share}% · 团体关系 ${fmt(g.relation,1)} · 议程倾向 ${fmt(upperAgenda108(g),1)}</small><small>${upperViewName108(g.view)}</small><details><summary>查看细则</summary><p>${UPPER_VIEWS108[g.view].text}</p><p>基础倾向 ${fmt(g.agenda-g.decay+(g.relation-60)*.65,1)} · 本案政策偏好 ${fmt(upperAffinity108(g),1)} · 本案协商加成 ${fmt(upperBill108()?.chamber108.temp[g.id]||0,1)}。</p><p>院内支持率贡献 ${fmt(g.share*upperRatio108(g),2)} 个百分点。${g.lowerId!==null?'对应'+esc(pstate().factions[g.lowerId]?.name||'原下院党团')+'；两院关系与议程倾向独立。':`其中玩家所属党席位占比${g.playerShare}%（全院口径）。`}</p></details></div><span class="badge">${fmt(upperRatio108(g)*100,1)}% 支持</span></div>`).join(''):`<h3>组建参议院</h3><p>分配三类倾向，合计100%后确认组建。社会进步在此代表社会民主路线。</p><div class="upper-composition108">${Object.entries(u.draft).map(([key,value])=>`<label><span>${upperViewName108(key)}${key==='progressive'?'（社会民主）':''}</span><div><button aria-label="减少${upperViewName108(key)}" onclick="symbolicSet108('${key}',bicameral108().upper.draft.${key}-1)">−</button><input id="upper-input-${key}" type="number" min="0" max="100" step="1" value="${value}" aria-label="${upperViewName108(key)}席位占比" oninput="symbolicSet108('${key}',this.value)"><span>%</span><button aria-label="增加${upperViewName108(key)}" onclick="symbolicSet108('${key}',bicameral108().upper.draft.${key}+1)">＋</button></div></label>`).join('')}</div><div id="upper-composition-result" aria-live="polite">${symbolicPreview108()}</div>`}</section>${upperDocket108()}</div>${u.formed?`<div class="section-label"><h3>主要成员</h3><span>通过人员获取本案修订要求</span></div><div class="member-grid">${u.members.map(m=>{const g=u.groups.find(g=>g.id===m.group);return `<article class="card person"><span class="tag">${upperOfficerTitle108(m.speaker)}</span><h3>${esc(m.name)}</h3><p>${esc(g.name)} · ${upperViewName108(g.view)}</p><p>${UPPER_VIEWS108[g.view].text}</p><button onclick="meetUpper108(${m.id})">会见 / 修订要求</button></article>`}).join('')}</div>`:''}`;
+ return `<div class="political-banner"><div><span class="tag">${regime().name}</span><h2>${upperName108()}</h2><p>${composition}</p></div><div class="action-count"><b>50</b><span>本院席位${u.formed?'':' · 全部空缺'}</span></div></div><div class="grid"><section class="card">${upperDiagram108()}${u.formed?u.groups.filter(g=>g.share>0).map(g=>`<div class="faction-row upper-faction108"><div><b style="color:${UPPER_VIEWS108[g.view].color}">${esc(g.name)}</b>${g.id===u.playerGroup?'<span class="player-party-badge">玩家所属</span>':''}<small>席位占比${g.share}% · 团体关系 ${fmt(g.relation,1)} · 议程倾向 ${fmt(upperAgenda108(g),1)}</small><small>${upperViewName108(g.view)}</small><details><summary>查看细则</summary><p>${UPPER_VIEWS108[g.view].text}</p><p>基础倾向 ${fmt(g.agenda-g.decay+(g.relation-60)*.65,1)} · 本案政策偏好 ${fmt(upperAffinity108(g),1)} · 本案协商加成 ${fmt(upperBill108()?.chamber108.temp[g.id]||0,1)}。</p><p>院内支持率贡献 ${fmt(g.share*upperRatio108(g),2)} 个百分点。本院按政治倾向组成独立党团，与下院分开协商。</p></details></div><span class="badge">${fmt(upperRatio108(g)*100,1)}% 支持</span></div>`).join(''):`<h3>组建参议院</h3><p>分配三类倾向，合计100%后确认组建。社会进步在此代表社会民主路线。</p><div class="upper-composition108">${Object.entries(u.draft).map(([key,value])=>`<label><span>${upperViewName108(key)}${key==='progressive'?'（社会民主）':''}</span><div><button aria-label="减少${upperViewName108(key)}" onclick="symbolicSet108('${key}',bicameral108().upper.draft.${key}-1)">−</button><input id="upper-input-${key}" type="number" min="0" max="100" step="1" value="${value}" aria-label="${upperViewName108(key)}席位占比" oninput="symbolicSet108('${key}',this.value)"><span>%</span><button aria-label="增加${upperViewName108(key)}" onclick="symbolicSet108('${key}',bicameral108().upper.draft.${key}+1)">＋</button></div></label>`).join('')}</div><div id="upper-composition-result" aria-live="polite">${symbolicPreview108()}</div>`}</section>${upperDocket108()}</div>${u.formed?`<div class="section-label"><h3>主要成员</h3><span>通过人员获取本案修订要求</span></div><div class="member-grid">${u.members.map(m=>{const g=u.groups.find(g=>g.id===m.group);return `<article class="card person"><span class="tag">${upperOfficerTitle108(m.speaker)}</span><h3>${esc(m.name)}</h3><p>${esc(g.name)} · ${upperViewName108(g.view)}</p><p>${UPPER_VIEWS108[g.view].text}</p><button onclick="meetUpper108(${m.id})">会见 / 修订要求</button></article>`}).join('')}</div>`:''}`;
 }
 function lowerPendingCard108(){const b=pstate().bill;if(!b?.chamber108||b.kind==='constitution')return '';const stage=b.chamber108.stage;
  return `<section class="card" id="lower-docket108"><span class="tag">${regime().body} · ${stage==='upper'?'已送交复审':stage==='returned'?'退回复议':'公民复决'}</span><h2>${esc(b.title)}</h2><p>${esc(b.description)}</p>${stage==='upper'?`<p>本院已通过，政策尚未生效。正在等待${upperName108()}复审。</p><button class="primary" onclick="switchChamber108('upper')">前往${upperName108()}复审</button>`:stage==='referendum'?`<p>两院程序已完成，全国支持率 ${fmt(s.approval,1)}% / 需要50%。</p><button class="primary" onclick="retryReferendum108()" ${s.approval<50?'disabled':''}>重新核验公民复决 · 不消耗行动点</button>`:`<div class="big-number" data-guide="pass-rate">${fmt(billPassRate104(),2)}<small>% 院内支持率</small></div><p>重新获得过半支持即可完成立法。${regime().id==='presidential'?'通过后延缓两个季度生效。':''}</p><button class="primary" onclick="voteBill()">重新表决 · 1 行动点</button>`} <button onclick="withdrawBill()">撤回议案</button>${upperRules108()}</section>`;
@@ -323,17 +368,21 @@ validSave=function(v){
  try{
   const state=v?.bicameral108;if(!state)return validBeforeBicameral108(v);
   const finite=(x,min=0,max=100)=>Number.isFinite(x)&&x>=min&&x<=max,integer=(x,min=0,max=100)=>Number.isInteger(x)&&x>=min&&x<=max;
-  if(state.version!==1||!CHAMBERS108[state.regime]||state.regime!==v.political.regime||!integer(state.nextBill,1,1e9)||!Array.isArray(state.delayed)||!Array.isArray(state.history))return false;
-  const u=state.upper;if(!u||typeof u.formed!=='boolean'||!Array.isArray(u.groups)||u.groups.length>15||!Array.isArray(u.members)||!integer(u.lastAgendaQ,0,v.q)||!integer(u.term,0,1e6)||!integer(u.nobleShare)||!integer(u.clergyShare))return false;
+  if(![1,2].includes(state.version)||!CHAMBERS108[state.regime]||state.regime!==v.political.regime||!integer(state.nextBill,1,1e9)||!Array.isArray(state.delayed)||!Array.isArray(state.history))return false;
+  const u=state.upper;if(!u||typeof u.formed!=='boolean'||!Array.isArray(u.groups)||u.groups.length>(state.version===1?15:state.regime==='theorepublic'?4:3)||!Array.isArray(u.members)||!integer(u.lastAgendaQ,0,v.q)||!integer(u.term,0,1e6)||!integer(u.nobleShare)||!integer(u.clergyShare))return false;
   if(!u.formed){if(state.regime!=='symbolic'||u.groups.length||u.members.length||!u.draft||Object.keys(u.draft).length!==3||!['establishment','progressive','conservative'].every(k=>integer(u.draft[k])))return false}
   else{
    if(!u.groups.length||u.groups.reduce((n,g)=>n+g.share,0)!==100||new Set(u.groups.map(g=>g.id)).size!==u.groups.length||u.groups.some(g=>!integer(g.id,0,20)||!UPPER_VIEWS108[g.view]||!integer(g.share)||!finite(g.relation)||!finite(g.agenda)||!finite(g.decay)||typeof g.name!=='string'||!g.name.length||g.name.length>60))return false;
+   if(state.version===2){
+    const lowerIds=new Set(v.political.factions.map(f=>f.id)),lowerNames=new Set(v.political.factions.map(f=>f.name));
+    if(new Set(u.groups.map(g=>g.view)).size!==u.groups.length||new Set(u.groups.map(g=>g.name)).size!==u.groups.length||!u.groups.some(g=>g.id===u.playerGroup)||u.groups.some(g=>lowerNames.has(g.name)||state.regime!=='theorepublic'&&g.view==='clerical'||g.lowerId!==null||!integer(g.share,1)||!Array.isArray(g.lowerShares)||new Set(g.lowerShares.map(x=>x.id)).size!==g.lowerShares.length||g.lowerShares.some(x=>!lowerIds.has(x.id)||!integer(x.share,1))||g.lowerShares.reduce((n,x)=>n+x.share,0)!==g.share||!integer(g.playerShare)||g.playerShare>g.share))return false;
+   }
    if(u.members.length!==u.groups.filter(g=>g.share>0).length+1||u.members.filter(m=>m.speaker).length!==1||u.members.some((m,i)=>m.id!==i||typeof m.speaker!=='boolean'||!u.groups.some(g=>g.id===m.group&&g.share>0)||!finite(m.relation)||!Number.isInteger(m.last)||typeof m.baseName!=='string'||m.name!==m.baseName+(m.honour?.title||'')))return false;
    const names=[...v.political.members,...v.political.candidates,...v.constitution.judges,...(v.judicialStaff?.reserve||[])].map(p=>p.baseName||p.name);
    if(new Set(u.members.map(m=>m.baseName)).size!==u.members.length||u.members.some(m=>names.includes(m.baseName)))return false;
    if(state.regime==='constitutional'&&(u.nobleShare<50||!u.groups.some(g=>g.view==='conservative'&&g.share>=40)))return false;
    if(state.regime==='theorepublic'){const share=u.groups.filter(g=>g.view==='clerical').reduce((n,g)=>n+g.share,0);if(u.clergyShare!==100||share<60||share>80||u.members.some(m=>m.honour?.kind!=='religious'))return false}
-   if(state.regime==='symbolic'&&(!Array.isArray(u.partyShares)||u.partyShares.reduce((n,x)=>n+x.share,0)!==100||u.groups.some(g=>!integer(g.playerShare)||g.playerShare>g.share)||u.partyShares.some(x=>u.groups.filter(g=>g.lowerId===x.id).reduce((n,g)=>n+g.share,0)!==x.share)||Object.entries(u.draft).some(([view,share])=>u.groups.filter(g=>g.view===view).reduce((n,g)=>n+g.share,0)!==share)))return false;
+   if(state.regime==='symbolic'&&(!Array.isArray(u.partyShares)||u.partyShares.reduce((n,x)=>n+x.share,0)!==100||u.groups.some(g=>!integer(g.playerShare)||g.playerShare>g.share)||u.partyShares.some(x=>u.groups.reduce((n,g)=>n+(state.version===1?(g.lowerId===x.id?g.share:0):g.lowerShares.filter(y=>y.id===x.id).reduce((n,y)=>n+y.share,0)),0)!==x.share)||Object.entries(u.draft).some(([view,share])=>u.groups.filter(g=>g.view===view).reduce((n,g)=>n+g.share,0)!==share)))return false;
   }
   const validBill=b=>{
    const t=b?.chamber108;if(!t||!integer(t.id,1,state.nextBill-1)||!['upper','returned','approved','referendum','delayed','judicial'].includes(t.stage)||!CHAMBERS108[t.sourceRegime]||!t.temp||!Array.isArray(t.agreements)||t.agreements.some(a=>!integer(a.member,0,20)||!integer(a.q,0,v.q)||![5,10,15].includes(a.bonus))||new Set(t.agreements.map(a=>a.member===0?'speaker':a.member+':'+a.q)).size!==t.agreements.length||Object.values(t.temp).some(n=>!finite(n,0,100))||!finite(t.penalty,0,100)||t.lowerRate!==null&&!finite(t.lowerRate)||t.upperRate!==null&&!finite(t.upperRate))return false;
@@ -361,10 +410,10 @@ validSave=function(v){
 function bicameralGuide108(entries){
  if(!hasUpper108())return;
  const add=(id,title,aliases,text)=>entries.push({id,title,aliases:[title,...aliases],text,category:'两院立法'});
- add('bicameral','两院制',Object.values(CHAMBERS108).flat(),`${regime().body}与${upperName108()}分别议事。第二院固定50席，两院团体关系、议程倾向和院内支持率独立；颜色对应各自政治倾向。君主立宪、西敏议会采用方形座席表，其余采用扇形。贵族与教士构成的硬性要求优先于下院席位映射。`);
+ add('bicameral','两院制',Object.values(CHAMBERS108).flat(),`${regime().body}与${upperName108()}分别议事。第二院固定50席，两院团体关系、议程倾向和院内支持率独立；颜色对应各自政治倾向。君主立宪、西敏议会采用方形座席表，其余采用扇形。第二院按倾向组成至多三个独立党团，神权共和至多四个，名称不与下院重名。贵族与教士构成的硬性要求优先于下院席位映射。`);
  add('upper-support','上院院内支持率',['上院支持率','上院议程倾向','临时议程倾向'],`倾向50对应0%本团体支持，51对应10%，60对应全票，按席位占比加权；严格超过50%通过。议长和代表提出的修订要求各消耗1行动点，仅对当前议案加成，结案清除。议长每案全体加成最多10；代表每季可接受一项条件、本团体本案加成15，可跨季继续协商，累计临时加成最高100。低于50没有额外稳定惩罚。非玩家团体每季议程倾向−2。`);
  add('upper-review','上院复审',['复审','退回复议','两院审议'],`预算、改革先获下院过半支持，再手动点击第二院复审，不消耗复审行动点。复审失败退回下院，重投耗1行动点；重新通过后无需再送上院。总统制退回重投的议案延缓两个季度实施。神权共和的改革和修宪被驳回即流案，预算仍可退回复议。${isFederal108()?'联邦最终生效时还需全国支持率达到50%。':''}`);
- add('upper-composition','参议院组建',['组建新一届参议院','建制保守','共和保守','贵族保守','教法保守'],`象征性民主开局参议院50席空缺，三种倾向合计100%后组建。每1%建制保守：稳定＋0.1、支持−0.1；社会进步（社会民主）：支持＋0.1、信心−0.1、全部下院党派关系−0.1；共和保守：信心＋0.2、稳定−0.1。党籍构成单独映射玩家下院占比，其余党籍随机。只有该政体可更换上院人员，其他政体不能任免。`);
+ add('upper-composition','参议院组建',['组建新一届参议院','建制保守','共和保守','贵族保守','教法保守'],`象征性民主开局参议院50席空缺，三种倾向合计100%后组建。每1%建制保守：稳定＋0.1、支持−0.1；社会进步（社会民主）：支持＋0.1、信心−0.1、全部下院党派关系−0.1；共和保守：信心＋0.2、稳定−0.1。每种非零倾向只形成一个独立党团，最多三个，不按下院党籍继续拆分；党籍关联仅在内部保留。只有该政体可更换上院人员，其他政体不能任免。`);
  for(const e of entries){
   if(e.id==='constitutional-docket')e.text=bicameralAmendmentText108();
   if(e.id==='constitution')e.text='国家档案记载现行根本条款。'+bicameralAmendmentText108();

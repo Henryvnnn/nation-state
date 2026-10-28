@@ -13,7 +13,7 @@ const storage={},ctx=boot(root,storage);
 vm.runInContext(fixture+`
 for(const r of REGIMES)for(let i=0;i<35;i++){
  fresh(r.id,'chambers-'+r.id+'-'+i);check(validSave(s),'fresh valid '+r.id+' '+i);if(!hasUpper108())continue;
- check(regime().body===CHAMBERS108[r.id][0],'lower name');const u=bicameral108().upper;chamberView108='upper';check((upperDiagram108().match(/class="upper-seat108"/g)||[]).length===50,'exact50 symbols');
+ check(regime().body===CHAMBERS108[r.id][0],'lower name');const u=bicameral108().upper;check(u.groups.length<=(r.id==='theorepublic'?4:3),'bloc count cap');check(new Set(u.groups.map(g=>g.view)).size===u.groups.length,'one bloc per view');check(u.groups.every(g=>!pstate().factions.some(f=>f.name===g.name)),'names independent of lower chamber');chamberView108='upper';check((upperDiagram108().match(/class="upper-seat108"/g)||[]).length===50,'exact50 symbols');
  for(const fn of [assembly,archive,guideCatalog104,judiciary,cabinet])fn();const snap=JSON.stringify(s);initPolitics();assembly();check(JSON.stringify(s)===snap,'no render/init mutation');
  if(r.id==='constitutional'){check(u.nobleShare>=50,'noble majority');check(u.groups.some(g=>g.view==='conservative'&&g.share>=40),'noble bloc');check(chamberSeatData107().layout==='benches','lower benches')}
  if(r.id==='theorepublic'){const n=u.groups.filter(g=>g.view==='clerical').reduce((a,g)=>a+g.share,0);check(n>=60&&n<=80&&u.clergyShare===100,'clerical rules')}
@@ -52,7 +52,7 @@ fresh('federal');goodUpper();electionForecast=()=>({total:50,rows:[]});proposeCo
 fresh('federal');goodUpper();electionForecast=()=>({total:70,rows:[]});proposeConstitution('amend','centralize','semi');court(10);upperReview108();check(regime().id==='semi'&&bicameral108().regime==='semi'&&validSave(s),'centralization rebuilds chambers safely');
 fresh('federal');constitution().authority='assembly';billPassRate104=()=>51;proposeConstitution('interpret','budget','education');voteBill();check(budgetCap('education')===13&&!constitution().docket,'interpretations unchanged');
 // Symbolic composition previews, exact once-only consequences and ruling party correlation.
-fresh('symbolic');let u=bicameral108().upper;u.draft={establishment:30,progressive:40,conservative:20};formSenate108();check(!u.formed,'99/90 not valid');u.draft={establishment:30,progressive:40,conservative:30};const old={a:s.approval,c:s.confidence,t:s.stability,r:pstate().factions.map(f=>f.relation)};formSenate108();near(s.approval-old.a,1,'composition approval');near(s.confidence-old.c,2,'composition confidence');near(s.stability-old.t,0,'composition stable');pstate().factions.forEach((f,i)=>near(f.relation-old.r[i],-4,'composition all factions'));near(u.partyShares.find(x=>x.id===playerFactionId107()).share,factionSeatShare107(pstate().factions[playerFactionId107()]),'player share mirror');check(validSave(s),'symbolic formed valid');let stateSnapshot=JSON.stringify(s);formSenate108();check(JSON.stringify(s)===stateSnapshot,'cannot farm composition');
+fresh('symbolic');let u=bicameral108().upper;u.draft={establishment:30,progressive:40,conservative:20};formSenate108();check(!u.formed,'99/90 not valid');u.draft={establishment:30,progressive:40,conservative:30};const old={a:s.approval,c:s.confidence,t:s.stability,r:pstate().factions.map(f=>f.relation)};formSenate108();near(s.approval-old.a,1,'composition approval');near(s.confidence-old.c,2,'composition confidence');near(s.stability-old.t,0,'composition stable');pstate().factions.forEach((f,i)=>near(f.relation-old.r[i],-4,'composition all factions'));near(u.partyShares.find(x=>x.id===playerFactionId107()).share,factionSeatShare107(pstate().factions[playerFactionId107()]),'player share mirror');check(u.groups.length===3&&u.members.length===4,'symbolic only three blocs and one representative each');check(u.groups.every(g=>!pstate().factions.some(f=>g.name.includes(f.name))),'symbolic names never reuse lower parties');check(validSave(s),'symbolic formed valid');let stateSnapshot=JSON.stringify(s);formSenate108();check(JSON.stringify(s)===stateSnapshot,'cannot farm composition');
 fresh('symbolic');u=bicameral108().upper;u.draft={establishment:0,progressive:100,conservative:0};formSenate108();check(validSave(s)&&u.groups.every(g=>g.view==='progressive'),'100 percent single bloc');
 billPassRate104=originalRate;electionForecast=originalForecast;upperSupport108=originalUpper;
 for(const id of ['federal','presidential','symbolic','theorepublic']){
@@ -63,7 +63,7 @@ fresh('party');budget();billPassRate104=()=>90;voteBill();check(!pstate().bill&&
 console.log('PASS full law matrix, thresholds, policy preferences, temporary agreements, vetoes/overrides/delays, final referendums, amendment timing, federal conversion, unchanged interpretations, symbolic controls.');
 fresh('constitutional');const lockedRoster=JSON.stringify(s);replaceUpperMember108(0);check(JSON.stringify(s)===lockedRoster,'non symbolic personnel cannot be replaced');
 fresh('presidential');billPassRate104=()=>80;goodUpper();budget();voteBill();pstate().ap=0;upperReview108();check(!pstate().bill&&pstate().ap===0,'review allowed at zero AP');
-fresh('presidential');billPassRate104=()=>80;goodUpper();budget();voteBill();let validPending=JSON.parse(JSON.stringify(s));for(const mutate of [v=>v.bicameral108.upper.groups[0].share++,v=>v.bicameral108.upper.groups[0].view='invalid',v=>v.political.bill.chamber108.temp[0]=Infinity,v=>v.political.bill.chamber108.agreements=[{member:0,key:'conference',bonus:5,q:0},{member:0,key:'guarantees',bonus:10,q:0}],v=>v.bicameral108.upper.members[0].baseName=v.political.candidates[0].baseName]){const bad=JSON.parse(JSON.stringify(validPending));mutate(bad);check(!validSave(bad),'malformed chamber state rejected')}
+fresh('presidential');billPassRate104=()=>80;goodUpper();budget();voteBill();let validPending=JSON.parse(JSON.stringify(s));for(const mutate of [v=>v.bicameral108.upper.groups[0].share++,v=>v.bicameral108.upper.groups[0].name=v.political.factions[0].name,v=>v.bicameral108.upper.groups[1].view=v.bicameral108.upper.groups[0].view,v=>v.bicameral108.upper.groups[0].view='invalid',v=>v.political.bill.chamber108.temp[0]=Infinity,v=>v.political.bill.chamber108.agreements=[{member:0,key:'conference',bonus:5,q:0},{member:0,key:'guarantees',bonus:10,q:0}],v=>v.bicameral108.upper.members[0].baseName=v.political.candidates[0].baseName]){const bad=JSON.parse(JSON.stringify(validPending));mutate(bad);check(!validSave(bad),'malformed chamber state rejected')}
 billPassRate104=originalRate;upperSupport108=originalUpper;save();check(validSave(s),'pending stateSnapshot');
 `,ctx);
 const raw=storage['nation-state-v1'];boot(root,storage);assert.equal(storage['nation-state-v1'],raw,'pending upper reload exact');
@@ -72,3 +72,46 @@ if(process.env.BASELINE_DIR)for(const id of ['federal','presidential','symbolic'
  const before=JSON.parse(oldStore['nation-state-v1']),up=boot(root,oldStore),after=JSON.parse(vm.runInContext('JSON.stringify(s)',up));for(const k of ['q','gdp','debt','rng'])assert.equal(after[k],before[k]);assert.deepEqual(after.political.candidates,before.political.candidates);assert.deepEqual(after.constitution.judges,before.constitution.judges);assert(vm.runInContext('validSave(s)',up));if(before.constitution.docket?.stage==='review')assert.equal(after.constitution.docket.reviewDeadline,before.constitution.docket.reviewDeadline);const once=oldStore['nation-state-v1'];boot(root,oldStore);assert.equal(oldStore['nation-state-v1'],once,'migration once');
 }
 console.log('PASS reload/migration preserves random stream, people, economy and existing court clocks.');
+// Load real version-1 two-chamber saves, including the former party × ideology senate.
+if(process.env.BLOC_BASELINE_DIR){
+ const ids=['constitutional','westminster','presidential','semi','federal','symbolic','theorepublic'];
+ for(const id of ids)for(const stage of ['none','budget','returned','amendment','review',...(id==='presidential'?['delayed']:[])]){
+  const store={},old=boot(process.env.BLOC_BASELINE_DIR,store);
+  vm.runInContext(fixture+`
+   fresh('${id}','legacy-blocs-${id}-${stage}');s.q=8;
+   if(regime().id==='symbolic'){bicameral108().upper.draft={establishment:30,progressive:40,conservative:30};formSenate108()}
+   const u=bicameral108().upper;u.groups.forEach((g,i)=>{g.agenda=40+i;g.relation=55+i;g.decay=i/2});billPassRate104=()=>90;
+   if('${stage}'!=='none'){
+    if(['amendment','review'].includes('${stage}')){proposeConstitution('amend','rights','equal');court(0);if(regime().id!=='federal')voteConstitution()}else{budget();voteBill()}
+    acceptUpperDemand108(0,'guarantees');for(const m of u.members.filter(m=>!m.speaker&&m.id%2))acceptUpperDemand108(m.id,'agreement');
+    if(['returned','delayed'].includes('${stage}')){lowUpper();upperReview108();if('${stage}'==='delayed'){s.q++;voteBill()}}
+    if('${stage}'==='review'){goodUpper();upperReview108()}
+   }
+   if(regime().id==='symbolic'){replaceUpperMember108(u.members.at(-1).id)}
+   check(validSave(s),'legacy fixture valid');save();
+  `,old);
+  const before=JSON.parse(store['nation-state-v1']),up=boot(root,store),after=JSON.parse(vm.runInContext('JSON.stringify(s)',up)),u=after.bicameral108.upper,previous=before.bicameral108.upper;
+  assert(vm.runInContext('validSave(s)',up),id+' '+stage+' migrated valid');assert.equal(after.bicameral108.version,2);assert(u.groups.length<=(id==='theorepublic'?4:3));
+  for(const k of ['q','gdp','debt','rng','approval','stability','confidence'])assert.equal(after[k],before[k],id+' migration preserves '+k);
+  for(const k of ['ap','candidates','members','cabinet','factions'])assert.deepEqual(after.political[k],before.political[k]);
+  assert.deepEqual(after.constitution.judges,before.constitution.judges);assert.equal(u.members[0].name,previous.members[0].name);assert.equal(u.members.length,u.groups.length+1);
+  assert.deepEqual(u.partyShares,previous.partyShares);assert.deepEqual(u.draft,previous.draft);assert.equal(u.nobleShare,previous.nobleShare);assert.equal(u.clergyShare,previous.clergyShare);
+  const tickets=v=>[v.political.bill,v.constitution.docket,...v.bicameral108.delayed].filter(b=>b?.chamber108);
+  for(const g of u.groups){
+   assert(!after.political.factions.some(f=>f.name===g.name));const parts=previous.groups.filter(x=>x.view===g.view),share=parts.reduce((n,x)=>n+x.share,0);assert.equal(g.share,share);
+   for(const k of ['agenda','relation','decay'])assert(Math.abs(g[k]-parts.reduce((n,x)=>n+x.share*x[k],0)/share)<1e-8,k+' weighted migration');
+   for(let i=0;i<tickets(before).length;i++){const b=tickets(before)[i],a=tickets(after)[i];assert.equal(a.chamber108.stage,b.chamber108.stage);assert.equal(a.reviewDeadline,b.reviewDeadline);assert.equal(a.enactAt108,b.enactAt108);const bonus=parts.reduce((n,x)=>n+x.share*(b.chamber108.temp[x.id]||0),0)/share;assert(Math.abs((a.chamber108.temp[g.id]||0)-bonus)<1e-8,'paid concessions retained proportionally')}
+  }
+  if(stage==='budget'||stage==='amendment')vm.runInContext(fixture+`
+   const b=upperBill108(),u=bicameral108().upper;check(!!b,'pending migrated bill');
+   const paid=JSON.stringify(s);acceptUpperDemand108(0,'conference');check(JSON.stringify(s)===paid,'chair quota preserved');
+   for(const a of b.chamber108.agreements.filter(a=>a.member!==0&&a.q===s.q)){const snap=JSON.stringify(s);acceptUpperDemand108(a.member,'agreement');check(JSON.stringify(s)===snap,'representative quarter quota preserved')}
+   s.q++;const rep=u.members.find(m=>!m.speaker),ap=pstate().ap;acceptUpperDemand108(rep.id,'agreement');check(pstate().ap===ap-1&&validSave(s),'merged representative can negotiate next quarter '+regime().id+' '+b.kind+' AP '+ap+' -> '+pstate().ap+' valid '+validSave(s));
+  `,up);
+  vm.runInContext('save()',up);const once=store['nation-state-v1'];boot(root,store);assert.equal(store['nation-state-v1'],once,'migration idempotent '+id+' '+stage);
+ }
+ // Unformed symbolic senates remain empty; naming avoids even a full lower-name pool collision.
+ const store={},old=boot(process.env.BLOC_BASELINE_DIR,store);vm.runInContext(fixture+"fresh('symbolic');save()",old);const up=boot(root,store);
+ vm.runInContext(fixture+`check(!bicameral108().upper.formed&&validSave(s),'empty legacy senate');const pool=upperGroupNames108('progressive');pstate().factions.forEach((f,i)=>f.name=pool[i]);bicameral108().upper.draft={establishment:0,progressive:100,conservative:0};formSenate108();check(bicameral108().upper.groups.length===1&&validSave(s),'fallback name avoids all lower names');`,up);
+ console.log('PASS legacy bloc migration across seven regimes: weighted shares/agreements, independent names, preserved people/finances/clocks/quotas, empty and single-bloc senates, exact repeated reload.');
+}
