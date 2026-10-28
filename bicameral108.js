@@ -3,8 +3,8 @@ const CHAMBERS108={constitutional:['下议院','上议院'],westminster:['众议
 for(const r of REGIMES)if(CHAMBERS108[r.id])r.body=CHAMBERS108[r.id][0];
 const UPPER_VIEWS108={
  establishment:{name:'建制保守',color:'#60748a',text:'对预算没有特别偏好；谨慎对待结构性改革。'},
- progressive:{name:'社会进步',color:'#c33874',text:'支持左派改革与加税，反对福利削减和私有化。'},
- conservative:{name:'共和保守',color:'#396bc1',text:'支持减税、福利紧缩与市场化，反对国有化等左派改革。'},
+ progressive:{name:'社会进步',color:'#c33874',text:'支持国有化、扩大社会保障与提高税收，反对削减福利和私有化。'},
+ conservative:{name:'共和保守',color:'#396bc1',text:'支持减税、控制福利支出与市场化改革，反对国有化。'},
  clerical:{name:'教法保守',color:'#b18b55',text:'反对文化、体育、科技与市场化改革；要求提高关税、降低其他税收，保持福利平稳。'}
 };
 let chamberView108='lower';
