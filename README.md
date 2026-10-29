@@ -1,6 +1,6 @@
 # 国策 · 虚构国家政治模拟开发日志
 
-在线游戏：https://Henryvnnn.github.io/nation-state/
+在线游戏：https://henrada.github.io/nation-state/
 
 [Wiki 主页与玩法手册](https://github.com/henrada/nation-state/wiki) · [搜索与术语索引](https://github.com/henrada/nation-state/wiki/搜索与术语索引)
 
