@@ -187,7 +187,7 @@ function enactOrdinary108(b){
 function finalizeOrdinary108(b,returned=false){
  if(isFederal108()&&s.approval<50){
   b.chamber108.stage='referendum';pstate().bill=b;
-  const text=`${b.title}已完成两院审议，但全国支持率 ${fmt(s.approval,1)}% 未达到50%，公民复决否决本案。草案保留；提高全国支持后可免费重新核验。`;
+  const text=`${b.title}已完成两院审议，但全国支持率 ${fmt(s.approval,1)}% 未达到50%，公民复决否决本案。草案保留；提高全国支持后可重新核验（无行动点消耗）。`;
   pushEvent(eventFrom('公民复决公投否决新法案',text,[option('接受复决结果','原预算与改革状态不变，已付协商成本保留。')],'federal-referendum'));log('公民复决公投否决新法案',text);showPoliticalEvent();return;
  }
  if(returned&&regime().id==='presidential'){
@@ -337,7 +337,7 @@ function upperDiagram108(){
  return `<div class="seat-strip seat-chamber upper-seat-chart" data-layout="${benches?'benches':'semicircle'}"><svg viewBox="0 0 ${benches?'300 130':'264 148'}" role="img" aria-label="${upperName108()}50席${u.formed?'倾向分布':'空缺'}图"><defs>${defs.join('')}</defs>${shapes.join('')}</svg></div>`;
 }
 function chamberSwitch108(){return `<nav class="chamber-switch108" aria-label="选择议院"><button onclick="switchChamber108('lower')" aria-pressed="${chamberView108==='lower'}" class="${chamberView108==='lower'?'primary':''}">${regime().body}</button><button onclick="switchChamber108('upper')" aria-pressed="${chamberView108==='upper'}" class="${chamberView108==='upper'?'primary':''}">${upperName108()}${upperBill108()?redDot107('有待复审议案'):''}</button></nav>`}
-function upperRules108(){return `<details class="upper-rules108"><summary>查看两院审议细则</summary><p>预算和结构性改革：${regime().body}院内支持率超过50%后送交${upperName108()}，手动点击复审且不消耗行动点；复审同样须超过50%。未完成程序前，现行预算不变，改革不扣启动费用、不计算执行期。</p><p>${regime().id==='theorepublic'?'宪法监护委员会驳回改革和修宪即流案；预算退回国民议会，复议过半后直接生效。':`未通过则退回${regime().body}；复议消耗1行动点，普通议案过半、修宪三分之二后不再返回上院。${regime().id==='presidential'?'总统制被退回的预算和改革再通过后延缓两季度；修宪司法通过后延缓两季度生效。':''}`}</p><p>${bicameralAmendmentText108()}</p>${isFederal108()?'<p>联邦预算与改革完成两院程序后，仍需全国支持率达到50%。公民复决未通过时草案保留，提高民意后可免费重新核验。</p>':''}<p>上院折算倾向50时无支持，51时支持本团体10%，60时全票支持，按席位占比加权。低于50不额外扣稳定。议长每案可选择一项全体加成（最多10），各代表每季可接受一项条件、继续争取本案支持；接受条件消耗1行动点，已付代价不因撤案退回。非玩家团体议程倾向每季−2。</p><p>50个席位标识合计100%权重，每个标识代表2%；出现奇数比例时用分色准确显示边界，不改变票数。</p></details>`}
+function upperRules108(){return `<details class="upper-rules108"><summary>查看两院审议细则</summary><p>预算和结构性改革：${regime().body}院内支持率超过50%后送交${upperName108()}，手动点击复审且不消耗行动点；复审同样须超过50%。未完成程序前，现行预算不变，改革不扣启动费用、不计算执行期。</p><p>${regime().id==='theorepublic'?'宪法监护委员会驳回改革和修宪即流案；预算退回国民议会，复议过半后直接生效。':`未通过则退回${regime().body}；复议消耗1行动点，普通议案过半、修宪三分之二后不再返回上院。${regime().id==='presidential'?'总统制被退回的预算和改革再通过后延缓两季度；修宪司法通过后延缓两季度生效。':''}`}</p><p>${bicameralAmendmentText108()}</p>${isFederal108()?'<p>联邦预算与改革完成两院程序后，仍需全国支持率达到50%。公民复决未通过时草案保留，提高民意后可重新核验（无行动点消耗）。</p>':''}<p>上院折算倾向50时无支持，51时支持本团体10%，60时全票支持，按席位占比加权。低于50不额外扣稳定。议长每案可选择一项全体加成（最多10），各代表每季可接受一项条件、继续争取本案支持；接受条件消耗1行动点，已付代价不因撤案退回。非玩家团体议程倾向每季−2。</p><p>50个席位标识合计100%权重，每个标识代表2%；出现奇数比例时用分色准确显示边界，不改变票数。</p></details>`}
 function upperDocket108(){const b=upperBill108();return `<section class="card" id="upper-docket108"><span class="tag">${upperName108()} · 复审</span>${b?`<h2>${esc(b.title)}</h2><p>${esc(b.description)}</p><div class="big-number" data-guide="upper-support"><b>${fmt(upperSupport108(b),2)}</b><small>% 院内支持率</small></div><p>超过50%通过。请先与议长或代表协商，再决定是否启动复审表决。</p><button class="primary" onclick="upperReview108()" ${s.ended||!bicameral108().upper.formed?'disabled':''}>进行复审 · 不消耗行动点</button> <button onclick="${b.mode==='amend'?'withdrawConstitution':'withdrawBill'}()">撤回议案</button>`:'<h2>暂无待复审议案</h2><p>下院通过的预算、结构性改革与宪法修正案将在此接收。</p>'}${upperRules108()}</section>`}
 function upperPage108(){
  const u=bicameral108().upper;
@@ -426,7 +426,7 @@ function bicameralGuide108(entries){
   if(e.id==='constitution')e.text='国家档案记载现行根本条款。'+bicameralAmendmentText108();
   if(['constitutional-transfer','pluralism-amendment','centralize-amendment'].includes(e.id))e.text=e.text.replace(/先获议事机关三分之二支持，再经当前最高司法机关半数赞成|联邦制直接进入司法审查|司法审查达到半数、公民加权支持率超过50%后|两项条件恰好达到也符合；进入修宪程序后不再反复核验。须依次通过议事机关三分之二与司法半数门槛/g,'完成两院立法程序后进入司法审查')+' '+bicameralAmendmentText108();
   if(e.id==='pass-rate')e.text='两院各自按团体席位权重计算院内支持率，普通议案都须严格超过50%。上院不适用低倾向稳定惩罚。'+bicameralAmendmentText108();
-  if(e.id==='federal-referendum')e.text='联邦预算和改革先经国民院过半、联邦院复审（可退回国民院过半重投），再核验全国支持率达到50%。全国支持不足时公民复决否决，草案保留；民意恢复后免费重新核验。政府信任案、释宪不走两院程序。';
+  if(e.id==='federal-referendum')e.text='联邦预算和改革先经国民院过半、联邦院复审（可退回国民院过半重投），再核验全国支持率达到50%。全国支持不足时公民复决否决，草案保留；民意恢复后可重新核验（无行动点消耗）。政府信任案、释宪不走两院程序。';
  }
 }
 function bicameralTutorial108(steps,scope,page){

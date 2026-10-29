@@ -57,7 +57,7 @@ function migrate103(){
  for(let k of cabinetSlots103())rules103().proposals[k]={progress:0,completed:false,spent:0,actions:[]};
  // Release migration clears obsolete relief cooldowns, but preserves paid works and their delivery dates.
  for(let x of sits()?.active||[])if(x.kind==='strike')delete x.cooldowns.relief;
- log('1.0.3 规则已启用','科研从本季度开始积累；内阁提案、比例议席与新组阁规则已启用。'+(!creatingWorld&&replaced.length?'旧存档中不符合组阁规则的 '+replaced.length+' 个职位已免费由执政党候选人接任，历史记录保留。':''));
+ log('1.0.3 规则已启用','科研从本季度开始积累；内阁提案、比例议席与新组阁规则已启用。'+(!creatingWorld&&replaced.length?'旧存档中不符合组阁规则的 '+replaced.length+' 个职位已由执政党候选人接任，历史记录保留。':''));
 }
 // Apply personnel rules before an opening scandal chooses its responsible minister.
 initPolitics=function(id=selectedRegime){initPreSituations(id);migrate103();initSituations()};
