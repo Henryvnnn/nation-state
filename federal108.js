@@ -231,7 +231,7 @@ checkAmendmentReview107=function(){
 function federalAmendmentProgress108(){const d=amendmentInProgress107();if(!d)return '';return `最高司法机关支持率 ${fmt(reviewRate107(d),2)}% / 需要达到50%；公民加权支持率 ${fmt(electionForecast().total,2)}% / 需要超过50%。<br>剩余 ${Math.max(0,d.reviewDeadline-s.q)} 季度；第 ${d.reviewDeadline} 季度开始时核验。两项须同时满足；全国支持率不能替代地区加权支持率。`}
 const docketBeforeFederal108=constitutionalDocketHTML;
 constitutionalDocketHTML=function(){
- const d=amendmentInProgress107();if(d?.procedure==='federal108')return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">联邦宪法修订 · 司法与公民复决</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p>${esc(d.costText)}</p><div class="note">${federalAmendmentProgress108()}</div><p>${d.route==='court'?courtBallotText107(d):'最高司法权现由国民院行使；审查须达到半数，不需三分之二。'}</p><p>本局势没有处置选项，送审后不能撤回；满足两项门槛即自动生效。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关</button></section>`;
+ const d=amendmentInProgress107();if(d?.procedure==='federal108')return `<section id="constitutional-docket" class="card constitution-docket"><span class="tag">联邦宪法修订 · 司法与公民复决</span><h2>${esc(d.title)}</h2><p>${esc(d.description)}</p><p>${esc(d.costText)}</p><div class="note">${federalAmendmentProgress108()}</div><p>${d.route==='court'?courtBallotText107(d):'最高司法权现由国民院行使；审查须达到半数，不需三分之二。'}</p><p>本局势没有处置选项，送审后不能撤回；满足两项门槛即生效。</p><button onclick="changeTab('${d.route==='court'?'judiciary':'assembly'}');$('modal').close()">前往审查机关</button></section>`;
  let html=docketBeforeFederal108();if(isFederal108())html=html.replace('先立法审议、再司法审查。','直接进行司法审查，并核验公民加权支持。');return html;
 };
 const amendmentHTMLBeforeFederal108=amendmentDocketHTML107;

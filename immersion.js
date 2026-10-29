@@ -4,10 +4,10 @@ function executiveName(){return EXECUTIVE_NAMES[regime().id]||'政府'}
 function governmentBriefings(limit=4){return governingChronicle().slice(0,limit)}
 
 const REGIME_ART={
- constitutional:{motto:'王冠之下，议会执政',focus:'议会信任 · 自动联合政府',alt:'君主立宪制示意图片'},
+ constitutional:{motto:'王冠之下，议会执政',focus:'议会信任 · 联合政府',alt:'君主立宪制示意图片'},
  presidential:{motto:'行政授权，立法制衡',focus:'总统决策 · 任命总理',alt:'民主共和制·总统制示意图片'},
  semi:{motto:'总统与总理，共掌行政',focus:'双首长协调 · 议会支持',alt:'半总统制示意图片'},
- westminster:{motto:'在辩论与信任中执政',focus:'首相组阁 · 自动联合政府',alt:'西敏议会制示意图片'},
+ westminster:{motto:'在辩论与信任中执政',focus:'首相组阁 · 联合政府',alt:'西敏议会制示意图片'},
  federal:{motto:'让不同地区找到共识',focus:'委员共治 · 公民复决',alt:'联邦委员会制示意图片'},
  theorepublic:{motto:'选举与宗教权威并立',focus:'最高领袖 · 民选议会',alt:'神权共和制示意图片'},
  symbolic:{motto:'选举之形，集中的权力',focus:'集中行政 · 稳定维系统治',alt:'象征性民主制示意图片'},

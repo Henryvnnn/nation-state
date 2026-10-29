@@ -116,7 +116,7 @@ function clergyQuarter(){
  if(c.lastQ<s.q){c.lastQ=s.q;if(c.loyalty<40){const stability=c.loyalty<20?2:0;mod({approval:-1,stability:-stability});log('神职集团离心',`神职人员忠诚度${fmt(c.loyalty,1)}%，本季度全国支持率−1${stability?'、政治稳定−2':''}。`)}}
  checkClergyConsequences();
 }
-function clergyRulesText(){return '初始忠诚度100%。法案在本院通过时，各神职团体本案倾向低于60的差额逐团累计扣除忠诚度；预算计入税收与支出偏好，上院计入本案协商加成。未通过、撤回和自动生效不会重复扣减。低于40：每季全国支持率−1；低于20：每季全国支持率−1、政治稳定−2。'+(regime().id==='theoabsolute'?'降至0：普通模式下统治结束。':'降至0：触发叛乱；无论以谈判或安全行动平息，国家随后转为象征性民主制。')}
+function clergyRulesText(){return '初始忠诚度100%。法案在本院通过时，各神职团体本案倾向低于60的差额逐团累计扣除忠诚度；预算计入税收与支出偏好，上院计入本案协商加成。未通过或撤回的法案不扣减；同一法案后续生效不重复扣减。低于40：每季全国支持率−1；低于20：每季全国支持率−1、政治稳定−2。'+(regime().id==='theoabsolute'?'降至0：普通模式下统治结束。':'降至0：触发叛乱；无论以谈判或安全行动平息，国家随后转为象征性民主制。')}
 function clergyCard(){const c=clergyState();if(!c)return '';return `<section id="clergy-loyalty" class="card ${c.loyalty<40?'attention-target':''}"><div class="section-label"><h3>神职人员忠诚度</h3><strong>${fmt(c.loyalty,1)}%</strong></div>${c.loyalty<40?redDot107('神职集团离心'):''}<div class="bar"><i style="width:${c.loyalty}%"></i></div><details><summary>查看忠诚度细则</summary><p>${clergyRulesText()}</p>${c.history.slice(-3).reverse().map(h=>`<p>第${h.q}季度 · ${esc(h.title)} · 忠诚度−${fmt(h.loss,1)}</p>`).join('')}</details></section>`}
 const assemblyBeforeInstitutions=assembly;
 assembly=function(){let html=assemblyBeforeInstitutions();if(regime().id==='theoabsolute'||regime().id==='theorepublic'&&chamberView108==='upper')html=clergyCard()+html;if(['presidential','semi'].includes(regime().id))html=`<p class="note" id="institution-summary">${institutions()?.partySystem==='two'?'两党制':'多党制'} · ${hasUpper108()?'两院制':'一院制'}${regime().id==='semi'?' · 联合政府席位占比'+fmt(coalitionShare107(),0)+'%':''}</p>`+html;return html};
@@ -152,7 +152,7 @@ function institutionsGuide(entries){
  add('presidential-parties','总统制党制',['两党制','多党制','无党籍党团'],'总统制开局两党制、多党制各50%，与院制独立抽取。两党制由自由主义或保守主义政党、社会自由主义或社会民主主义政党，以及倾向不同的无党籍党团组成。若设参议院，两院使用相同三党团名称，关系和议程独立；参议院可直接否决预算，改革只能退回，退回后通过的改革延缓两季度实施。多党制沿用通常两院规则。');
  add('semi-coalition','半总统制联合政府',['半总统制议会','国民议会'],'半总统制新世界至少七党，众议院或国民议会名称各50%。你属于相对较大的党派，开局与路线接近的党组成至少50%席位、总数不超过三党的联盟。总理与阁员均来自联盟；失信触发三季度政府危机。到期未解决则联盟解散、盟友阁员依强制离任规则辞职，不因此直接结束任期。');
  add('clergy-loyalty','神职人员忠诚度',['神职忠诚','神职集团','神职人员'],'神权共和制在宪法监护委员会、神权专制在枢密院显示，初始100%。法案在各院通过时，宗教党派／神职团体倾向不足60的差额逐团累计扣除；全部由教士组成的监护委员会各团体都计入。预算使用本案折算倾向，上院包括协商加成。低于40每季支持率−1；低于20每季支持率−1、稳定−2，前一档不重复叠加。归零时神权专制结束统治，神权共和触发叛乱，平息后转为象征性民主制。低于40出现执政提醒。');
- const ally=entries.find(e=>e.id==='political-ally');if(ally)ally.text=ally.text.replace('其他民主与象征性民主开局不自动结盟。','半总统制开局也自动组建最多三党的多数联盟。其余民主与象征性民主开局不自动结盟。');
+ const ally=entries.find(e=>e.id==='political-ally');if(ally)ally.text=ally.text.replace('其他民主与象征性民主开局为单党政府。','半总统制开局也组成最多三党的多数联盟。其余民主与象征性民主开局为单党政府。');
  if(twoPartyPresidency()){
   const entry=entries.find(e=>e.id==='bicameral');if(entry)entry.text=entry.text.replace('第二院按倾向组成至多三个独立党团，神权共和至多四个，名称不与下院重名。','本局为总统制两党格局，两院均为两个主要政党与一个无党籍党团，名称相同，关系与议程独立。');
   const review=entries.find(e=>e.id==='upper-review');if(review)review.text+=' 本局两党制参议院具有预算否决权，预算被否决后直接流案，不退回下院；改革仍按退回和延缓规则办理。';

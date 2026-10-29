@@ -23,7 +23,7 @@ economicQuarter=function(){
 function monetaryAction107(r){const delta=r.after-r.before;return Math.abs(delta)<.0000001?'维持政策利率':delta>0?'上调政策利率':'下调政策利率'}
 function monetaryReason107(r){
  if(r.kind==='legacy')return '历史指标摘录（非原始决策报告）。仅能确认相邻季度记录中的利率与指标，无法还原当时的决策理由或季度内调整。';
- return `央行按本季通胀 ${fmt(r.inflation)}% 与产出缺口 ${r.outputGap>0?'+':''}${fmt(r.outputGap)} 个百分点自动调整利率，并保留上一季利率的惯性。${r.after>r.before?'借贷成本随政策利率上升，经济扩张将面临额外压力。':r.after<r.before?'政策利率下调可缓解借贷压力，效果会随经济模拟逐步体现。':'本季计算结果维持利率不变。'}${r.inflation>20&&r.growth<0?'高通胀与经济收缩同时存在，货币政策面临取舍。':''}`;
+ return `央行按本季通胀 ${fmt(r.inflation)}% 与产出缺口 ${r.outputGap>0?'+':''}${fmt(r.outputGap)} 个百分点自主调整利率，并保留上一季利率的惯性。${r.after>r.before?'借贷成本随政策利率上升，经济扩张将面临额外压力。':r.after<r.before?'政策利率下调可缓解借贷压力，效果会随经济模拟逐步体现。':'本季计算结果维持利率不变。'}${r.inflation>20&&r.growth<0?'高通胀与经济收缩同时存在，货币政策面临取舍。':''}`;
 }
 function centralBankAdvice107(){
  const advice=[];const debt=s.debt/s.gdp*100,fiscal=balance();
@@ -44,7 +44,7 @@ function centralBankPage107(){
 }
 politicalTabs.push(['centralbank','▥','央行报告']);
 const archiveBeforeBank107=archive;
-archive=function(){return `<section class="card" id="central-bank-entry"><div class="section-label"><h3>央行政策档案</h3><span>政策利率 ${fmt(s.rate,2)}%</span></div><p>查看自动货币政策记录与本季度建议。</p><button onclick="changeTab('centralbank')">查阅央行报告 →</button></section>`+archiveBeforeBank107()};
+archive=function(){return `<section class="card" id="central-bank-entry"><div class="section-label"><h3>央行政策档案</h3><span>政策利率 ${fmt(s.rate,2)}%</span></div><p>查阅历季货币政策记录与本季度建议。</p><button onclick="changeTab('centralbank')">查阅央行报告 →</button></section>`+archiveBeforeBank107()};
 const validBeforeBank107=validSave;
 validSave=function(v){
  if(!validBeforeBank107(v))return false;const bank=v.centralBank107;if(!bank)return true;
@@ -64,6 +64,6 @@ function judicialReportsGuide107(entries){
  add('judicial-personnel','法官补缺',['法官备选池','任命法官','司法人事','法官辞任','任上病故','因病辞职','主动退休'],'每季度有5%概率随机一位现任法官离任，三种原因各占三分之一。报告不占三个常规事件。补缺消耗1行动点，候选人不得兼任政府或议事机关官员；可选非执政联盟人物。就任后永久退出政府候选名单，也不得进入议事机关。首席离任后，完成补缺时从全体现任法官中随机产生新首席。');
  add('judicial-mapping','司法倾向转换',['任前政治倾向'],'新任法官依据原政治倾向抽取司法倾向；任命前展示概率。强硬集权派必为政治保守；民生扩张派各以50%成为社会进步或墨守成规；市场社会派各以50%成为社会进步或政治自由。倾向在确认时确定，任命后不会因刷新重抽。');
  add('casting-vote','关键一票',['首席关键票','平票裁决'],'法院普通赞成与反对票恰好相等时，首席额外投一票；其本案意愿达到60即投赞成，否则投反对。释宪与修宪审查都适用；最高司法权属于议事机关时不适用。空缺不计票，首席空缺时没有关键票。');
- add('centralbank','央行报告',['央行政策报告','央行政策档案','历季政策处理报告','货币政策报告'],'从办公桌档案进入。记录每季度实际自动利率调整、当时的通胀、增长、就业及融资指标。利率自主反应；之后事件可能使季末数据不同。旧档可恢复的指标单独标为历史摘录，不补造原始报告。','经济与财政');
- add('bank-advice','本季度央行建议',['央行建议','中央银行建议'],'根据当前通胀、就业、增长、债务、财政余额与信心，提示游戏中的政策取舍。建议随本季选择更新；不会自动修改政策，不消耗行动点。','经济与财政');
+ add('centralbank','央行报告',['央行政策报告','央行政策档案','历季政策处理报告','货币政策报告'],'从办公桌档案进入。记录央行每季度的利率调整、当时的通胀、增长、就业及融资指标。利率自主反应；之后事件可能使季末数据不同。旧档可恢复的指标单独标为历史摘录，不补造原始报告。','经济与财政');
+ add('bank-advice','本季度央行建议',['央行建议','中央银行建议'],'根据当前通胀、就业、增长、债务、财政余额与信心，提示游戏中的政策取舍。建议随本季选择更新，查阅不消耗行动点。','经济与财政');
 }
