@@ -297,7 +297,7 @@ function symbolicSet108(key,value){const u=bicameral108()?.upper;if(regime().id!
 function symbolicPreview108(){const d=bicameral108().upper.draft,total=Object.values(d).reduce((a,b)=>a+b,0),e=symbolicEffects108(d);return `<b>已分配 ${total}% / 100%</b><p>${impactText(e)}。</p><p>以上为组建时的一次性影响；全部下院党派关系均受影响。</p><button class="primary" onclick="formSenate108()" ${total!==100||s.ended?'disabled':''}>组建新一届参议院</button>`}
 function formSenate108(){
  const u=bicameral108()?.upper;if(regime().id!=='symbolic'||!u||u.formed||s.ended||Object.values(u.draft).reduce((a,b)=>a+b,0)!==100)return;
- const prior=s.rng;s.rng=hash(s.seed+'|symbolic-senate108');
+ const prior=s.rng;s.rng=hash(s.seed+'|symbolic-senate108'+(u.term?'|term'+u.term:''));
  try{
   const player=playerFactionId107(),share=factionSeatShare107(pstate().factions[player]),views=Object.keys(u.draft),others=pstate().factions.filter(f=>f.id!==player),otherWeights=others.map(()=>1+rand()*4),otherShares=allocateUnits107(otherWeights,100-share);
   u.partyShares=pstate().factions.map(f=>({id:f.id,share:f.id===player?share:otherShares[others.findIndex(x=>x.id===f.id)]}));
@@ -306,7 +306,7 @@ function formSenate108(){
   const parties=[u.partyShares.find(x=>x.id===player),...u.partyShares.filter(x=>x.id!==player)];
   for(const party of parties){const alloc=allocateUnits107(rows,party.share);for(let i=0;i<views.length;i++)if(alloc[i]){const view=views[i];u.groups.push({id:u.groups.length,lowerId:party.id,view,share:alloc[i],relation:60,agenda:60,decay:0});rows[i]-=alloc[i]}}
 
-  u.formed=true;u.term=1;u.playerGroup=null;consolidateUpperBlocs108(u);mod(symbolicEffects108(u.draft));
+  u.formed=true;u.term++;u.playerGroup=null;consolidateUpperBlocs108(u);mod(symbolicEffects108(u.draft));
   noteDecision('组建参议院',{authority:(u.draft.establishment-u.draft.progressive)/25,welfare:(u.draft.progressive-u.draft.conservative)/25,market:u.draft.conservative/25},[],null,1,null,{kind:'coalition'});
   log('参议院组建',`50席依三类倾向组成；玩家党籍占比${share}%，与众议院对应。`);record();
  }finally{s.rng=prior}
@@ -382,7 +382,7 @@ validSave=function(v){
    if(!u.groups.length||u.groups.reduce((n,g)=>n+g.share,0)!==100||new Set(u.groups.map(g=>g.id)).size!==u.groups.length||u.groups.some(g=>!integer(g.id,0,20)||!UPPER_VIEWS108[g.view]||!integer(g.share)||!finite(g.relation)||!finite(g.agenda)||!finite(g.decay)||typeof g.name!=='string'||!g.name.length||g.name.length>60))return false;
    if(state.version===2){
     const lowerIds=new Set(v.political.factions.map(f=>f.id)),lowerNames=new Set(v.political.factions.map(f=>f.name));
-    if(new Set(u.groups.map(g=>g.view)).size!==u.groups.length||new Set(u.groups.map(g=>g.name)).size!==u.groups.length||!u.groups.some(g=>g.id===u.playerGroup)||u.groups.some(g=>(lowerNames.has(g.name)&&!(v.institutions?.regime==='presidential'&&v.institutions.partySystem==='two'))||state.regime!=='theorepublic'&&g.view==='clerical'||g.lowerId!==null||!integer(g.share,1)||!Array.isArray(g.lowerShares)||new Set(g.lowerShares.map(x=>x.id)).size!==g.lowerShares.length||g.lowerShares.some(x=>!lowerIds.has(x.id)||!integer(x.share,1))||g.lowerShares.reduce((n,x)=>n+x.share,0)!==g.share||!integer(g.playerShare)||g.playerShare>g.share))return false;
+    if(new Set(u.groups.map(g=>g.view)).size!==u.groups.length||new Set(u.groups.map(g=>g.name)).size!==u.groups.length||!u.groups.some(g=>g.id===u.playerGroup)||u.groups.some(g=>(lowerNames.has(g.name)&&!(v.institutions?.regime==='presidential'&&v.institutions.partySystem==='two'))||state.regime!=='theorepublic'&&g.view==='clerical'||g.lowerId!==null||!integer(g.share)||!Array.isArray(g.lowerShares)||new Set(g.lowerShares.map(x=>x.id)).size!==g.lowerShares.length||g.lowerShares.some(x=>!lowerIds.has(x.id)||!integer(x.share,1))||g.lowerShares.reduce((n,x)=>n+x.share,0)!==g.share||!integer(g.playerShare)||g.playerShare>g.share))return false;
    }
    if(u.members.length!==u.groups.filter(g=>g.share>0).length+1||u.members.filter(m=>m.speaker).length!==1||u.members.some((m,i)=>m.id!==i||typeof m.speaker!=='boolean'||!u.groups.some(g=>g.id===m.group&&g.share>0)||!finite(m.relation)||!Number.isInteger(m.last)||typeof m.baseName!=='string'||m.name!==m.baseName+(m.honour?.title||'')))return false;
    const names=[...v.political.members,...v.political.candidates,...v.constitution.judges,...(v.judicialStaff?.reserve||[])].map(p=>p.baseName||p.name);

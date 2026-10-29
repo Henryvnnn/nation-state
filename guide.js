@@ -166,6 +166,7 @@ function guideCatalog104(){
  if(typeof bicameralGuide108==='function')bicameralGuide108(entries);
  if(typeof institutionsGuide==='function')institutionsGuide(entries);
  if(typeof familiesGuide==='function')familiesGuide(entries);
+ if(typeof electionsGuide==='function')electionsGuide(entries);
  return entries;
 }
 let guideEntries104=[];
@@ -295,4 +296,4 @@ function stopTutorial(){let t=tutorial104;if(!t)return;tutorial104=null;t.opened
 // Keep the original bootstrap for non-browser rule tests and legacy hosts.
 if(typeof window==='undefined'||!document.documentElement.hasAttribute('data-office-ui'))bootGame();
 
-function tutorialSteps104(scope='intro',page=tab){let steps=tutorialStepsBase104(scope,page);if(typeof bicameralTutorial108==='function')steps=bicameralTutorial108(steps,scope,page);if(typeof institutionsTutorial==='function')steps=institutionsTutorial(steps,scope,page);return typeof familiesTutorial==='function'?familiesTutorial(steps,scope,page):steps}
+function tutorialSteps104(scope='intro',page=tab){let steps=tutorialStepsBase104(scope,page);if(typeof bicameralTutorial108==='function')steps=bicameralTutorial108(steps,scope,page);if(typeof institutionsTutorial==='function')steps=institutionsTutorial(steps,scope,page);if(typeof familiesTutorial==='function')steps=familiesTutorial(steps,scope,page);return typeof electionsTutorial==='function'?electionsTutorial(steps,scope,page):steps}

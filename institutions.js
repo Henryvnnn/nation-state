@@ -166,7 +166,7 @@ validSave=function(v){
  if(i.regime==='semi'&&i.origin==='new'&&(p.factions.length<7||!['众议院','国民议会'].includes(i.lowerName)))return false;
  if(i.partySystem==='two'){
   if(i.regime!=='presidential'||p.factions.length!==3||p.factions[2].name!=='无党籍党团'||new Set(p.factions.map(f=>f.profileKey)).size!==3)return false;
-  if(i.twoChambers){const u=v.bicameral108?.upper;if(!u||u.groups.length!==3||u.groups.some(g=>g.name!==p.factions[g.id]?.name||g.lowerShares.length!==1||g.lowerShares[0].id!==g.id))return false}
+  if(i.twoChambers){const u=v.bicameral108?.upper;if(!u||u.groups.length!==3||u.groups.some(g=>g.name!==p.factions[g.id]?.name||(g.share>0?(g.lowerShares.length!==1||g.lowerShares[0].id!==g.id):g.lowerShares.length!==0)))return false}
  }
  if(i.twoChambers!==!!v.bicameral108)return false;
  if(RELIGIOUS_REGIMES107.includes(i.regime)){

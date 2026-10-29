@@ -61,3 +61,10 @@
 .family-rules{margin-top:12px}
 .family-rules p{line-height:1.7}
 @media(max-width:700px){.family-grid{grid-template-columns:1fr}.family-switch{flex-wrap:wrap}.family-switch button{min-width:0}.family-central .big-number{font-size:40px}}
+
+/* Election reports share the existing paper and ink palette. */
+.electoral-forecast,.electoral-results{margin-bottom:20px;min-width:0}
+.electoral-chambers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.electoral-chamber{min-width:0}.electoral-chamber h4{margin:12px 0}.electoral-seat-bar{display:block;width:100%;height:24px;margin:7px 0 14px;border:1px solid var(--line)}
+.electoral-color{display:inline-block;width:8px;height:8px;margin-right:6px}.electoral-result .table-wrap{max-width:100%;overflow-x:auto}.electoral-chamber th,.electoral-chamber td{font-size:12px;padding:8px 5px}.electoral-result details{margin-top:16px}.electoral-forecast .row{gap:12px}.electoral-forecast .row b{white-space:nowrap}
+@media(max-width:760px){.electoral-chambers{grid-template-columns:1fr;gap:12px}.electoral-chamber td:first-child{min-width:95px}.electoral-forecast h3,.electoral-results h3{overflow-wrap:anywhere}}
