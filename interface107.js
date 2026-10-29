@@ -1,4 +1,5 @@
 /* 1.0.6 additions: live history charts and non-blocking government reminders. */
+function institutionSectionName(){return ['absolute','aristocratic','tyranny','theoabsolute'].includes(regime().id)?'监察机构':'立法机构'}
 const EXTRA_SERIES107=[['forecast','当前加权选票预测','%'],['eventsChosen','本季已回复事件','件'],['human','人力资本','/100'],['capitalStock','基础设施资本','/100'],['researchLevel','科研等级','级'],['researchProgress','科研进度','%'],['politicalCapacity','本季政治行动点总数','点']];
 const snapshotBeforeCharts107=snapshot;
 snapshot=function(){return {...snapshotBeforeCharts107(),...(v3()?.regions?.length?{forecast:electionForecast().total,eventsChosen:v3().eventsChosen}:{}),human:s.human,capitalStock:s.capitalStock,...(rules103()?{researchLevel:rules103().research.level,researchProgress:rules103().research.progress,politicalCapacity:politicalCapacity()}:{} )}};
@@ -56,7 +57,7 @@ render=function(){
  $('executive-heading').textContent=executiveName()+' / 战略决策室';
  $('heading').textContent=tab==='assembly'?r.body:tab==='judiciary'?r.court:list.find(row=>row[0]===tab)[2];$('date').textContent=date()+(s.adminMode?' · 管理员模式':'');
  $('advance').innerHTML=s.ended?'查看任期结算 →':pstate().current?'回复季度事件 →':v3().settlementDue?'选择结算或继续 →':'推进季度 →';
- let alerts=activeAlerts107();$('nav').innerHTML=list.map(row=>{let matches=alerts.filter(a=>a.tabs.includes(row[0]));return `<button class="nav-item ${tab===row[0]?'active':''}" data-nav="${row[0]}" onclick="changeTab('${row[0]}')"><span>${row[1]}</span>${row[0]==='assembly'?r.body:row[2]}${row[0]==='situations'?' · '+sits().active.length:''}${matches.length?redDot107(matches.map(a=>a.title).join('；')):''}</button>`}).join('');
+ let alerts=activeAlerts107();$('nav').innerHTML=list.map(row=>{let matches=alerts.filter(a=>a.tabs.includes(row[0]));return `<button class="nav-item ${tab===row[0]?'active':''}" data-nav="${row[0]}" onclick="changeTab('${row[0]}')"><span>${row[1]}</span>${row[0]==='assembly'?institutionSectionName():row[2]}${row[0]==='situations'?' · '+sits().active.length:''}${matches.length?redDot107(matches.map(a=>a.title).join('；')):''}</button>`}).join('');
  $('content').innerHTML=({overview,assembly,cabinet,judiciary,politics,budget,reforms:policies,archive,centralbank:typeof centralBankPage107==='function'?centralBankPage107:archive,settlement:settlementPage,situations:situationsPage,console:consolePage107})[tab]();decorateAlerts107();renderNotices107();
 };
 const validBeforeAdditions107=validSave;

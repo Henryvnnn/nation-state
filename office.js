@@ -144,7 +144,7 @@
   for(const [id,title,aliases,body]of [
    ['office-desk','办公桌',['办公室','桌面'],'点击桌上的文件、电话、档案、地图处理国务。桌面下按数字1至4也可打开；收回桌面或Esc可返回。办公室陈设随政体变化。'],
    ['office-files','文件',['待批文件','公文'],'处理本季事件、财政预算、结构性改革和持续局势，也可从宪制议程联系修宪、释宪的受理机关。'],
-   ['office-phone','电话',[],'联系议事机关、内阁和最高司法机关。会见、协商、任免、任务和提案继续使用现有行动点与表决规则。'],
+   ['office-phone','电话',[],`联系${institutionSectionName()}、内阁和最高司法机关。会见、协商、任免、任务和提案继续使用现有行动点与表决规则。`],
    ['office-map','地图',['地区目录'],'查看全部地区、地方诉求、完成进度及选举预测。点击编号或目录定位地区；示意图不表示真实面积。'],
    ['office-calendar','季度交接',['台历'],'检查待批事件和执政提醒，再推进下一季度。经济、内阁、改革与局势按原规则结算，未回复的季度事件须先处理。']
   ])entries.push({id,title,aliases:[title,...aliases],text:body,category:'页面与操作'});
@@ -158,7 +158,7 @@
   }
   let steps=baseTutorialSteps(scope,page).map(step=>({...step}));
   steps.forEach(step=>{if(step.id==='advance')step.text='进入下一季度会结算经济与施政，并发放行动点。剩余行动点不会结转，系统会先询问是否继续；勾选本局不再提示可关闭本局提醒。待决事件须先回复。';if(step.id==='page-tutorial')step.text='点击桌面物品进入需要了解的板块，再使用纸页右上方的“本页教程”。文件处理政策，电话联系人物，档案查看指标，地图查看地方与选举。';if(step.id==='tour-roadmap')step.text='办公桌上的文件、电话、档案和地图是主要入口。各页右上方都有本页教程；按空格进入下一步，右下角可跳过。';if(step.id==='new-world'){step.selector='button[onclick="officeUI.menu()"]';step.text='返回主菜单后可继续本局，或点击开启新历史重新生成国家。保留旧进度请先在国家档案导出存档。'}});
-  if(scope==='intro')steps.splice(5,0,{page:'overview',id:'office-objects',selector:'.office-close',title:'从办公桌处理国务',text:'文件：事件、预算、改革、局势与宪制议程。电话：议会、内阁和司法机关。档案：国家数据与存档。地图：地区诉求和选举。点击“收回桌面”再选择其他物品，也可按数字1至4打开。'});
+  if(scope==='intro')steps.splice(5,0,{page:'overview',id:'office-objects',selector:'.office-close',title:'从办公桌处理国务',text:`文件：事件、预算、改革、局势与宪制议程。电话：${institutionSectionName()}、内阁和司法机关。档案：国家数据与存档。地图：地区诉求和选举。点击“收回桌面”再选择其他物品，也可按数字1至4打开。`});
   return steps;
  };
  startTutorial=function(scope='intro'){

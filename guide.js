@@ -14,7 +14,7 @@ const REGIME_GUIDE104={
  theoabsolute:'你所扮演的是神权专制国家。最高教长统治国家，教团组成枢密院，宰相负责行政执行。'
 };
 function playerGuide104(){let r=regime();if(r.id==='federal')return '你担任联邦总理，是名义领袖并兼管财政；委员自主施政，不可强制撤换。忠诚达到70后可协调任务、协助提案。普通任期仍为48季度，管理员模式不受失败和任期限制。';if(s.adminMode)return `你担任${r.player}并兼管财政。本存档已启用管理员模式，控制台可修改数据，选举失败与其他结束条件均不会终止本局。`; if(r.id==='theorepublic')return '最高领袖掌握重大国务决策权，没有任期。本游戏将总统和财政部长的职责一并融合于最高领袖，方便玩家游玩；仍须维持政治稳定。';if(r.democratic)return `你担任${r.player}，决定预算、人事与重大政策，并兼管财政。选举决定是否留任，最多执政两届、48 个季度。`;return `你担任${r.player}，决定重大国务并兼管财政，没有民主选举的强制任期限制。低稳定仍会导致统治结束，第 48 季度起可选择结算。`}
-function legislativeGroups104(){return regime().id==='party'?'这些是你的立法机关中的政党和你所在政党的派系，也包括无党籍团体。':regime().body==='枢密院'?'这些是枢密院中的派系与政治团体。':'这些是你立法机关中的政党／派系。'}
+function legislativeGroups104(){return regime().id==='party'?'这些是你的立法机构中的政党和你所在政党的派系，也包括无党籍团体。':institutionSectionName()==='监察机构'?'这些是监察机构中的派系与政治团体。':'这些是你立法机构中的政党／派系。'}
 function guideNormalize104(text){return String(text).normalize('NFKC').replace(/\s+/g,'').replace(/^[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+|[、，。！？：；,.!?;:‘’“”\"'（）()【】\[\]]+$/g,'').toLowerCase()}
 function guideCatalog104(){
  let entries=[];function add(id,title,aliases,text,category='基本概念'){entries.push({id,title,aliases:[title,...aliases],text,category})}
@@ -47,7 +47,7 @@ function guideCatalog104(){
  add('capital','基础设施水平',['基础设施等级','基建资本','资本存量'],'反映已有交通、能源和公共设施的积累，与本季基础设施预算不同。持续投资、公共工程和改革可提高它；灾害会破坏设施。','经济与财政');
  add('human','人力资本',['教育资本'],'反映知识、技能与生产能力的积累，影响潜在经济增长。教育投入、教育部门提案和相关改革可以提高它；科研等级另外决定政治行动额度。','经济与财政');
  add('research','科研水平',['科研等级','科研','科研进度','下一级进度'],`每季度科研进度增加教育预算数值×2，教育部门提案完成后×3。每100%升一级，保留溢出进度；${actionResearchDescription()}升级在当季发放行动点前结算，已经发放的点数不会因浏览、刷新或导入重复增加。`,'内阁与科研');
- add('assembly','权力机关',['议会','立法机关','枢密院','最高人民会议','人民会议'],'审议预算和改革的机关。民主及部分共和政体使用议会，一党独大制使用最高人民会议，专制和贵族政体使用枢密院。可协商党派、会见负责人、提出并表决议案。','页面与操作');
+ add('assembly',institutionSectionName(),['立法机构','监察机构','权力机关','议会','立法机关','枢密院','最高人民会议','人民会议'],'电话中的机构入口。君主专制、贵族制、僭主制和神权专制显示为“监察机构”，其他政体显示为“立法机构”。进入后按本国制度显示具体机构或议院名称；两院制可切换查看两院。可协商党派或派系、会见负责人、提出并表决议案。','页面与操作');
  add('groups','政党与派系',['政党','党派','派系','党团','政治团体','执政党','执政派系','民主党派','无党籍团体','主流派','新锐派','改革派'],'政党和派系代表不同政治力量。席位决定其表决权重，团体关系、成员关系、倾向和政策偏好决定支持。一党独大制中的前三组是执政党内部派系，并非三个竞争执政党。','立法与政治');
  add('seats','席位',['议席','席','席位占比','议席比例','议事权重','权力构成'],'席位占比表示各党或派系在立法机关的表决权重，以整数百分比显示，总和为100%。表决仍使用实际席位与支持比例计算，不因显示取整改变结果；枢密院使用同样机制表示政治配合程度。最高司法机关仍按法官席数显示。','立法与政治');
  add('faction-relation','团体关系',['派系关系','党派关系','集团关系'],'政府与一个党派或派系的关系，范围0至100。协商、任命、事件和承诺会影响它。民主与象征性民主政体中，关系达到70后，可向该党总召邀请组建联合政府。','立法与政治');
@@ -195,7 +195,7 @@ function tutorialStepsBase104(scope='intro',page=tab){let steps=[],add=(page,id,
  target('overview','advance','#advance','推进季度会结算经济与施政，并恢复行动点。出现待决事件时，按钮会先带你回复事件。');
  target('overview','ap','.political-banner .action-count',actionTutorialText);
  for(let id of ['approval','stability','judicial','growth','unemployment','inflation','debt','rating','gdp','population','balance'])target('overview',id,`[data-guide="${id}"]`);
- nav('assembly','assembly',()=>`这是${regime().body}，用于争取支持并通过预算和改革。`);
+ nav('assembly','assembly',()=>`这是${institutionSectionName()}入口，用于会见成员、争取支持并审议预算和改革。${hasUpper108()?`进入后可切换${regime().body}与${upperName108()}。`:`本国机构称为${regime().body}。`}`);
  target('assembly','ap','.political-banner .action-count',actionTutorialText);
  target('assembly','groups','.seat-strip',legislativeGroups104);
  for(let id of ['seats','faction-relation','agenda','faction-profile','faction-support','negotiate','faction-details','full-support','effective-agenda'])target('assembly',id,`[data-guide="${id}"]`);
