@@ -53,7 +53,7 @@ const specBeforeProcedure107=constitutionalSpec;
 constitutionalSpec=function(mode,action,target){
  if(mode!=='amend')return specBeforeProcedure107(mode,action,target);
  let x=minoritySituation107(),c=constitution();
- if(action==='competitive'&&target==='enabled'&&!regime().democratic){
+ if(action==='competitive'&&target==='enabled'&&!regime().democratic&&regime().id!=='aristocratic'){
   let targets=['symbolic','party'].includes(regime().id)?'总统制或半总统制':regime().id==='theoabsolute'?'神权共和制或总统制':'君主立宪制或西敏议会制';
   return {mode,action,target,stance:'liberal',title:'增加竞争性选举条文',description:`确立竞争性选举，修宪成功后各以 50% 概率转为${targets}。保留执政时间、人物成果和经济数据；按新政体重组执政联盟，不符合入阁资格的官员按现行离任规则离任。`,values:{},axes:{authority:-4,law:4,elite:-2},costText:'通过后执行政体转型；不会额外扣减固定的支持或稳定，但内阁离任仍有正常后果。'};
  }

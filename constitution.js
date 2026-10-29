@@ -79,9 +79,6 @@ function constitutionalSpec(mode,action,target){
    spec.title='修订任期限制条款';spec.description=Number(target)?`宪法执政期限改为 ${Number(target)/TERM} 届（${target} 季度），已执政季度不清零。`:'取消宪法任期上限；保留每 24 季度的选举和失去支持时的失败条件。48 季度起每 12 季度询问是否结算。';
    let extendsTerm=Number(target)===0||(c.termLimit!==0&&Number(target)>c.termLimit);
    spec.stance=extendsTerm?'authority':'liberal';spec.values={approval:-3,stability:-4};spec.axes={authority:extendsTerm?3:-3,elite:extendsTerm?2:-2};
-  }else if(action==='economy'&&['mixed','socialist'].includes(target)&&target!==c.economicModel){
-   spec.title='修订经济模式条款';spec.description=target==='socialist'?'确立社会主义经济方向，公共所有与劳动保障优先；影响经济模式档案和非民主国家任期评估范围。':'确立混合经济方向，允许公共与私人部门并存；影响经济模式档案和任期评估范围。';
-   spec.stance=target==='socialist'?'social':'neutral';spec.values=target==='socialist'?{approval:3,confidence:-5,stability:-3}:{approval:-2,confidence:5,stability:-3};spec.axes={market:target==='socialist'?-4:3,welfare:target==='socialist'?2:0};
   }else if(action==='rights'&&['equal','traditional'].includes(target)&&target!==c.rights){
    spec.title='修订公民权利条款';spec.description=target==='equal'?'明确平等保护与社会权利，强化公共服务的平等可及原则。':'恢复传统社会秩序优先的宪法条款。';
    spec.stance=target==='equal'?'social':'traditional';spec.values=target==='equal'?{judicial:5,approval:3,stability:-3}:{judicial:-5,approval:-2,stability:3};spec.axes={welfare:target==='equal'?4:-4,law:target==='equal'?2:-2};
@@ -95,7 +92,7 @@ function constitutionalChoices(mode){
  if(mode==='interpret'){
   CONSTITUTION_BUDGETS.forEach(k=>add('budget',k));v3().offers.forEach(o=>add('reform',String(o.uid)));pstate().factions.forEach(f=>add('relations',String(f.id)));
  }else{
-  ['assembly','court'].forEach(t=>add('court',t));['48','72','0'].forEach(t=>add('term',t));['socialist','mixed'].forEach(t=>add('economy',t));['equal','traditional'].forEach(t=>add('rights',t));
+  ['assembly','court'].forEach(t=>add('court',t));['48','72','0'].forEach(t=>add('term',t));['equal','traditional'].forEach(t=>add('rights',t));
  }
  return all;
 }

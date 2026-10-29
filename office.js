@@ -72,6 +72,7 @@
  }
  function decoratePage(){
   content.dataset.officePage=ui.custom||tab;
+  if(tab==='assembly'&&!ui.custom&&aristocratic()&&familyView==='families')$('heading').textContent='家族互动';
   if(tab==='assembly'&&!ui.custom&&hasUpper108())$('heading').textContent=chamberView108==='upper'?upperName108():regime().body;
   if(tab==='politics'&&!ui.custom){
    content.insertAdjacentHTML('afterbegin',mapSheet());

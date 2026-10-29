@@ -165,6 +165,7 @@ function guideCatalog104(){
  if(typeof federalGuide108==='function')federalGuide108(entries);
  if(typeof bicameralGuide108==='function')bicameralGuide108(entries);
  if(typeof institutionsGuide==='function')institutionsGuide(entries);
+ if(typeof familiesGuide==='function')familiesGuide(entries);
  return entries;
 }
 let guideEntries104=[];
@@ -294,4 +295,4 @@ function stopTutorial(){let t=tutorial104;if(!t)return;tutorial104=null;t.opened
 // Keep the original bootstrap for non-browser rule tests and legacy hosts.
 if(typeof window==='undefined'||!document.documentElement.hasAttribute('data-office-ui'))bootGame();
 
-function tutorialSteps104(scope='intro',page=tab){let steps=tutorialStepsBase104(scope,page);if(typeof bicameralTutorial108==='function')steps=bicameralTutorial108(steps,scope,page);return typeof institutionsTutorial==='function'?institutionsTutorial(steps,scope,page):steps}
+function tutorialSteps104(scope='intro',page=tab){let steps=tutorialStepsBase104(scope,page);if(typeof bicameralTutorial108==='function')steps=bicameralTutorial108(steps,scope,page);if(typeof institutionsTutorial==='function')steps=institutionsTutorial(steps,scope,page);return typeof familiesTutorial==='function'?familiesTutorial(steps,scope,page):steps}

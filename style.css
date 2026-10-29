@@ -46,3 +46,18 @@
 
 /* 1.0.7 · constitutional chamber */
 .constitutional-grid{margin-top:20px;align-items:start}.judge-semicircle{display:block;width:100%;max-width:440px;margin:18px auto 0}.judge-legend{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;margin:4px 0 18px}.judge-legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px}.judge-legend i{height:9px;width:9px;border-radius:50%;flex-shrink:0}.judge-legend b{font-weight:500;color:var(--muted)}.constitution-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.constitution-actions button{margin:0}.judge-roster .card{display:flex;flex-direction:column}.judge-roster .card>button{margin-top:auto}.judge-roster .card p{font-size:13px}.constitution-docket .big-number{font-size:40px}.constitution-docket p{overflow-wrap:anywhere}.constitution-articles{margin-bottom:20px}.constitution-articles .row{gap:20px;align-items:start}.constitution-articles .row>b{max-width:72%;text-align:right;overflow-wrap:anywhere}.constitution-articles details{margin-top:20px}.constitution-articles summary{cursor:pointer;color:var(--green)}.constitution-member{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}.constitution-choices strong{display:block}.constitution-choices small{line-height:1.8}.constitution-choices{margin-bottom:18px}.judge-seat{transition:opacity .15s}.judge-seat:hover{opacity:.75}@media(max-width:650px){.constitutional-grid{grid-template-columns:1fr}.constitution-actions button{flex:1 1 140px}.judge-semicircle{max-width:340px}.constitution-articles .row{gap:12px}.constitution-articles .row>b{max-width:64%}}
+
+/* Aristocratic family dossier, sharing the established document palette. */
+.family-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:20px 0}
+.family-card{display:flex;flex-direction:column;gap:8px;min-width:0}
+.family-card h3{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:3px 0}
+.family-card p{margin:4px 0;overflow-wrap:anywhere}
+.family-card>button{margin-top:auto;align-self:flex-start}
+.family-powers{display:flex;flex-wrap:wrap;gap:6px;margin:5px 0}
+.family-inactive{opacity:.68}
+.family-warning{border-left:4px solid var(--red,#a34538);margin:16px 0}
+.family-central{margin:18px 0}
+.family-central>.bar{max-width:480px;margin:8px 0}
+.family-rules{margin-top:12px}
+.family-rules p{line-height:1.7}
+@media(max-width:700px){.family-grid{grid-template-columns:1fr}.family-switch{flex-wrap:wrap}.family-switch button{min-width:0}.family-central .big-number{font-size:40px}}
